@@ -1,1 +1,175 @@
-/* Add styles here */
+body {
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #777;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-link.active {
+    color: #333;
+    border-bottom: 2px solid #333;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+/* Timer and Stopwatch */
+.timer-inputs, .alarm-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="number"], input[type="time"] {
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.timer-buttons, .stopwatch-buttons, .alarm-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+button:hover {
+    background-color: #ccc;
+}
+
+#start-timer, #start-stopwatch {
+    background-color: #4CAF50;
+    color: white;
+}
+#start-timer:hover, #start-stopwatch:hover{
+    background-color: #45a049;
+}
+
+#stop-stopwatch {
+    background-color: #f44336;
+    color: white;
+}
+#stop-stopwatch:hover {
+    background-color: #da190b;
+}
+
+
+.timer-display, .stopwatch-display {
+    text-align: center;
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+/* Stopwatch Laps */
+.laps {
+    list-style: none;
+    padding: 0;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.laps li {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+/* World Clock */
+.world-clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#city-select {
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#clocks-container {
+    width: 100%;
+}
+
+.clock {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.clock-city {
+    font-weight: bold;
+}
+
+/* Alarm */
+.alarms-list {
+    list-style: none;
+    padding: 0;
+}
+
+.alarms-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.alarms-list button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.alarms-list button:hover {
+    background-color: #da190b;
+}

@@ -1,14 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <div class="container">
+        <nav class="tabs">
+            <button class="tab-link active" data-tab="timer">Timer</button>
+            <button class="tab-link" data-tab="stopwatch">Stopwatch</button>
+            <button class="tab-link" data-tab="world-clock">World Clock</button>
+            <button class="tab-link" data-tab="alarm">Alarm</button>
+        </nav>
+
+        <div id="timer" class="tab-content active">
+            <h2>Timer</h2>
+            <div class="timer-inputs">
+                <input type="number" id="hours" placeholder="HH" min="0">
+                <input type="number" id="minutes" placeholder="MM" min="0" max="59">
+                <input type="number" id="seconds" placeholder="SS" min="0" max="59">
+            </div>
+            <div class="timer-buttons">
+                <button id="start-timer">Start</button>
+                <button id="pause-timer">Pause</button>
+                <button id="reset-timer">Reset</button>
+            </div>
+            <div class="timer-display">00:00:00</div>
+        </div>
+
+        <div id="stopwatch" class="tab-content">
+            <h2>Stopwatch</h2>
+            <div class="stopwatch-display">00:00:00.000</div>
+            <div class="stopwatch-buttons">
+                <button id="start-stopwatch">Start</button>
+                <button id="stop-stopwatch">Stop</button>
+                <button id="reset-stopwatch">Reset</button>
+                <button id="lap-stopwatch">Lap</button>
+            </div>
+            <ul class="laps"></ul>
+        </div>
+
+        <div id="world-clock" class="tab-content">
+            <h2>World Clock</h2>
+            <div class="world-clock-container">
+                <select id="city-select">
+                    <option value="Asia/Seoul">Seoul</option>
+                    <option value="America/New_York">New York</option>
+                    <option value="Europe/London">London</option>
+                    <option value="Europe/Paris">Paris</option>
+                    <option value="Asia/Tokyo">Tokyo</option>
+                </select>
+                <div id="clocks-container"></div>
+            </div>
+        </div>
+
+        <div id="alarm" class="tab-content">
+            <h2>Alarm</h2>
+            <div class="alarm-inputs">
+                <input type="time" id="alarm-time">
+                <button id="set-alarm">Set Alarm</button>
+            </div>
+            <ul class="alarms-list"></ul>
+        </div>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
