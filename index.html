@@ -3,97 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="온라인 시계는 타이머, 스톱워치, 세계 시각, 알람 기능을 제공하는 무료 웹 애플리케이션입니다.">
-    <title>온라인 시계 - 타이머, 스톱워치, 세계 시각, 알람</title>
+    <title>과학자 툴킷 (Scientist's Toolkit)</title>
     <link rel="stylesheet" href="style.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017"
-     crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="container">
-        <nav class="tabs">
-            <button class="tab-link active" data-tab="timer">타이머</button>
-            <button class="tab-link" data-tab="stopwatch">스톱워치</button>
-            <button class="tab-link" data-tab="world-clock">세계 시각</button>
-            <button class="tab-link" data-tab="alarm">알람</button>
-        </nav>
 
-        <div id="timer" class="tab-content active">
-            <h2>타이머</h2>
-            <div class="how-to-use">
-                <p>시간, 분, 초를 입력하고 '시작' 버튼을 누르세요. '일시정지'와 '초기화'도 가능합니다.</p>
-            </div>
-            <div class="timer-inputs">
-                <input type="number" id="hours" placeholder="HH" min="0">
-                <input type="number" id="minutes" placeholder="MM" min="0" max="59">
-                <input type="number" id="seconds" placeholder="SS" min="0" max="59">
-            </div>
-            <div class="timer-buttons">
-                <button id="start-timer">시작</button>
-                <button id="pause-timer">일시정지</button>
-                <button id="reset-timer">초기화</button>
-            </div>
-            <div class="timer-display">00:00:00</div>
-        </div>
+    <header>
+        <h1>과학자 툴킷 (Scientist's Toolkit)</h1>
+    </header>
 
-        <div id="stopwatch" class="tab-content">
-            <h2>스톱워치</h2>
-            <div class="how-to-use">
-                <p>'시작' 버튼을 눌러 스톱워치를 작동시키세요. '랩' 버튼으로 중간 기록을 남길 수 있습니다.</p>
-            </div>
-            <div class="stopwatch-display">00:00:00.000</div>
-            <div class="stopwatch-buttons">
-                <button id="start-stopwatch">시작</button>
-                <button id="stop-stopwatch">정지</button>
-                <button id="reset-stopwatch">초기화</button>
-                <button id="lap-stopwatch">랩</button>
-            </div>
-            <ul class="laps"></ul>
-        </div>
+    <nav>
+        <button id="show-mass-calc" class="active">분자량 계산기</button>
+        <button id="show-outlier-check">Outlier 검정기</button>
+        <button id="show-hed-calc">HED 계산기</button>
+    </nav>
 
-        <div id="world-clock" class="tab-content">
-            <h2>세계 시각</h2>
-            <div class="how-to-use">
-                <p>드롭다운 메뉴에서 도시를 선택하면 해당 도시의 현재 시각을 볼 수 있습니다.</p>
-            </div>
-            <div class="world-clock-container">
-                <select id="city-select">
-                    <option value="Asia/Seoul">서울</option>
-                    <option value="America/New_York">뉴욕</option>
-                    <option value="Europe/London">런던</option>
-                    <option value="Europe/Paris">파리</option>
-                    <option value="Asia/Tokyo">도쿄</option>
-                    <option value="Asia/Beijing">베이징</option>
-                    <option value="Australia/Sydney">시드니</option>
-                    <option value="Europe/Moscow">모스크바</option>
-                    <option value="Asia/Dubai">두바이</option>
-                    <option value="Asia/Singapore">싱가포르</option>
-                    <option value="Asia/Hong_Kong">홍콩</option>
-                    <option value="Asia/Shanghai">상하이</option>
-                    <option value="America/Toronto">토론토</option>
-                    <option value="America/Vancouver">밴쿠버</option>
-                    <option value="America/Los_Angeles">로스앤젤레스</option>
-                    <option value="America/Chicago">시카고</option>
-                    <option value="Asia/Bangkok">방콕</option>
-                    <option value="Asia/Hanoi">하노이</option>
-                    <option value="Asia/Jakarta">자카르타</option>
+    <main>
+        <section id="mass-calculator" class="calculator active">
+            <h2>분자량 계산기</h2>
+            <p>네 개의 값 중 세 개를 입력하면 나머지 하나가 계산됩니다. (질량 = 농도 * 부피 * 분자량)</p>
+            <div class="input-group">
+                <label for="mass">질량 (Mass)</label>
+                <input type="number" id="mass" placeholder="값을 입력하세요...">
+                <select id="mass-unit">
+                    <option value="g">g</option>
+                    <option value="mg" selected>mg</option>
+                    <option value="ug">µg</option>
+                    <option value="ng">ng</option>
+                    <option value="pg">pg</option>
                 </select>
-                <div id="clocks-container"></div>
             </div>
-        </div>
+            <div class="input-group">
+                <label for="concentration">농도 (Concentration)</label>
+                <input type="number" id="concentration" placeholder="값을 입력하세요...">
+                <select id="concentration-unit">
+                    <option value="M">M</option>
+                    <option value="mM" selected>mM</option>
+                    <option value="uM">µM</option>
+                    <option value="nM">nM</option>
+                    <option value="pM">pM</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="volume">부피 (Volume)</label>
+                <input type="number" id="volume" placeholder="값을 입력하세요...">
+                <select id="volume-unit">
+                    <option value="L">L</option>
+                    <option value="mL" selected>mL</option>
+                    <option value="uL">µL</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="mw">분자량 (Molecular Weight)</label>
+                <input type="number" id="mw" placeholder="값을 입력하세요...">
+                <span>g/mol</span>
+            </div>
+            <button id="calculate-mass">계산</button>
+            <div id="mass-result" class="result"></div>
+        </section>
 
-        <div id="alarm" class="tab-content">
-            <h2>알람</h2>
-            <div class="how-to-use">
-                <p>원하는 시간을 설정하고 '알람 설정' 버튼을 누르세요.</p>
+        <section id="outlier-checker" class="calculator">
+            <h2>Outlier 검정기</h2>
+            <p>데이터를 쉼표(,)나 공백으로 구분하여 입력하세요.</p>
+            <textarea id="outlier-data" rows="10" placeholder="예: 1, 2, 3, 4, 5, 100"></textarea>
+            <button id="check-outliers">검정</button>
+            <div id="outlier-result" class="result"></div>
+        </section>
+
+        <section id="hed-calculator" class="calculator">
+            <h2>HED (Human Equivalent Dose) 계산기</h2>
+            <p>종 A의 정보를 입력하고, 종 B의 체중을 입력하면 종 B의 해당 섭취량이 계산됩니다.</p>
+            <div class="hed-group">
+                <h3>종 A (Species A)</h3>
+                <div class="input-group">
+                    <label for="species-a">동물 종</label>
+                    <select id="species-a">
+                        <option value="Rat">Rat</option>
+                        <option value="Mouse">Mouse</option>
+                        <option value="Hamster">Hamster</option>
+                        <option value="Gerbil">Gerbil</option>
+                        <option value="Guinea Pig">Guinea Pig</option>
+                        <option value="Rabbit">Rabbit</option>
+                        <option value="Dog">Dog</option>
+                        <option value="Monkey">Monkey</option>
+                        <option value="Minipig">Minipig</option>
+                        <option value="Pig">Pig</option>
+                        <option value="Human" selected>Human</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="dose-a">섭취량 (Dose)</label>
+                    <input type="number" id="dose-a" placeholder="값을 입력하세요...">
+                    <select id="dose-a-unit">
+                        <option value="mg">mg</option>
+                        <option value="g">g</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="weight-a">체중 (Weight)</label>
+                    <input type="number" id="weight-a" placeholder="값을 입력하세요...">
+                    <select id="weight-a-unit">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                    </select>
+                </div>
             </div>
-            <div class="alarm-inputs">
-                <input type="time" id="alarm-time">
-                <button id="set-alarm">알람 설정</button>
+            <div class="hed-group">
+                <h3>종 B (Species B)</h3>
+                 <div class="input-group">
+                    <label for="species-b">동물 종</label>
+                    <select id="species-b">
+                        <option value="Human" selected>Human</option>
+                        <option value="Rat">Rat</option>
+                        <option value="Mouse">Mouse</option>
+                        <option value="Hamster">Hamster</option>
+                        <option value="Gerbil">Gerbil</option>
+                        <option value="Guinea Pig">Guinea Pig</option>
+                        <option value="Rabbit">Rabbit</option>
+                        <option value="Dog">Dog</option>
+                        <option value="Monkey">Monkey</option>
+                        <option value="Minipig">Minipig</option>
+                        <option value="Pig">Pig</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="weight-b">체중 (Weight)</label>
+                    <input type="number" id="weight-b" placeholder="값을 입력하세요...">
+                    <select id="weight-b-unit">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                    </select>
+                </div>
             </div>
-            <ul class="alarms-list"></ul>
-        </div>
-    </div>
+            <button id="calculate-hed">계산</button>
+            <div id="hed-result" class="result"></div>
+        </section>
+    </main>
+
     <script src="main.js"></script>
 </body>
 </html>

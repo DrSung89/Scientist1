@@ -1,254 +1,166 @@
+/* General Styles */
 body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f9;
+    color: #333;
     margin: 0;
-}
-
-.container {
-    background-color: white;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
 }
 
-.tabs {
-    display: flex;
-    justify-content: space-around;
+header {
+    text-align: center;
     margin-bottom: 20px;
 }
 
-.tab-link {
-    background: none;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #777;
-    border-bottom: 2px solid transparent;
-}
-
-.tab-link.active {
-    color: #333;
-    border-bottom: 2px solid #333;
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
+h1 {
+    color: #2c3e50;
+    font-weight: 300;
 }
 
 h2 {
-    text-align: center;
+    color: #34495e;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
     margin-top: 0;
 }
 
-/* Timer and Stopwatch */
-.timer-inputs, .alarm-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-input[type="number"], input[type="time"] {
-    width: 60px;
-    padding: 5px;
-    font-size: 16px;
+/* Navigation */
+nav {
     text-align: center;
-}
-
-.timer-buttons, .stopwatch-buttons, .alarm-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
     margin-bottom: 20px;
 }
 
-button {
+nav button {
+    background-color: #fff;
+    border: 1px solid #bdc3c7;
+    color: #34495e;
     padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 16px;
+}
+
+nav button:hover {
+    background-color: #ecf0f1;
+}
+
+nav button.active {
+    background-color: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+
+/* Main Content */
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.calculator {
+    display: none;
+}
+
+.calculator.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.calculator p {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Input Groups */
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.input-group label {
+    flex: 0 0 180px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.input-group input[type="number"],
+.input-group select,
+.input-group textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 16px;
+    min-width: 150px;
+}
+
+.input-group select {
+    margin-left: 8px;
+    flex-grow: 0;
+}
+
+.input-group span {
+    margin-left: 8px;
+    color: #7f8c8d;
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* HED Calculator Specifics */
+.hed-group {
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.hed-group h3 {
+    margin-top: 0;
+    color: #3498db;
+}
+
+/* Buttons */
+button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 12px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #ddd;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    display: block;
+    margin-top: 20px;
 }
 
 button:hover {
-    background-color: #ccc;
+    background-color: #2980b9;
 }
 
-#start-timer, #start-stopwatch {
-    background-color: #4CAF50;
-    color: white;
-}
-#start-timer:hover, #start-stopwatch:hover{
-    background-color: #45a049;
-}
-
-#stop-stopwatch {
-    background-color: #f44336;
-    color: white;
-}
-#stop-stopwatch:hover {
-    background-color: #da190b;
-}
-
-
-.timer-display, .stopwatch-display {
-    text-align: center;
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-/* Stopwatch Laps */
-.laps {
-    list-style: none;
-    padding: 0;
-    max-height: 100px;
-    overflow-y: auto;
-}
-
-.laps li {
-    padding: 5px;
-    border-bottom: 1px solid #eee;
-}
-
-.how-to-use p {
-    font-size: 14px;
-    color: #666;
-    text-align: center;
-    margin-top: -10px;
-    margin-bottom: 15px;
-}
-
-/* World Clock */
-.world-clock-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#city-select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-#clocks-container {
-    width: 100%;
-}
-
-.clock {
-    border: 1px solid #eee;
+/* Result Area */
+.result {
+    margin-top: 20px;
     padding: 15px;
-    border-radius: 8px;
-}
-
-.clock-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.clock-city {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.clock-time {
-    font-size: 24px;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-.weather-info {
-    border-top: 1px solid #f0f0f0;
-    padding-top: 15px;
-}
-
-.weather-info .temperature {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.clothing-recommendations h4 {
-    font-size: 16px;
-    margin-top: 0;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #333;
-}
-
-.clothing-recommendations ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-}
-
-.clothing-recommendations li {
-    font-size: 14px;
-    color: #555;
-    padding: 2px 0;
-}
-
-/* Alarm */
-.alarms-list {
-    list-style: none;
-    padding: 0;
-}
-
-.alarms-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.alarms-list button {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-.alarms-list button:hover {
-    background-color: #da190b;
-}
-
-/* 404 Page */
-.not-found-container {
-    text-align: center;
-}
-
-.not-found-container h1 {
-    font-size: 72px;
-    margin-bottom: 10px;
-}
-
-.not-found-container p {
-    font-size: 18px;
-    margin-bottom: 20px;
-}
-
-.not-found-container a {
-    text-decoration: none;
-    color: #4CAF50;
-    font-weight: bold;
-}
-
-.not-found-container a:hover {
-    text-decoration: underline;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    border: 1px solid #bdc3c7;
+    min-height: 20px;
+    white-space: pre-wrap; /* To preserve formatting */
+    font-family: "Courier New", Courier, monospace;
 }
