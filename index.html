@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학자 툴킷 (Scientist's Toolkit)</title>
+    <title>Scientist's Toolkit</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h1>과학자 툴킷 (Scientist's Toolkit)</h1>
+        <h1>Scientist's Toolkit</h1>
     </header>
 
     <nav>
-        <button id="show-mass-calc" class="active">분자량 계산기</button>
-        <button id="show-outlier-check">Outlier 검정기</button>
-        <button id="show-hed-calc">HED 계산기</button>
+        <button id="show-mass-calc" class="active">Molarity Calc</button>
+        <button id="show-outlier-check">Outlier Checker</button>
+        <button id="show-hed-calc">HED Calc</button>
     </nav>
 
     <main>
         <section id="mass-calculator" class="calculator active">
-            <h2>분자량 계산기</h2>
-            <p>네 개의 값 중 세 개를 입력하면 나머지 하나가 계산됩니다. (질량 = 농도 * 부피 * 분자량)</p>
+            <h2>Molarity Calculator</h2>
+            <p>Enter 3 values to calculate the 4th. (Mass = Conc. * Vol. * MW)</p>
             <div class="input-group">
-                <label for="mass">질량 (Mass)</label>
-                <input type="number" id="mass" placeholder="값을 입력하세요...">
+                <label for="mass">Mass</label>
+                <input type="number" id="mass" placeholder="Input value...">
                 <select id="mass-unit">
                     <option value="g">g</option>
                     <option value="mg" selected>mg</option>
@@ -34,8 +34,8 @@
                 </select>
             </div>
             <div class="input-group">
-                <label for="concentration">농도 (Concentration)</label>
-                <input type="number" id="concentration" placeholder="값을 입력하세요...">
+                <label for="concentration">Concentration</label>
+                <input type="number" id="concentration" placeholder="Input value...">
                 <select id="concentration-unit">
                     <option value="M">M</option>
                     <option value="mM" selected>mM</option>
@@ -45,8 +45,8 @@
                 </select>
             </div>
             <div class="input-group">
-                <label for="volume">부피 (Volume)</label>
-                <input type="number" id="volume" placeholder="값을 입력하세요...">
+                <label for="volume">Volume</label>
+                <input type="number" id="volume" placeholder="Input value...">
                 <select id="volume-unit">
                     <option value="L">L</option>
                     <option value="mL" selected>mL</option>
@@ -54,88 +54,100 @@
                 </select>
             </div>
             <div class="input-group">
-                <label for="mw">분자량 (Molecular Weight)</label>
-                <input type="number" id="mw" placeholder="값을 입력하세요...">
+                <label for="mw">Molecular Weight</label>
+                <input type="number" id="mw" placeholder="Input value...">
                 <span>g/mol</span>
             </div>
-            <button id="calculate-mass">계산</button>
+            <button id="calculate-mass">Calculate</button>
             <div id="mass-result" class="result"></div>
         </section>
 
         <section id="outlier-checker" class="calculator">
-            <h2>Outlier 검정기</h2>
-            <p>데이터를 쉼표(,)나 공백으로 구분하여 입력하세요.</p>
-            <textarea id="outlier-data" rows="10" placeholder="예: 1, 2, 3, 4, 5, 100"></textarea>
-            <button id="check-outliers">검정</button>
+            <h2>Outlier Checker & Normality</h2>
+            <p class="warning-text">⚠️ Please separate data with <strong>commas (,)</strong>.</p>
+            <textarea id="outlier-data" rows="8" placeholder="e.g.: 1.2, 1.5, 1.8, 10.5, 1.3"></textarea>
+            <button id="check-outliers">Check Data</button>
             <div id="outlier-result" class="result"></div>
         </section>
 
         <section id="hed-calculator" class="calculator">
-            <h2>HED (Human Equivalent Dose) 계산기</h2>
-            <p>종 A의 정보를 입력하고, 종 B의 체중을 입력하면 종 B의 해당 섭취량이 계산됩니다.</p>
-            <div class="hed-group">
-                <h3>종 A (Species A)</h3>
-                <div class="input-group">
-                    <label for="species-a">동물 종</label>
-                    <select id="species-a">
-                        <option value="Rat">Rat</option>
-                        <option value="Mouse">Mouse</option>
-                        <option value="Hamster">Hamster</option>
-                        <option value="Gerbil">Gerbil</option>
-                        <option value="Guinea Pig">Guinea Pig</option>
-                        <option value="Rabbit">Rabbit</option>
-                        <option value="Dog">Dog</option>
-                        <option value="Monkey">Monkey</option>
-                        <option value="Minipig">Minipig</option>
-                        <option value="Pig">Pig</option>
-                        <option value="Human" selected>Human</option>
-                    </select>
+            <h2>HED (Human Equivalent Dose) Calculator</h2>
+            <p>Calculates equivalent dose based on BSA (Body Surface Area).</p>
+            
+            <div class="hed-container">
+                <div class="hed-inputs">
+                    <div class="hed-group">
+                        <h3>Species A (Source)</h3>
+                        <div class="input-group">
+                            <label for="species-a">Species</label>
+                            <select id="species-a">
+                                <option value="Mouse">Mouse</option>
+                                <option value="Hamster">Hamster</option>
+                                <option value="Rat">Rat</option>
+                                <option value="Ferret">Ferret</option>
+                                <option value="Guinea Pig">Guinea Pig</option>
+                                <option value="Rabbit">Rabbit</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Monkey">Monkey</option>
+                                <option value="Marmoset">Marmoset</option>
+                                <option value="Baboon">Baboon</option>
+                                <option value="Micro Pig">Micro Pig</option>
+                                <option value="Mini Pig">Mini Pig</option>
+                                <option value="Human">Human</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="dose-a">Dose (mg/kg)</label>
+                            <input type="number" id="dose-a" placeholder="mg/kg">
+                            <span>mg/kg</span>
+                        </div>
+                    </div>
+
+                    <div class="hed-group">
+                        <h3>Species B (Target)</h3>
+                        <div class="input-group">
+                            <label for="species-b">Species</label>
+                            <select id="species-b">
+                                <option value="Human" selected>Human</option>
+                                <option value="Mouse">Mouse</option>
+                                <option value="Rat">Rat</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Monkey">Monkey</option>
+                                </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="weight-b">Body Weight</label>
+                            <input type="number" id="weight-b" placeholder="Weight">
+                            <select id="weight-b-unit">
+                                <option value="kg" selected>kg</option>
+                                <option value="g">g</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="calculate-hed">Calculate HED</button>
                 </div>
-                <div class="input-group">
-                    <label for="dose-a">섭취량 (Dose)</label>
-                    <input type="number" id="dose-a" placeholder="값을 입력하세요...">
-                    <select id="dose-a-unit">
-                        <option value="mg">mg</option>
-                        <option value="g">g</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="weight-a">체중 (Weight)</label>
-                    <input type="number" id="weight-a" placeholder="값을 입력하세요...">
-                    <select id="weight-a-unit">
-                        <option value="kg">kg</option>
-                        <option value="g">g</option>
-                    </select>
+
+                <div class="hed-reference">
+                    <h4>Reference Body Weights</h4>
+                    <ul id="ref-list">
+                        <li><strong>Human:</strong> 60 kg</li>
+                        <li><strong>Mouse:</strong> 0.02 kg</li>
+                        <li><strong>Hamster:</strong> 0.08 kg</li>
+                        <li><strong>Rat:</strong> 0.15 kg</li>
+                        <li><strong>Ferret:</strong> 0.30 kg</li>
+                        <li><strong>Guinea Pig:</strong> 0.40 kg</li>
+                        <li><strong>Rabbit:</strong> 1.8 kg</li>
+                        <li><strong>Dog:</strong> 10 kg</li>
+                        <li><strong>Monkey:</strong> 3 kg</li>
+                        <li><strong>Marmoset:</strong> 0.35 kg</li>
+                        <li><strong>Squirrel Monkey:</strong> 0.60 kg</li>
+                        <li><strong>Baboon:</strong> 12 kg</li>
+                        <li><strong>Micro Pig:</strong> 20 kg</li>
+                        <li><strong>Mini Pig:</strong> 40 kg</li>
+                    </ul>
                 </div>
             </div>
-            <div class="hed-group">
-                <h3>종 B (Species B)</h3>
-                 <div class="input-group">
-                    <label for="species-b">동물 종</label>
-                    <select id="species-b">
-                        <option value="Human" selected>Human</option>
-                        <option value="Rat">Rat</option>
-                        <option value="Mouse">Mouse</option>
-                        <option value="Hamster">Hamster</option>
-                        <option value="Gerbil">Gerbil</option>
-                        <option value="Guinea Pig">Guinea Pig</option>
-                        <option value="Rabbit">Rabbit</option>
-                        <option value="Dog">Dog</option>
-                        <option value="Monkey">Monkey</option>
-                        <option value="Minipig">Minipig</option>
-                        <option value="Pig">Pig</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="weight-b">체중 (Weight)</label>
-                    <input type="number" id="weight-b" placeholder="값을 입력하세요...">
-                    <select id="weight-b-unit">
-                        <option value="kg">kg</option>
-                        <option value="g">g</option>
-                    </select>
-                </div>
-            </div>
-            <button id="calculate-hed">계산</button>
+            
             <div id="hed-result" class="result"></div>
         </section>
     </main>
