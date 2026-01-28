@@ -7,7 +7,6 @@
 }
 
 body {
-    /* 기존 설정 유지 */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
     margin: 0;
@@ -15,14 +14,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    /* [배경 부분 변경] */
-    background-color: #f3f4f6; /* 기본 배경색 */
-    /* 가로 세로 1px짜리 아주 연한 파란색 선을 그립니다 */
+    
+    /* [배경 스타일 변경] */
+    background-color: var(--bg-color); /* 기본 배경색 */
+    /* 가로, 세로 격자 무늬 추가 */
     background-image: 
         linear-gradient(#e5e7eb 1px, transparent 1px), 
         linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
-    background-size: 20px 20px; /* 격자 크기 (20px) */
+    background-size: 20px 20px; /* 격자 크기 */
+    min-height: 100vh; /* 화면이 짧아도 배경이 끊기지 않게 함 */
 }
 
 header h1 {
