@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ==========================================
+// ==========================================
     // 2. Molarity Calculator (분자량 계산기)
     // ==========================================
     const massCalcButton = document.getElementById('calculate-mass');
@@ -62,24 +62,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Mass 계산
                 const calculatedMassG = (concVal * concUnit) * (volVal * volUnit) * mwVal;
                 const finalMass = calculatedMassG / massUnit;
-                resultText = `Calculated Mass: <strong>${finalMass.toExponential(4)}</strong> ${document.getElementById('mass-unit').value}`;
+                // 수정됨: toExponential(4) -> toFixed(1)
+                resultText = `Calculated Mass: <strong>${finalMass.toFixed(1)}</strong> ${document.getElementById('mass-unit').value}`;
             } else if (!isNaN(massVal) && !isNaN(volVal) && !isNaN(mwVal) && isNaN(concVal)) {
                 // Concentration 계산
                 const massG = massVal * massUnit;
                 const calculatedConcM = massG / (mwVal * (volVal * volUnit));
                 const finalConc = calculatedConcM / concUnit;
-                resultText = `Calculated Concentration: <strong>${finalConc.toExponential(4)}</strong> ${document.getElementById('concentration-unit').value}`;
+                // 수정됨: toExponential(4) -> toFixed(1)
+                resultText = `Calculated Concentration: <strong>${finalConc.toFixed(1)}</strong> ${document.getElementById('concentration-unit').value}`;
             } else if (!isNaN(massVal) && !isNaN(concVal) && !isNaN(mwVal) && isNaN(volVal)) {
                 // Volume 계산
                 const massG = massVal * massUnit;
                 const calculatedVolL = massG / (mwVal * (concVal * concUnit));
                 const finalVol = calculatedVolL / volUnit;
-                resultText = `Calculated Volume: <strong>${finalVol.toExponential(4)}</strong> ${document.getElementById('volume-unit').value}`;
+                // 수정됨: toExponential(4) -> toFixed(1)
+                resultText = `Calculated Volume: <strong>${finalVol.toFixed(1)}</strong> ${document.getElementById('volume-unit').value}`;
             } else if (!isNaN(massVal) && !isNaN(concVal) && !isNaN(volVal) && isNaN(mwVal)) {
                 // MW 계산
                 const massG = massVal * massUnit;
                 const calculatedMW = massG / ((concVal * concUnit) * (volVal * volUnit));
-                resultText = `Calculated MW: <strong>${calculatedMW.toFixed(2)}</strong> g/mol`;
+                // 수정됨: 통일성을 위해 여기도 toFixed(1)로 변경 (원래 toFixed(2)였음)
+                resultText = `Calculated MW: <strong>${calculatedMW.toFixed(1)}</strong> g/mol`;
             } else {
                 resultText = "<span style='color:red;'>Error: Please enter exactly 3 values.</span>";
             }
@@ -87,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resultDiv.innerHTML = resultText;
         });
     }
-
     // ==========================================
     // 3. Outlier Checker (이상치 & 정규성 검정)
     // ==========================================
