@@ -19,13 +19,14 @@
         <button class="nav-btn active" data-target="mass-calculator">Molarity Calc</button>
         <button class="nav-btn" data-target="outlier-checker">Outlier Checker</button>
         <button class="nav-btn" data-target="hed-calculator">HED Calc</button>
+        <button class="nav-btn" data-target="help-section">Help & Info</button>
     </nav>
 
     <div class="ad-container">
         <ins class="adsbygoogle"
              style="display:block"
              data-ad-client="ca-pub-9274620489745017"
-             data-ad-slot="YOUR_AD_SLOT_NUMBER_HERE"
+             data-ad-slot="6554136062" 
              data-ad-format="auto"
              data-full-width-responsive="true"></ins>
         <script>
@@ -165,6 +166,58 @@
             
             <div id="hed-result" class="result"></div>
         </section>
+
+        <section id="help-section" class="calculator">
+            <h2>User Guide & References</h2>
+            
+            <div class="help-block">
+                <h3>🧪 Molarity Calculator</h3>
+                <p>
+                    This tool assists researchers in preparing solutions by calculating the required <strong>Mass, Concentration, Volume, or Molecular Weight (MW)</strong>. 
+                    Based on the fundamental formula:
+                </p>
+                <div class="formula-box">Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</div>
+                <p>
+                    Simply enter three known values, and the calculator will determine the fourth. 
+                    It supports automatic unit conversion (e.g., mg, µM, mL) to minimize manual calculation errors during experiments.
+                </p>
+            </div>
+
+            <div class="help-block">
+                <h3>📊 Outlier Checker & Normality</h3>
+                <p>
+                    This statistical tool identifies potential outliers in your experimental data using the <strong>Interquartile Range (IQR) method</strong>.
+                    It defines outliers as data points falling below Q1 - 1.5*IQR or above Q3 + 1.5*IQR.
+                </p>
+                <p>
+                    Additionally, it performs a basic normality check using <strong>Skewness and Z-score analysis</strong> to help you decide whether to use parametric or non-parametric tests for downstream analysis.
+                </p>
+            </div>
+
+            <div class="help-block">
+                <h3>🐁 HED (Human Equivalent Dose) Calculator</h3>
+                <p>
+                    The HED Calculator converts drug doses between different animal species and humans based on <strong>Body Surface Area (BSA) normalization</strong>. 
+                    This method is widely used in the initial stages of clinical trials to estimate the Maximum Safe Starting Dose (MRSD).
+                </p>
+                <p>
+                    The calculation uses standard <strong>Km factors</strong> (Body Weight / Body Surface Area) for various species.
+                </p>
+                
+                <div class="reference-box">
+                    <strong>Reference (FDA Guidance):</strong><br>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">
+                        Estimating the Maximum Safe Starting Dose in Initial Clinical Trials for Therapeutics in Adult Healthy Volunteers
+                    </a>
+                    <br>
+                    <em>U.S. Food and Drug Administration (July 2005)</em>
+                </div>
+                <p class="warning-text" style="margin-top: 10px;">
+                    ⚠️ Note: This tool is for research and educational purposes only. Always consult official guidelines and professionals for clinical dosing.
+                </p>
+            </div>
+        </section>
+
     </main>
 
     <script src="main.js"></script>
