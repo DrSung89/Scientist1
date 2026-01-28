@@ -120,6 +120,14 @@ button:hover {
     border-bottom: 1px solid #eee;
 }
 
+.how-to-use p {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
 /* World Clock */
 .world-clock-container {
     display: flex;
@@ -128,7 +136,7 @@ button:hover {
 }
 
 #city-select {
-    width: 50%;
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
 }
@@ -138,14 +146,60 @@ button:hover {
 }
 
 .clock {
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.clock-info {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 .clock-city {
+    font-size: 24px;
     font-weight: bold;
+}
+
+.clock-time {
+    font-size: 24px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.weather-info {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 15px;
+}
+
+.weather-info .temperature {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.clothing-recommendations h4 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #333;
+}
+
+.clothing-recommendations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.clothing-recommendations li {
+    font-size: 14px;
+    color: #555;
+    padding: 2px 0;
 }
 
 /* Alarm */
@@ -172,4 +226,29 @@ button:hover {
 }
 .alarms-list button:hover {
     background-color: #da190b;
+}
+
+/* 404 Page */
+.not-found-container {
+    text-align: center;
+}
+
+.not-found-container h1 {
+    font-size: 72px;
+    margin-bottom: 10px;
+}
+
+.not-found-container p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.not-found-container a {
+    text-decoration: none;
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.not-found-container a:hover {
+    text-decoration: underline;
 }

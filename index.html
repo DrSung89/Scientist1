@@ -1,66 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clock</title>
+    <meta name="description" content="온라인 시계는 타이머, 스톱워치, 세계 시각, 알람 기능을 제공하는 무료 웹 애플리케이션입니다.">
+    <title>온라인 시계 - 타이머, 스톱워치, 세계 시각, 알람</title>
     <link rel="stylesheet" href="style.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017"
+     crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
         <nav class="tabs">
-            <button class="tab-link active" data-tab="timer">Timer</button>
-            <button class="tab-link" data-tab="stopwatch">Stopwatch</button>
-            <button class="tab-link" data-tab="world-clock">World Clock</button>
-            <button class="tab-link" data-tab="alarm">Alarm</button>
+            <button class="tab-link active" data-tab="timer">타이머</button>
+            <button class="tab-link" data-tab="stopwatch">스톱워치</button>
+            <button class="tab-link" data-tab="world-clock">세계 시각</button>
+            <button class="tab-link" data-tab="alarm">알람</button>
         </nav>
 
         <div id="timer" class="tab-content active">
-            <h2>Timer</h2>
+            <h2>타이머</h2>
+            <div class="how-to-use">
+                <p>시간, 분, 초를 입력하고 '시작' 버튼을 누르세요. '일시정지'와 '초기화'도 가능합니다.</p>
+            </div>
             <div class="timer-inputs">
                 <input type="number" id="hours" placeholder="HH" min="0">
                 <input type="number" id="minutes" placeholder="MM" min="0" max="59">
                 <input type="number" id="seconds" placeholder="SS" min="0" max="59">
             </div>
             <div class="timer-buttons">
-                <button id="start-timer">Start</button>
-                <button id="pause-timer">Pause</button>
-                <button id="reset-timer">Reset</button>
+                <button id="start-timer">시작</button>
+                <button id="pause-timer">일시정지</button>
+                <button id="reset-timer">초기화</button>
             </div>
             <div class="timer-display">00:00:00</div>
         </div>
 
         <div id="stopwatch" class="tab-content">
-            <h2>Stopwatch</h2>
+            <h2>스톱워치</h2>
+            <div class="how-to-use">
+                <p>'시작' 버튼을 눌러 스톱워치를 작동시키세요. '랩' 버튼으로 중간 기록을 남길 수 있습니다.</p>
+            </div>
             <div class="stopwatch-display">00:00:00.000</div>
             <div class="stopwatch-buttons">
-                <button id="start-stopwatch">Start</button>
-                <button id="stop-stopwatch">Stop</button>
-                <button id="reset-stopwatch">Reset</button>
-                <button id="lap-stopwatch">Lap</button>
+                <button id="start-stopwatch">시작</button>
+                <button id="stop-stopwatch">정지</button>
+                <button id="reset-stopwatch">초기화</button>
+                <button id="lap-stopwatch">랩</button>
             </div>
             <ul class="laps"></ul>
         </div>
 
         <div id="world-clock" class="tab-content">
-            <h2>World Clock</h2>
+            <h2>세계 시각</h2>
+            <div class="how-to-use">
+                <p>드롭다운 메뉴에서 도시를 선택하면 해당 도시의 현재 시각을 볼 수 있습니다.</p>
+            </div>
             <div class="world-clock-container">
                 <select id="city-select">
-                    <option value="Asia/Seoul">Seoul</option>
-                    <option value="America/New_York">New York</option>
-                    <option value="Europe/London">London</option>
-                    <option value="Europe/Paris">Paris</option>
-                    <option value="Asia/Tokyo">Tokyo</option>
+                    <option value="Asia/Seoul">서울</option>
+                    <option value="America/New_York">뉴욕</option>
+                    <option value="Europe/London">런던</option>
+                    <option value="Europe/Paris">파리</option>
+                    <option value="Asia/Tokyo">도쿄</option>
+                    <option value="Asia/Beijing">베이징</option>
+                    <option value="Australia/Sydney">시드니</option>
+                    <option value="Europe/Moscow">모스크바</option>
+                    <option value="Asia/Dubai">두바이</option>
+                    <option value="Asia/Singapore">싱가포르</option>
+                    <option value="Asia/Hong_Kong">홍콩</option>
+                    <option value="Asia/Shanghai">상하이</option>
+                    <option value="America/Toronto">토론토</option>
+                    <option value="America/Vancouver">밴쿠버</option>
+                    <option value="America/Los_Angeles">로스앤젤레스</option>
+                    <option value="America/Chicago">시카고</option>
+                    <option value="Asia/Bangkok">방콕</option>
+                    <option value="Asia/Hanoi">하노이</option>
+                    <option value="Asia/Jakarta">자카르타</option>
                 </select>
                 <div id="clocks-container"></div>
             </div>
         </div>
 
         <div id="alarm" class="tab-content">
-            <h2>Alarm</h2>
+            <h2>알람</h2>
+            <div class="how-to-use">
+                <p>원하는 시간을 설정하고 '알람 설정' 버튼을 누르세요.</p>
+            </div>
             <div class="alarm-inputs">
                 <input type="time" id="alarm-time">
-                <button id="set-alarm">Set Alarm</button>
+                <button id="set-alarm">알람 설정</button>
             </div>
             <ul class="alarms-list"></ul>
         </div>
