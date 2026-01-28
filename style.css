@@ -195,3 +195,13 @@ button:hover {
         width: 100%;
     }
 }
+
+.ad-container {
+    width: 100%;
+    max-width: 700px; /* main 너비와 맞춤 */
+    margin: 20px auto; /* 위아래 여백 */
+    text-align: center;
+    background-color: #fafafa; /* 광고 로딩 전 배경색 (선택) */
+    min-height: 100px; /* 광고 로딩 전 공간 확보 (CLS 방지) */
+    overflow: hidden;
+}
