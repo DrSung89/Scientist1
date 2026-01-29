@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HED Calculator (FDA Guidance) | Scientist's Toolkit</title>
+    <meta name="description" content="Convert animal doses to Human Equivalent Dose (HED) based on BSA.">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="./" class="nav-btn active">HED Calc</a>
+    </nav>
+
+    <main>
+        <section id="hed-calculator" class="calculator active" style="display:block;">
+            <h2>HED (Human Equivalent Dose) Calculator</h2>
+            <div class="hed-container">
+                <div class="hed-inputs">
+                    <div class="hed-group">
+                        <h3>Species A (Source)</h3>
+                        <div class="input-group">
+                            <label>Species</label>
+                            <select id="species-a">
+                                <option value="Mouse">Mouse</option>
+                                <option value="Rat">Rat</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Human">Human</option>
+                                </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Dose (mg/kg)</label>
+                            <input type="number" id="dose-a" placeholder="mg/kg">
+                        </div>
+                    </div>
+                    <div class="hed-group">
+                        <h3>Species B (Target)</h3>
+                        <div class="input-group">
+                            <label>Species</label>
+                            <select id="species-b">
+                                <option value="Human" selected>Human</option>
+                                <option value="Mouse">Mouse</option>
+                                </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Body Weight</label>
+                            <input type="number" id="weight-b" placeholder="Weight">
+                            <select id="weight-b-unit"><option value="kg">kg</option><option value="g">g</option></select>
+                        </div>
+                    </div>
+                    <button id="calculate-hed">Calculate HED</button>
+                </div>
+                <div class="hed-reference">
+                    <h4>Reference Body Weights</h4>
+                    <ul style="display: grid; grid-template-columns: 1fr; gap: 5px;">
+                        <li><strong>Mouse:</strong> 0.02 kg</li>
+                        <li><strong>Rat:</strong> 0.15 kg</li>
+                        <li><strong>Human:</strong> 60 kg</li>
+                        </ul>
+                </div>
+            </div>
+            <div id="hed-result" class="result"></div>
+        </section>
+    </main>
+    <script src="../assets/main.js"></script>
+</body>
+</html>

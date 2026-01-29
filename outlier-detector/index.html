@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outlier Checker (IQR & P-value) | Scientist's Toolkit</title>
+    <meta name="description" content="Advanced outlier detection using IQR method and Normality test (P-value).">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="./" class="nav-btn active">Outlier Checker</a>
+        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+    </nav>
+
+    <main>
+        <section id="outlier-checker" class="calculator active" style="display:block;">
+            <h2>Outlier Checker & Normality</h2>
+            <p class="warning-text">⚠️ Separate data with commas, spaces, or new lines.</p>
+            <textarea id="outlier-data" rows="8" placeholder="e.g.: 1.2, 1.5, 1.8..."></textarea>
+            <button id="check-outliers">Check Data</button>
+            <div id="outlier-result" class="result"></div>
+        </section>
+    </main>
+    <script src="../assets/main.js"></script>
+</body>
+</html>

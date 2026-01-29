@@ -3,268 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="LbMdJ6ZiaObT9M0W8t_cLl_9hiQ_F2Dc6Z9kdIQwIJ4" />
-    <title>Scientist's Toolkit | Molarity, HED & Outlier Calculator</title>
-    
-    <meta name="description" content="Free online tools for scientists: Calculate Molarity, detect Outliers (IQR method), and convert Human Equivalent Dose (HED) based on FDA guidelines.">
-    <meta name="keywords" content="Molarity Calculator, HED Calculator, Outlier Checker, IQR Calculator, Scientist Toolkit, Dose Conversion, FDA HED">
-    
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/">
-
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Scientist's Toolkit | Free Scientific Calculators">
-    <meta property="og:description" content="Professional toolkit: Molarity, Outlier detection (IQR), and FDA-based HED calculators.">
-    <meta property="og:url" content="https://scientisttoolkit.xyz/">
-    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Scientist's Toolkit">
-    <meta name="twitter:description" content="Molarity, Outlier, and HED Calculators for Researchers.">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-
-    <link rel="stylesheet" href="style.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Scientist's Toolkit",
-      "url": "https://scientisttoolkit.xyz/",
-      "description": "A comprehensive toolkit for scientists including Molarity Calculator, Outlier Checker (IQR), and Human Equivalent Dose (HED) Calculator.",
-      "applicationCategory": "ScientificCalculator",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": "Molarity Calculation, Outlier Detection, HED Conversion"
-    }
-    </script>
+    <title>Scientist's Toolkit | Free Scientific Calculators</title>
+    <meta name="description" content="A comprehensive toolkit for scientists: Molarity Calculator, Outlier Checker (IQR & P-value), and HED Calculator.">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-
-    <header>
-        <h1>Scientist's Toolkit</h1>
-    </header>
-
+    <header><h1>Scientist's Toolkit</h1></header>
+    
     <nav>
-        <button class="nav-btn active" data-target="molarity-calc">Molarity Calc</button>
-        <button class="nav-btn" data-target="outlier-checker">Outlier Checker</button>
-        <button class="nav-btn" data-target="hed-calculator">HED Calc</button>
-        <button class="nav-btn" data-target="help-section">Help & Info</button>
-        <button class="nav-btn" data-target="comments-section">Comments</button>
+        <a href="molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="hed-calculator/" class="nav-btn">HED Calc</a>
+        <a href="help/" class="nav-btn">Help & Info</a>
+        <a href="#footer" class="nav-btn">Comments</a>
     </nav>
 
-    <div class="ad-container">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9274620489745017"
-             data-ad-slot="6554136062" 
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <main>
-        <section id="molarity-calc" class="calculator active">
-            <h2>Molarity Calculator</h2>
-            <p>Enter 3 values to calculate the 4th. (Mass = Conc. * Vol. * MW)</p>
-            <div class="input-group">
-                <label for="mass">Mass</label>
-                <input type="number" id="mass" placeholder="Input value...">
-                <select id="mass-unit">
-                    <option value="g">g</option>
-                    <option value="mg" selected>mg</option>
-                    <option value="ug">µg</option>
-                    <option value="ng">ng</option>
-                    <option value="pg">pg</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="concentration">Concentration</label>
-                <input type="number" id="concentration" placeholder="Input value...">
-                <select id="concentration-unit">
-                    <option value="M">M</option>
-                    <option value="mM" selected>mM</option>
-                    <option value="uM">µM</option>
-                    <option value="nM">nM</option>
-                    <option value="pM">pM</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="volume">Volume</label>
-                <input type="number" id="volume" placeholder="Input value...">
-                <select id="volume-unit">
-                    <option value="L">L</option>
-                    <option value="mL" selected>mL</option>
-                    <option value="uL">µL</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="mw">Molecular Weight</label>
-                <input type="number" id="mw" placeholder="Input value...">
-                <span>g/mol</span>
-            </div>
-            <button id="calculate-mass">Calculate</button>
-            <div id="mass-result" class="result"></div>
-        </section>
-
-        <section id="outlier-checker" class="calculator">
-            <h2>Outlier Checker & Normality</h2>
-            <p class="warning-text">⚠️ Please separate data with <strong>commas (,)</strong>.</p>
-            <textarea id="outlier-data" rows="8" placeholder="e.g.: 1.2, 1.5, 1.8, 10.5, 1.3"></textarea>
-            <button id="check-outliers">Check Data</button>
-            <div id="outlier-result" class="result"></div>
-        </section>
-
-        <section id="hed-calculator" class="calculator">
-            <h2>HED (Human Equivalent Dose) Calculator</h2>
-            <p>Calculates equivalent dose based on BSA (Body Surface Area).</p>
-            <div class="hed-container">
-                <div class="hed-inputs">
-                    <div class="hed-group">
-                        <h3>Species A (Source)</h3>
-                        <div class="input-group">
-                            <label for="species-a">Species</label>
-                            <select id="species-a">
-                                <option value="Mouse">Mouse</option>
-                                <option value="Hamster">Hamster</option>
-                                <option value="Rat">Rat</option>
-                                <option value="Ferret">Ferret</option>
-                                <option value="Guinea Pig">Guinea Pig</option>
-                                <option value="Rabbit">Rabbit</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Monkey">Monkey</option>
-                                <option value="Marmoset">Marmoset</option>
-                                <option value="Squirrel Monkey">Squirrel Monkey</option>
-                                <option value="Baboon">Baboon</option>
-                                <option value="Micro Pig">Micro Pig</option>
-                                <option value="Mini Pig">Mini Pig</option>
-                                <option value="Human">Human</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label for="dose-a">Dose (mg/kg)</label>
-                            <input type="number" id="dose-a" placeholder="mg/kg">
-                        </div>
-                    </div>
-                    <div class="hed-group">
-                        <h3>Species B (Target)</h3>
-                        <div class="input-group">
-                            <label for="species-b">Species</label>
-                            <select id="species-b">
-                                <option value="Human" selected>Human</option>
-                                <option value="Mouse">Mouse</option>
-                                <option value="Rat">Rat</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Monkey">Monkey</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label for="weight-b">Body Weight</label>
-                            <input type="number" id="weight-b" placeholder="Weight">
-                            <select id="weight-b-unit"><option value="kg">kg</option><option value="g">g</option></select>
-                        </div>
-                    </div>
-                    <button id="calculate-hed">Calculate HED</button>
-                </div>
+    <main style="text-align:center;">
+        <section class="calculator active" style="display:block;">
+            <h2>Select a Tool</h2>
+            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 30px;">
                 
-                <div class="hed-reference">
-                    <h4>Reference Body Weights (FDA Standard)</h4>
-                    <ul style="display: grid; grid-template-columns: 1fr; gap: 5px;">
-                        <li><strong>Mouse:</strong> 0.02 kg</li>
-                        <li><strong>Hamster:</strong> 0.08 kg</li>
-                        <li><strong>Rat:</strong> 0.15 kg</li>
-                        <li><strong>Ferret:</strong> 0.3 kg</li>
-                        <li><strong>Guinea Pig:</strong> 0.4 kg</li>
-                        <li><strong>Rabbit:</strong> 1.8 kg</li>
-                        <li><strong>Dog:</strong> 10 kg</li>
-                        <li><strong>Monkey:</strong> 3 kg</li>
-                        <li><strong>Marmoset:</strong> 0.35 kg</li>
-                        <li><strong>Baboon:</strong> 12 kg</li>
-                        <li><strong>Micro Pig:</strong> 20 kg</li>
-                        <li><strong>Mini Pig:</strong> 35 kg</li>
-                        <li><strong>Human:</strong> 60 kg</li>
-                    </ul>
-                </div>
-            </div>
-            <div id="hed-result" class="result"></div>
-        </section>
-
-<section id="help-section" class="calculator">
-            <h2>User Guide & Detailed Information</h2>
-
-            <div class="help-block">
-                <h3>🧪 Molarity Calculation</h3>
-                <p>
-                    Molarity is the most common measure of concentration in biology and chemistry. 
-                    It is defined as the number of moles of solute per liter of solution.
-                </p>
-                <div class="formula-box">
-                    Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)
-                </div>
-            </div>
-
-            <div class="help-block">
-                <h3>📊 Outlier Detection: Why IQR?</h3>
-                <p>
-                    Generally, outliers are detected using <strong>Z-scores</strong> (Standard Deviation), which assumes the data follows a normal distribution (Bell curve).
-                </p>
-                <p>
-                    However, <strong>biological data is often skewed</strong> (asymmetric) and does not follow a perfect normal distribution. 
-                    In these cases, using Z-scores can lead to errors. Therefore, we use the <strong>Interquartile Range (IQR)</strong> method, which is robust and reliable for non-normal distributions.
-                </p>
-                <div class="formula-box" style="text-align: left; line-height: 1.8;">
-                    <strong>Calculation Formula:</strong><br>
-                    1. Calculate IQR = Q3 (75th percentile) - Q1 (25th percentile)<br>
-                    2. Define Fences (Thresholds):<br>
-                    &nbsp;&nbsp;&nbsp; • <strong>Lower Limit:</strong> Q1 - 1.5 × IQR<br>
-                    &nbsp;&nbsp;&nbsp; • <strong>Upper Limit:</strong> Q3 + 1.5 × IQR<br>
-                    <br>
-                    <em>*Any data point outside these limits is considered an outlier.</em>
-                </div>
-            </div>
-
-            <div class="help-block">
-                <h3>🐁 Human Equivalent Dose (HED)</h3>
-                <p>
-                    This calculator converts doses between species based on <strong>Body Surface Area (BSA)</strong> normalization, not just body weight.
-                </p>
-                <p>
-                    <strong>Planning Animal Studies from Human Doses:</strong><br>
-                    When calculating a starting dose for animal experiments based on a human approved dose (e.g., a flat dose in mg), 
-                    you must first convert it to <strong>mg/kg</strong>.
-                </p>
-                <p style="background-color: #fff7ed; padding: 10px; border-left: 4px solid #f97316;">
-                    <strong>⚠️ Important Note:</strong><br>
-                    For this conversion, use the <strong>FDA standard human body weight of 60 kg</strong>. 
-                    Do not use arbitrary weights unless specific data is available.
-                </p>
-                <div class="formula-box">
-                    <strong>Step 1 (Human Dose to mg/kg):</strong><br>
-                    Human Dose (mg/kg) = Total Human Dose (mg) / 60 kg
-                    <br><br>
-                    <strong>Step 2 (Conversion to Animal Dose):</strong><br>
-                    Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human Km / Animal Km)
+                <div style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;" onclick="location.href='molarity-calculator/'">
+                    <h3>🧪 Molarity Calculator</h3>
+                    <p>Calculate Mass, Volume, or Concentration.</p>
                 </div>
 
-                <div class="reference-box">
-                    <strong>Official Reference:</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
+                <div style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;" onclick="location.href='outlier-detector/'">
+                    <h3>📊 Outlier Checker</h3>
+                    <p>Detect outliers using IQR & P-value.</p>
                 </div>
+
+                <div style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;" onclick="location.href='hed-calculator/'">
+                    <h3>🐁 HED Calculator</h3>
+                    <p>Convert animal doses to Human Equivalent Dose.</p>
+                </div>
+
             </div>
         </section>
-
-        <section id="comments-section" class="calculator">
-            <h2>Comments & Inquiries</h2>
-            <p>Please feel free to leave your feedback here.</p>
+        
+        <section id="footer" style="margin-top:50px;">
+            <h3>Comments</h3>
             <div id="disqus_thread"></div>
         </section>
     </main>
 
-    <script src="main.js"></script>
+    <script src="assets/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide & References | Scientist's Toolkit</title>
+    <meta name="description" content="Learn how to use Molarity, Outlier (IQR), and HED calculators. References FDA guidance.">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+        <a href="./" class="nav-btn active">Help & Info</a>
+    </nav>
+
+    <main>
+        <section id="help-section" class="calculator active" style="display:block;">
+            <h2>User Guide & Detailed Information</h2>
+
+            <div class="help-block">
+                <h3>🧪 Molarity Calculation</h3>
+                <p>
+                    Molarity is the most common measure of concentration in biology and chemistry. 
+                    It is defined as the number of moles of solute per liter of solution.
+                </p>
+                <div class="formula-box">
+                    Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)
+                </div>
+            </div>
+
+            <div class="help-block">
+                <h3>📊 Outlier Detection: IQR & Normality</h3>
+                <p>
+                    Generally, outliers are detected using <strong>Z-scores</strong>, which assumes the data follows a normal distribution.
+                    However, biological data is often skewed. Therefore, we provide both a <strong>Normality Test</strong> and the <strong>IQR Method</strong>.
+                </p>
+                
+                <div style="background-color: #f0fdf4; padding: 12px; border-left: 4px solid #16a34a; margin-bottom: 15px; font-size: 0.95rem;">
+                    <strong>📉 Normality Test (Shapiro-Wilk):</strong><br>
+                    To determine if data is normally distributed (P-value), this tool uses <strong>Royston's Approximation Algorithm (1992)</strong>. 
+                    This method allows for the accurate calculation of the Shapiro-Wilk <em>W</em> statistic and its significance level (P-value) directly in the browser without requiring extensive statistical tables.
+                </div>
+                <div class="formula-box" style="text-align: left; line-height: 1.8;">
+                    <strong>IQR Calculation Formula:</strong><br>
+                    1. Calculate IQR = Q3 (75th percentile) - Q1 (25th percentile)<br>
+                    2. Define Fences (Thresholds):<br>
+                    &nbsp;&nbsp;&nbsp; • <strong>Lower Limit:</strong> Q1 - 1.5 × IQR<br>
+                    &nbsp;&nbsp;&nbsp; • <strong>Upper Limit:</strong> Q3 + 1.5 × IQR<br>
+                    <br>
+                    <em>*Data points outside these limits are outliers if P < 0.05.</em>
+                </div>
+            </div>
+
+            <div class="help-block">
+                <h3>🐁 Human Equivalent Dose (HED)</h3>
+                <p>
+                    This calculator converts doses between species based on <strong>Body Surface Area (BSA)</strong> normalization.
+                </p>
+                <p>
+                    <strong>Planning Animal Studies from Human Doses:</strong><br>
+                    When calculating a starting dose for animal experiments based on a human approved dose (e.g., a flat dose in mg), 
+                    you must first convert it to <strong>mg/kg</strong>.
+                </p>
+                <p style="background-color: #fff7ed; padding: 10px; border-left: 4px solid #f97316;">
+                    <strong>⚠️ Important Note:</strong><br>
+                    For this conversion, use the <strong>FDA standard human body weight of 60 kg</strong>. 
+                    Do not use arbitrary weights unless specific data is available.
+                </p>
+                <div class="formula-box">
+                    <strong>Step 1 (Human Dose to mg/kg):</strong><br>
+                    Human Dose (mg/kg) = Total Human Dose (mg) / 60 kg
+                    <br><br>
+                    <strong>Step 2 (Conversion to Animal Dose):</strong><br>
+                    Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human Km / Animal Km)
+                </div>
+
+                <div class="reference-box">
+                    <strong>Official Reference:</strong><br>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="../assets/main.js"></script>
+</body>
+</html>

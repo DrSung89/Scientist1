@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molarity Calculator | Scientist's Toolkit</title>
+    <meta name="description" content="Calculate Molarity, Mass, Volume, and Molecular Weight instantly.">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="./" class="nav-btn active">Molarity Calc</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+    </nav>
+
+    <main>
+        <section id="molarity-calc" class="calculator active" style="display:block;">
+            <h2>Molarity Calculator</h2>
+            <p>Enter 3 values to calculate the 4th.</p>
+            <div class="input-group">
+                <label for="mass">Mass</label>
+                <input type="number" id="mass" placeholder="Input value...">
+                <select id="mass-unit"><option value="mg" selected>mg</option><option value="g">g</option><option value="ug">µg</option></select>
+            </div>
+            <div class="input-group">
+                <label for="concentration">Concentration</label>
+                <input type="number" id="concentration" placeholder="Input value...">
+                <select id="concentration-unit"><option value="mM" selected>mM</option><option value="M">M</option><option value="uM">µM</option></select>
+            </div>
+            <div class="input-group">
+                <label for="volume">Volume</label>
+                <input type="number" id="volume" placeholder="Input value...">
+                <select id="volume-unit"><option value="mL" selected>mL</option><option value="L">L</option><option value="uL">µL</option></select>
+            </div>
+            <div class="input-group">
+                <label for="mw">Molecular Weight</label>
+                <input type="number" id="mw" placeholder="Input value...">
+                <span>g/mol</span>
+            </div>
+            <button id="calculate-mass">Calculate</button>
+            <div id="mass-result" class="result"></div>
+        </section>
+    </main>
+    <script src="../assets/main.js"></script>
+</body>
+</html>
