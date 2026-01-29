@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 3. Outlier Checker 로직 (여백 제거 및 레이아웃 최적화 버전)
+    // 3. Outlier Checker 로직 (공백 완전 제거 버전)
     // ----------------------------------------------------
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -131,6 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 .sort((a, b) => a - b);
 
             const resDiv = document.getElementById('outlier-result');
+            
+            // [중요] 부모 요소의 pre-wrap 속성을 해제하여 불필요한 공백 제거
+            resDiv.style.whiteSpace = 'normal';
+            // [중요] 패딩도 조금 줄여서 더 컴팩트하게 만듭니다
+            resDiv.style.padding = '10px'; 
             
             if (data.length < 3) {
                 resDiv.innerHTML = "<span style='color:red; font-size: 0.9rem;'>Error: Need at least 3 numbers.</span>";
@@ -171,9 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const upperFence = q3 + 1.5 * iqr;
             const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
-            // [최종 수정] 디자인: white-space: normal로 불필요한 공백 제거
-            let resultHTML = `
-                <div style="font-size: 0.9rem; line-height: 1.4; color: #374151; white-space: normal;">
+            // [수정] 줄바꿈 없이 백틱(`) 바로 뒤에 태그를 붙여 공백 생성 차단
+            let resultHTML = `<div style="font-size: 0.9rem; line-height: 1.4; color: #374151;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb;">
                         <div style="flex: 1;">
                             <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Stats</div>
@@ -201,28 +205,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="color: #4b5563; font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 3px;">
                             ${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}
                         </span>
-                    </div>
-            `;
+                    </div>`;
 
-            // 4. 결과 박스 (최소화)
+            // 4. 결과 박스
             if (outliers.length > 0) {
                 resultHTML += `
                     <div style="padding: 8px 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
                         <strong style="color:#b91c1c; font-size: 0.9rem;">🚨 Outliers Detected:</strong>
                         <strong style="font-size: 0.95rem; color: #b91c1c;">${outliers.join(', ')}</strong>
-                    </div>
-                </div>`; 
+                    </div></div>`; 
             } else {
                 resultHTML += `
                     <div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center;">
                         ✅ No outliers found.
-                    </div>
-                </div>`;
+                    </div></div>`;
             }
 
             resDiv.innerHTML = resultHTML;
         });
     }
+
 
     // ----------------------------------------------------
     // 4. HED Calculator 로직
