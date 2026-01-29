@@ -9,6 +9,7 @@
 </head>
 <body>
     <header><h1>Scientist's Toolkit</h1></header>
+    
     <nav>
         <a href="../" class="nav-btn">Home</a>
         <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
@@ -28,10 +29,20 @@
                             <label>Species</label>
                             <select id="species-a">
                                 <option value="Mouse">Mouse</option>
+                                <option value="Hamster">Hamster</option>
                                 <option value="Rat">Rat</option>
+                                <option value="Ferret">Ferret</option>
+                                <option value="Guinea Pig">Guinea Pig</option>
+                                <option value="Rabbit">Rabbit</option>
                                 <option value="Dog">Dog</option>
+                                <option value="Monkey">Monkey</option>
+                                <option value="Marmoset">Marmoset</option>
+                                <option value="Squirrel Monkey">Squirrel Monkey</option>
+                                <option value="Baboon">Baboon</option>
+                                <option value="Micro Pig">Micro Pig</option>
+                                <option value="Mini Pig">Mini Pig</option>
                                 <option value="Human">Human</option>
-                                </select>
+                            </select>
                         </div>
                         <div class="input-group">
                             <label>Dose (mg/kg)</label>
@@ -45,6 +56,9 @@
                             <select id="species-b">
                                 <option value="Human" selected>Human</option>
                                 <option value="Mouse">Mouse</option>
+                                <option value="Rat">Rat</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Monkey">Monkey</option>
                                 </select>
                         </div>
                         <div class="input-group">
@@ -55,15 +69,26 @@
                     </div>
                     <button id="calculate-hed">Calculate HED</button>
                 </div>
+                
                 <div class="hed-reference">
-                    <h4>Reference Body Weights</h4>
+                    <h4>Reference Body Weights (FDA Standard)</h4>
                     <ul style="display: grid; grid-template-columns: 1fr; gap: 5px;">
                         <li><strong>Mouse:</strong> 0.02 kg</li>
+                        <li><strong>Hamster:</strong> 0.08 kg</li>
                         <li><strong>Rat:</strong> 0.15 kg</li>
+                        <li><strong>Ferret:</strong> 0.3 kg</li>
+                        <li><strong>Guinea Pig:</strong> 0.4 kg</li>
+                        <li><strong>Rabbit:</strong> 1.8 kg</li>
+                        <li><strong>Dog:</strong> 10 kg</li>
+                        <li><strong>Monkey:</strong> 3 kg</li>
+                        <li><strong>Marmoset:</strong> 0.35 kg</li>
+                        <li><strong>Baboon:</strong> 12 kg</li>
+                        <li><strong>Micro Pig:</strong> 20 kg</li>
+                        <li><strong>Mini Pig:</strong> 35 kg</li>
                         <li><strong>Human:</strong> 60 kg</li>
-                        </ul>
+                    </ul>
                 </div>
-            </div>
+                </div>
             <div id="hed-result" class="result"></div>
         </section>
     </main>
