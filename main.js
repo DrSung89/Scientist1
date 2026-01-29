@@ -2,15 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-btn');
     const sections = document.querySelectorAll('.calculator');
 
+    // SEO 데이터
     const seoData = {
         'molarity-calc': { title: "Molarity Calculator | Scientist's Toolkit", desc: "Professional molarity calculator.", url: "https://scientisttoolkit.xyz/molarity-calc" },
-        'outlier-checker': { title: "Outlier Checker | Scientist's Toolkit", desc: "Identify data outliers.", url: "https://scientisttoolkit.xyz/outlier-checker" },
-        'hed-calculator': { title: "HED Calculator | Scientist's Toolkit", desc: "Calculate Human Equivalent Dose.", url: "https://scientisttoolkit.xyz/hed-calculator" },
+        'outlier-checker': { title: "Outlier Checker | Scientist's Toolkit", desc: "Identify data outliers using IQR.", url: "https://scientisttoolkit.xyz/outlier-checker" },
+        'hed-calculator': { title: "HED Calculator | Scientist's Toolkit", desc: "Convert animal doses to HED.", url: "https://scientisttoolkit.xyz/hed-calculator" },
         'help-section': { title: "Help & Info | Scientist's Toolkit", desc: "User guide and references.", url: "https://scientisttoolkit.xyz/help-section" },
         'comments-section': { title: "Comments | Scientist's Toolkit", desc: "Feedback and inquiries.", url: "https://scientisttoolkit.xyz/comments-section" }
     };
 
-    // [핵심] 댓글 탭 클릭 시에만 호출되는 함수
+    // Disqus 로딩 함수
     function loadDisqus() {
         if (typeof DISQUS !== 'undefined') {
             DISQUS.reset({
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // 화면 전환 함수
     function showSection(targetId, updateHistory = true) {
         navButtons.forEach(btn => btn.classList.remove('active'));
         sections.forEach(sec => sec.classList.remove('active'));
@@ -46,9 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(meta) meta.setAttribute('content', data.desc);
             }
 
-            // --- [핵심 변경] Comments 탭일 때만 Disqus 로드 ---
+            // 댓글 탭일 때만 지연 로딩
             if (targetId === 'comments-section') {
-                loadDisqus();
+                setTimeout(loadDisqus, 100);
             }
 
             if (updateHistory) {
@@ -69,14 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection(id, false);
     });
 
-    // 초기 로딩 로직
+    // 초기 접속 처리
     const urlPath = window.location.pathname.replace('/', '');
     const urlParams = new URLSearchParams(window.location.search);
     const redirectPath = urlParams.get('p') ? urlParams.get('p').replace('/', '') : urlPath;
     const finalPath = (redirectPath && document.getElementById(redirectPath)) ? redirectPath : 'molarity-calc';
     showSection(finalPath, false);
 
-    // --- 계산기 로직 시작 (Molarity) ---
+    // [계산기 기능]
+    // 1. Molarity
     const mUnits = { mass: { g: 1, mg: 1e-3, ug: 1e-6, ng: 1e-9, pg: 1e-12 }, conc: { M: 1, mM: 1e-3, uM: 1e-6, nM: 1e-9, pM: 1e-12 }, vol: { L: 1, mL: 1e-3, uL: 1e-6 } };
     const massCalcButton = document.getElementById('calculate-mass');
     if (massCalcButton) {
@@ -89,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cUnit = mUnits.conc[document.getElementById('concentration-unit').value];
             const vUnit = mUnits.vol[document.getElementById('volume-unit').value];
             const resultDiv = document.getElementById('mass-result');
+
             if (!isNaN(concVal) && !isNaN(volVal) && !isNaN(mwVal) && isNaN(massVal)) {
                 const calcMassG = (concVal * cUnit) * (volVal * vUnit) * mwVal;
                 resultDiv.innerHTML = `Calculated Mass: <strong>${(calcMassG / mUnit).toFixed(4)}</strong> ${document.getElementById('mass-unit').value}`;
@@ -105,32 +109,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Outlier Checker 로직 ---
+    // 2. Outlier
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
         outlierButton.addEventListener('click', () => {
             const data = document.getElementById('outlier-data').value.split(',').map(s => s.trim()).filter(s => s !== '' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
             const resDiv = document.getElementById('outlier-result');
-            if (data.length < 3) { resDiv.innerHTML = "Need 3+ points."; return; }
+            if (data.length < 3) { resDiv.innerHTML = "Error: Need at least 3 points."; return; }
             const n = data.length, mean = data.reduce((a, b) => a + b, 0) / n;
             const stdev = Math.sqrt(data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1));
-            const q1 = data[Math.floor((n-1)/4)], q3 = data[Math.floor((n-1)*3/4)], iqr = q3 - q1;
+            const q1 = data[Math.floor((n - 1) / 4)], q3 = data[Math.floor((n - 1) * 3 / 4)], iqr = q3 - q1;
             const outliers = data.filter(x => x < q1 - 1.5 * iqr || x > q3 + 1.5 * iqr);
-            resDiv.innerHTML = `Mean=${mean.toFixed(2)}, SD=${stdev.toFixed(2)}<br>Outliers: ${outliers.length > 0 ? outliers.join(', ') : "None"}`;
+            resDiv.innerHTML = `Mean=${mean.toFixed(2)}, SD=${stdev.toFixed(2)}<br>Outliers: ${outliers.length > 0 ? `<span style='color:red;'>${outliers.join(', ')}</span>` : "None"}`;
         });
     }
 
-    // --- HED Calculator 로직 ---
+    // 3. HED
+    const kmFactors = { "Mouse": 3, "Hamster": 5, "Rat": 6, "Ferret": 7, "Guinea Pig": 8, "Rabbit": 12, "Dog": 20, "Monkey": 12, "Human": 37 };
     const hedButton = document.getElementById('calculate-hed');
     if (hedButton) {
         hedButton.addEventListener('click', () => {
-            const kmFactors = { "Mouse": 3, "Hamster": 5, "Rat": 6, "Rabbit": 12, "Dog": 20, "Monkey": 12, "Human": 37 };
             const sA = document.getElementById('species-a').value, dA = parseFloat(document.getElementById('dose-a').value);
             const sB = document.getElementById('species-b').value, wB = parseFloat(document.getElementById('weight-b').value);
             const resDiv = document.getElementById('hed-result');
-            if(isNaN(dA)) { resDiv.innerHTML = "Enter dose."; return; }
+            if(isNaN(dA)) { resDiv.innerHTML = "Error: Enter dose."; return; }
             const doseB = dA * (kmFactors[sA] / kmFactors[sB]);
-            resDiv.innerHTML = `Equivalent Dose: <strong>${doseB.toFixed(4)} mg/kg</strong>`;
+            resDiv.innerHTML = `Equivalent Dose (${sB}): <strong>${doseB.toFixed(4)} mg/kg</strong>`;
         });
     }
 });
