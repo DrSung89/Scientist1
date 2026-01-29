@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - 페이지를 찾을 수 없습니다</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Scientist's Toolkit Redirector</title>
+    <script type="text/javascript">
+        // 현재 잘못된 경로를 파라미터(p)로 담아서 메인 페이지로 보냅니다.
+        var path = window.location.pathname;
+        window.location.replace(window.location.protocol + "//" + window.location.hostname + "/?p=" + encodeURIComponent(path));
+    </script>
 </head>
 <body>
-    <div class="container not-found-container">
-        <h1>404</h1>
-        <p>죄송합니다. 요청하신 페이지를 찾을 수 없습니다.</p>
-        <p>주소가 올바른지 다시 한번 확인해주세요.</p>
-        <a href="/">홈으로 돌아가기</a>
-    </div>
 </body>
 </html>

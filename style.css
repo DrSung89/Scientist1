@@ -258,7 +258,21 @@ button:hover {
 .reference-box a:hover {
     text-decoration: underline;
 }
+/* 현재 페이지임을 알리는 강조 효과 */
+nav button.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
 
+/* 설명 섹션 제목 스타일 */
+#help-section h2 {
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 25px;
+}
 .ad-container {
     width: 100%;
     max-width: 700px;  /* 메인 콘텐츠 너비와 맞춤 */
