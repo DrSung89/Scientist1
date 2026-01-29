@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title id="page-title">Scientist's Toolkit | Molarity Calculator</title>
-    <meta name="description" id="meta-desc" content="Professional molarity calculator for scientists. Calculate Mass, Concentration, Volume, and Molecular Weight easily.">
+    <meta name="description" id="meta-desc" content="Professional toolkit for scientists: Molarity, Outlier detection, and Human Equivalent Dose (HED) calculators.">
     
     <meta property="og:type" content="website">
     <meta property="og:title" id="og-title" content="Scientist's Toolkit | Molarity Calculator">
@@ -14,7 +14,6 @@
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
 
     <link rel="stylesheet" href="style.css">
-    
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -155,7 +154,6 @@
                         <li><strong>Human:</strong> 60 kg</li>
                         <li><strong>Mouse:</strong> 0.02 kg</li>
                         <li><strong>Rat:</strong> 0.15 kg</li>
-                        <li><strong>Rabbit:</strong> 1.8 kg</li>
                         <li><strong>Dog:</strong> 10 kg</li>
                         <li><strong>Monkey:</strong> 3 kg</li>
                     </ul>
@@ -165,27 +163,41 @@
         </section>
 
         <section id="help-section" class="calculator">
-            <h2>User Guide & References</h2>
+            <h2>User Guide & Detailed Information</h2>
+            
             <div class="help-block">
-                <h3>🧪 Molarity Calculator</h3>
-                <p>Formula: Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</p>
+                <h3>🧪 Molarity Calculation</h3>
+                <p>Molarity is a measure of the concentration of a solute in a solution. This tool uses the standard chemical formula:</p>
+                <div class="formula-box">Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)</div>
+                <p>Precise molarity calculation is the foundation of any wet lab experiment. By automating unit conversions (mg to g, µM to M, etc.), we help prevent common scaling errors.</p>
             </div>
+
             <div class="help-block">
-                <h3>📊 Outlier Checker</h3>
-                <p>Uses the IQR method: Q1 - 1.5*IQR to Q3 + 1.5*IQR.</p>
+                <h3>📊 Statistics: IQR and Skewness</h3>
+                <p><strong>IQR (Interquartile Range) Method:</strong> Standard Z-score methods assume your data follows a Normal Distribution. However, in many biological experiments, data may be skewed. <strong>IQR is used when the data does not follow a normal distribution</strong> because it is based on percentiles rather than the mean and standard deviation, making it robust against extreme outliers.</p>
+                <p><strong>Skewness:</strong> This is a measure of the asymmetry of the probability distribution. 
+                    <ul>
+                        <li>Positive Skew: The tail on the right side is longer.</li>
+                        <li>Negative Skew: The tail on the left side is longer.</li>
+                    </ul>
+                    We provide a Z-score based normality check to help you decide between parametric (T-test) and non-parametric (Mann-Whitney) tests.
+                </p>
             </div>
+
             <div class="help-block">
-                <h3>🐁 HED Calculator</h3>
+                <h3>🐁 Human Equivalent Dose (HED)</h3>
+                <p>Animal doses cannot be directly applied to humans simply by adjusting body weight. Instead, they must be normalized based on Body Surface Area (BSA).</p>
+                <p><strong>Clinical Tip:</strong> When you are determining the dose for an animal study based on a drug's <strong>approved human dose</strong>, you should typically enter <strong>60 kg</strong> as the reference human body weight to ensure standardized conversion factors.</p>
+                
                 <div class="reference-box">
-                    <strong>FDA Guidance Reference:</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA July 2005 Guidelines</a>
+                    <strong>Official Reference:</strong><br>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance (July 2005): Estimating the Maximum Safe Starting Dose in Initial Clinical Trials.</a>
                 </div>
             </div>
         </section>
 
         <section id="comments-section" class="calculator">
             <h2>Comments & Inquiries</h2>
-            <p>Feel free to leave feedback or ask questions about the toolkit.</p>
             <div id="disqus_thread"></div>
             <script>
                 var disqus_config = function () {
