@@ -15,14 +15,12 @@ body {
     flex-direction: column;
     align-items: center;
     
-    /* [배경 스타일 변경] */
-    background-color: var(--bg-color); /* 기본 배경색 */
-    /* 가로, 세로 격자 무늬 추가 */
+    background-color: var(--bg-color);
     background-image: 
         linear-gradient(#e5e7eb 1px, transparent 1px), 
         linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
-    background-size: 20px 20px; /* 격자 크기 */
-    min-height: 100vh; /* 화면이 짧아도 배경이 끊기지 않게 함 */
+    background-size: 20px 20px;
+    min-height: 100vh;
 }
 
 header h1 {
@@ -34,6 +32,8 @@ nav {
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
+    flex-wrap: wrap; /* 모바일에서 버튼 줄바꿈 허용 */
+    justify-content: center;
 }
 
 nav button {
@@ -49,6 +49,8 @@ nav button {
 nav button.active {
     background-color: var(--primary-color);
     color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
 }
 
 main {
@@ -62,10 +64,16 @@ main {
 
 .calculator {
     display: none;
+    animation: fadeIn 0.3s ease-in-out; /* 탭 전환 시 부드럽게 */
 }
 
 .calculator.active {
     display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .input-group {
@@ -163,6 +171,8 @@ button:hover {
     margin-bottom: 4px;
     display: flex;
     justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dashed #e2e8f0; /* 각 동물 구분선 추가 */
 }
 
 .hed-group {
@@ -204,9 +214,7 @@ button:hover {
     }
 }
 
-/* =========================================
-   Help & Info Section Styling
-   ========================================= */
+/* Help & Info Section Styling */
 .help-block {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
@@ -255,18 +263,6 @@ button:hover {
     font-weight: 500;
 }
 
-.reference-box a:hover {
-    text-decoration: underline;
-}
-/* 현재 페이지임을 알리는 강조 효과 */
-nav button.active {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transform: translateY(-1px);
-}
-
-/* 설명 섹션 제목 스타일 */
 #help-section h2 {
     border-bottom: 2px solid var(--primary-color);
     display: inline-block;
@@ -275,30 +271,17 @@ nav button.active {
 }
 
 #comments-section {
-    min-height: 500px; /* 댓글창 로딩 전 영역 확보 */
-}
-
-#comments-section p {
-    margin-bottom: 30px;
-    color: #64748b;
-    font-style: italic;
+    min-height: 500px;
 }
 
 .ad-container {
     width: 100%;
-    max-width: 700px;  /* 메인 콘텐츠 너비와 맞춤 */
-    margin: 20px auto; /* 위아래 여백 20px, 좌우 중앙 정렬 */
+    max-width: 700px;
+    margin: 20px auto;
     text-align: center;
     background-color: #fafafa;
-    
-    /* [수정된 부분] */
-    height: 100px;      /* 높이를 100px로 딱 고정합니다 */
-    /* 만약 광고 크기에 따라 조금 유연하게 하고 싶다면 height 대신 
-       max-height: 120px; 등을 사용해도 됩니다. */
-       
-    overflow: hidden;   /* 광고가 100px보다 크면 넘치는 부분은 잘라냅니다 */
-    
-    /* [추가 팁] 광고를 박스 정중앙에 예쁘게 배치하려면 아래 3줄 추가 */
+    height: 100px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
