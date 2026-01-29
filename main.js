@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ----------------------------------------------------
-    // 3. Outlier Checker 로직 (대폭 수정됨)
+// ----------------------------------------------------
+    // 3. Outlier Checker 로직 (공백 및 폰트 사이즈 최적화 버전)
     // ----------------------------------------------------
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resDiv = document.getElementById('outlier-result');
             
             if (data.length < 3) {
-                resDiv.innerHTML = "<span style='color:red;'>Error: Need at least 3 numbers for statistical analysis.</span>";
+                resDiv.innerHTML = "<span style='color:red; font-size: 0.9rem;'>Error: Need at least 3 numbers.</span>";
                 return;
             }
 
@@ -142,8 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
             const stdev = Math.sqrt(variance);
 
-            // Skewness 계산 (Sample Skewness)
-            // g1 = [n / ((n-1)(n-2))] * sum((x-mean)/s)^3
+            // Skewness 계산
             let skewness = 0;
             if (n > 2) {
                 const sumCubicDiff = data.reduce((acc, val) => acc + Math.pow((val - mean)/stdev, 3), 0);
@@ -151,75 +150,75 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Normality 해석
-            let distributionType = "Approximately Symmetric";
+            let distributionType = "Approx. Symmetric";
             let skewnessColor = "green";
             if (skewness > 1) {
-                distributionType = "Highly Skewed (Right Tail)";
-                skewnessColor = "#d97706"; // amber
+                distributionType = "Skewed (Right)";
+                skewnessColor = "#d97706";
             } else if (skewness < -1) {
-                distributionType = "Highly Skewed (Left Tail)";
+                distributionType = "Skewed (Left)";
                 skewnessColor = "#d97706";
             } else if (Math.abs(skewness) > 0.5) {
                 distributionType = "Moderately Skewed";
-                skewnessColor = "#2563eb"; // blue
+                skewnessColor = "#2563eb";
             }
 
-            // Quartile 계산
+            // Quartile & Fence
             const q1 = data[Math.floor((n - 1) / 4)];
             const q3 = data[Math.floor((n - 1) * 3 / 4)];
             const iqr = q3 - q1;
-            
-            // Fence 계산
             const lowerFence = q1 - 1.5 * iqr;
             const upperFence = q3 + 1.5 * iqr;
-
-            // 이상치 판별
             const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
-            // 결과 HTML 구성
+            // [수정됨] 디자인: 폰트 크기 축소, 마진 축소, 레이아웃 밀집도 증가
             let resultHTML = `
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <div>
-                        <strong>Descriptive Statistics:</strong><br>
-                        Mean: ${mean.toFixed(2)}<br>
-                        SD: ${stdev.toFixed(2)}<br>
-                        N: ${n}
+                <div style="font-size: 0.95rem; line-height: 1.4; color: #374151;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #e5e7eb;">
+                        <div>
+                            <strong style="font-size: 0.9rem; color:#111;">Descriptive Stats:</strong>
+                            <div style="margin-top: 4px; font-size: 0.85rem; color: #4b5563;">
+                                Mean: ${mean.toFixed(2)}<br>
+                                SD: ${stdev.toFixed(2)}<br>
+                                N: ${n}
+                            </div>
+                        </div>
+                        <div>
+                            <strong style="font-size: 0.9rem; color:#111;">Normality Check:</strong>
+                            <div style="margin-top: 4px; font-size: 0.85rem; color: #4b5563;">
+                                Skewness: <strong>${skewness.toFixed(3)}</strong><br>
+                                <span style="color:${skewnessColor}; font-weight:bold;">${distributionType}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <strong>Normality Check:</strong><br>
-                        Skewness: <strong>${skewness.toFixed(3)}</strong><br>
-                        <span style="color:${skewnessColor}; font-weight:bold;">${distributionType}</span>
+
+                    <div style="background-color: #fffbeb; padding: 8px 12px; border-left: 3px solid #f59e0b; margin-bottom: 12px; font-size: 0.85rem; border-radius: 4px;">
+                        <strong style="color: #92400e; display:block; margin-bottom: 2px;">Why IQR?</strong>
+                        Data may not be normal (Skewness ≠ 0). The <strong>IQR method</strong> is robust against outliers regardless of distribution.
                     </div>
-                </div>
 
-                <div style="background-color: #fffbeb; padding: 10px; border-left: 4px solid #f59e0b; margin-bottom: 15px; font-size: 0.9em;">
-                    <strong>Why IQR?</strong><br>
-                    Since the data may not follow a perfect normal distribution (Skewness ≠ 0), 
-                    the <strong>IQR method</strong> is used as a robust statistical standard. 
-                    It effectively identifies outliers regardless of normality.
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <strong>Detection Range (1.5 × IQR):</strong><br>
-                    Any value <strong>below ${lowerFence.toFixed(2)}</strong> or <strong>above ${upperFence.toFixed(2)}</strong> is considered an outlier.
-                </div>
+                    <div style="margin-bottom: 12px; font-size: 0.9rem;">
+                        <strong style="color:#111;">Detection Range (1.5 × IQR):</strong><br>
+                        <span style="color: #4b5563;">Below <strong>${lowerFence.toFixed(2)}</strong> or Above <strong>${upperFence.toFixed(2)}</strong></span>
+                    </div>
             `;
 
+            // 4. 결과 박스 (컴팩트하게 수정)
             if (outliers.length > 0) {
                 resultHTML += `
-                    <div style="padding: 15px; background-color: #fee2e2; border-radius: 5px; border: 1px solid #ef4444;">
-                        <h3 style="margin:0 0 10px 0; color:#b91c1c;">🚨 Outliers Detected</h3>
-                        <div style="font-size: 1.2em; font-weight: bold; color: #b91c1c;">
+                    <div style="padding: 10px 12px; background-color: #fee2e2; border-radius: 6px; border: 1px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="color:#b91c1c; font-weight:bold; font-size: 0.9rem;">🚨 Outliers Detected:</div>
+                        <div style="font-size: 1rem; font-weight: bold; color: #b91c1c;">
                             ${outliers.join(', ')}
                         </div>
                     </div>
-                `;
+                </div>`; // 닫는 div
             } else {
                 resultHTML += `
-                    <div style="padding: 15px; background-color: #dcfce7; border-radius: 5px; border: 1px solid #22c55e; color: #166534; font-weight: bold;">
-                        ✅ No outliers found within the calculated range.
+                    <div style="padding: 10px 12px; background-color: #dcfce7; border-radius: 6px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center;">
+                        ✅ No outliers found.
                     </div>
-                `;
+                </div>`; // 닫는 div
             }
 
             resDiv.innerHTML = resultHTML;
