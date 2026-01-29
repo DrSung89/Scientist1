@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title id="page-title">Scientist's Toolkit | Molarity Calculator</title>
     <meta name="description" id="meta-desc" content="Professional toolkit for scientists: Molarity, Outlier detection, and Human Equivalent Dose (HED) calculators.">
     
@@ -17,7 +16,6 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 </head>
 <body>
-
     <header>
         <h1>Scientist's Toolkit</h1>
     </header>
@@ -37,9 +35,7 @@
              data-ad-slot="6554136062" 
              data-ad-format="auto"
              data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
     <main>
@@ -95,7 +91,7 @@
         </section>
 
         <section id="hed-calculator" class="calculator">
-            <h2>HED (Human Equivalent Dose) Calculator</h2>
+            <h2>HED Calculator</h2>
             <p>Calculates equivalent dose based on BSA (Body Surface Area).</p>
             <div class="hed-container">
                 <div class="hed-inputs">
@@ -107,22 +103,14 @@
                                 <option value="Mouse">Mouse</option>
                                 <option value="Hamster">Hamster</option>
                                 <option value="Rat">Rat</option>
-                                <option value="Ferret">Ferret</option>
-                                <option value="Guinea Pig">Guinea Pig</option>
-                                <option value="Rabbit">Rabbit</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Monkey">Monkey</option>
-                                <option value="Marmoset">Marmoset</option>
-                                <option value="Baboon">Baboon</option>
-                                <option value="Micro Pig">Micro Pig</option>
-                                <option value="Mini Pig">Mini Pig</option>
                                 <option value="Human">Human</option>
-                            </select>
+                                <option value="Monkey">Monkey</option>
+                                <option value="Dog">Dog</option>
+                                </select>
                         </div>
                         <div class="input-group">
                             <label for="dose-a">Dose (mg/kg)</label>
                             <input type="number" id="dose-a" placeholder="mg/kg">
-                            <span>mg/kg</span>
                         </div>
                     </div>
                     <div class="hed-group">
@@ -133,55 +121,32 @@
                                 <option value="Human" selected>Human</option>
                                 <option value="Mouse">Mouse</option>
                                 <option value="Rat">Rat</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Monkey">Monkey</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label for="weight-b">Body Weight</label>
                             <input type="number" id="weight-b" placeholder="Weight">
-                            <select id="weight-b-unit">
-                                <option value="kg" selected>kg</option>
-                                <option value="g">g</option>
-                            </select>
+                            <select id="weight-b-unit"><option value="kg">kg</option><option value="g">g</option></select>
                         </div>
                     </div>
                     <button id="calculate-hed">Calculate HED</button>
-                </div>
-                <div class="hed-reference">
-                    <h4>Reference Body Weights</h4>
-                    <ul>
-                        <li><strong>Human:</strong> 60 kg</li>
-                        <li><strong>Mouse:</strong> 0.02 kg</li>
-                        <li><strong>Rat:</strong> 0.15 kg</li>
-                        <li><strong>Dog:</strong> 10 kg</li>
-                        <li><strong>Monkey:</strong> 3 kg</li>
-                    </ul>
                 </div>
             </div>
             <div id="hed-result" class="result"></div>
         </section>
 
         <section id="help-section" class="calculator">
-            <h2>User Guide & Detailed Information</h2>
+            <h2>User Guide & Information</h2>
             <div class="help-block">
                 <h3>🧪 Molarity Calculation</h3>
                 <p>Formula: Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</p>
-            </div>
-            <div class="help-block">
-                <h3>📊 Statistics: IQR and Skewness</h3>
-                <p>IQR is robust against outliers when data isn't normally distributed.</p>
-            </div>
-            <div class="help-block">
-                <h3>🐁 Human Equivalent Dose (HED)</h3>
-                <p>Standardized via BSA. Use 60 kg for approved human dose reference.</p>
             </div>
         </section>
 
         <section id="comments-section" class="calculator">
             <h2>Comments & Inquiries</h2>
-            <div id="disqus_thread"></div>
-            </section>
+            <p>Feel free to leave your feedback here.</p>
+            <div id="disqus_thread"></div> </section>
     </main>
 
     <script src="main.js"></script>
