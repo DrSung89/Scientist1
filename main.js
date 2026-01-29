@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 3. Outlier Checker 로직 (공백 및 폰트 사이즈 최적화 버전)
+    // 3. Outlier Checker 로직 (여백 제거 및 레이아웃 최적화 버전)
     // ----------------------------------------------------
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Normality 해석
-            let distributionType = "Approx. Symmetric";
+            let distributionType = "Symmetric";
             let skewnessColor = "green";
             if (skewness > 1) {
                 distributionType = "Skewed (Right)";
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 distributionType = "Skewed (Left)";
                 skewnessColor = "#d97706";
             } else if (Math.abs(skewness) > 0.5) {
-                distributionType = "Moderately Skewed";
+                distributionType = "Mod. Skewed";
                 skewnessColor = "#2563eb";
             }
 
@@ -171,54 +171,53 @@ document.addEventListener('DOMContentLoaded', () => {
             const upperFence = q3 + 1.5 * iqr;
             const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
-            // [수정됨] 디자인: 폰트 크기 축소, 마진 축소, 레이아웃 밀집도 증가
+            // [최종 수정] 디자인: white-space: normal로 불필요한 공백 제거
             let resultHTML = `
-                <div style="font-size: 0.95rem; line-height: 1.4; color: #374151;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #e5e7eb;">
-                        <div>
-                            <strong style="font-size: 0.9rem; color:#111;">Descriptive Stats:</strong>
-                            <div style="margin-top: 4px; font-size: 0.85rem; color: #4b5563;">
-                                Mean: ${mean.toFixed(2)}<br>
-                                SD: ${stdev.toFixed(2)}<br>
-                                N: ${n}
+                <div style="font-size: 0.9rem; line-height: 1.4; color: #374151; white-space: normal;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Stats</div>
+                            <div style="font-size: 0.85rem; color: #4b5563; display: flex; gap: 10px;">
+                                <span>Mean: <strong>${mean.toFixed(2)}</strong></span>
+                                <span>SD: <strong>${stdev.toFixed(2)}</strong></span>
+                                <span>N: <strong>${n}</strong></span>
                             </div>
                         </div>
-                        <div>
-                            <strong style="font-size: 0.9rem; color:#111;">Normality Check:</strong>
-                            <div style="margin-top: 4px; font-size: 0.85rem; color: #4b5563;">
-                                Skewness: <strong>${skewness.toFixed(3)}</strong><br>
-                                <span style="color:${skewnessColor}; font-weight:bold;">${distributionType}</span>
+                        <div style="flex: 1; text-align: right;">
+                            <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Normality</div>
+                            <div style="font-size: 0.85rem; color: #4b5563;">
+                                Skew: <strong>${skewness.toFixed(2)}</strong> 
+                                <span style="color:${skewnessColor}; font-weight:bold; margin-left:5px;">(${distributionType})</span>
                             </div>
                         </div>
                     </div>
 
-                    <div style="background-color: #fffbeb; padding: 8px 12px; border-left: 3px solid #f59e0b; margin-bottom: 12px; font-size: 0.85rem; border-radius: 4px;">
-                        <strong style="color: #92400e; display:block; margin-bottom: 2px;">Why IQR?</strong>
-                        Data may not be normal (Skewness ≠ 0). The <strong>IQR method</strong> is robust against outliers regardless of distribution.
+                    <div style="background-color: #fffbeb; padding: 6px 10px; border-left: 3px solid #f59e0b; margin-bottom: 8px; font-size: 0.8rem; border-radius: 4px;">
+                        <strong style="color: #92400e;">Why IQR?</strong> Data can be skewed. IQR is robust.
                     </div>
 
-                    <div style="margin-bottom: 12px; font-size: 0.9rem;">
-                        <strong style="color:#111;">Detection Range (1.5 × IQR):</strong><br>
-                        <span style="color: #4b5563;">Below <strong>${lowerFence.toFixed(2)}</strong> or Above <strong>${upperFence.toFixed(2)}</strong></span>
+                    <div style="margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color:#111; font-weight: 600;">Limit (1.5×IQR):</span>
+                        <span style="color: #4b5563; font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 3px;">
+                            ${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}
+                        </span>
                     </div>
             `;
 
-            // 4. 결과 박스 (컴팩트하게 수정)
+            // 4. 결과 박스 (최소화)
             if (outliers.length > 0) {
                 resultHTML += `
-                    <div style="padding: 10px 12px; background-color: #fee2e2; border-radius: 6px; border: 1px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="color:#b91c1c; font-weight:bold; font-size: 0.9rem;">🚨 Outliers Detected:</div>
-                        <div style="font-size: 1rem; font-weight: bold; color: #b91c1c;">
-                            ${outliers.join(', ')}
-                        </div>
+                    <div style="padding: 8px 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
+                        <strong style="color:#b91c1c; font-size: 0.9rem;">🚨 Outliers Detected:</strong>
+                        <strong style="font-size: 0.95rem; color: #b91c1c;">${outliers.join(', ')}</strong>
                     </div>
-                </div>`; // 닫는 div
+                </div>`; 
             } else {
                 resultHTML += `
-                    <div style="padding: 10px 12px; background-color: #dcfce7; border-radius: 6px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center;">
+                    <div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center;">
                         ✅ No outliers found.
                     </div>
-                </div>`; // 닫는 div
+                </div>`;
             }
 
             resDiv.innerHTML = resultHTML;
