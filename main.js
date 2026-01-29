@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
             desc: "User guide and official FDA references for molarity, outlier detection, and HED calculation.",
             url: "https://scientisttoolkit.xyz/help-section"
         }
+        'comments-section': {
+            title: "Comments & Inquiries | Scientist's Toolkit",
+            desc: "Leave your feedback, feature requests, or questions about the scientist toolkit.",
+            url: "https://scientisttoolkit.xyz/comments-section"
+        }
     };
 
     // 2. 섹션 전환 및 SEO 업데이트 함수

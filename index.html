@@ -14,6 +14,7 @@
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
 
     <link rel="stylesheet" href="style.css">
+    
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -27,6 +28,7 @@
         <button class="nav-btn" data-target="outlier-checker">Outlier Checker</button>
         <button class="nav-btn" data-target="hed-calculator">HED Calc</button>
         <button class="nav-btn" data-target="help-section">Help & Info</button>
+        <button class="nav-btn" data-target="comments-section">Comments</button>
     </nav>
 
     <div class="ad-container">
@@ -96,7 +98,6 @@
         <section id="hed-calculator" class="calculator">
             <h2>HED (Human Equivalent Dose) Calculator</h2>
             <p>Calculates equivalent dose based on BSA (Body Surface Area).</p>
-            
             <div class="hed-container">
                 <div class="hed-inputs">
                     <div class="hed-group">
@@ -125,7 +126,6 @@
                             <span>mg/kg</span>
                         </div>
                     </div>
-
                     <div class="hed-group">
                         <h3>Species B (Target)</h3>
                         <div class="input-group">
@@ -149,82 +149,57 @@
                     </div>
                     <button id="calculate-hed">Calculate HED</button>
                 </div>
-
                 <div class="hed-reference">
                     <h4>Reference Body Weights</h4>
-                    <ul id="ref-list">
+                    <ul>
                         <li><strong>Human:</strong> 60 kg</li>
                         <li><strong>Mouse:</strong> 0.02 kg</li>
-                        <li><strong>Hamster:</strong> 0.08 kg</li>
                         <li><strong>Rat:</strong> 0.15 kg</li>
-                        <li><strong>Ferret:</strong> 0.30 kg</li>
-                        <li><strong>Guinea Pig:</strong> 0.40 kg</li>
                         <li><strong>Rabbit:</strong> 1.8 kg</li>
                         <li><strong>Dog:</strong> 10 kg</li>
                         <li><strong>Monkey:</strong> 3 kg</li>
-                        <li><strong>Marmoset:</strong> 0.35 kg</li>
-                        <li><strong>Squirrel Monkey:</strong> 0.60 kg</li>
-                        <li><strong>Baboon:</strong> 12 kg</li>
-                        <li><strong>Micro Pig:</strong> 20 kg</li>
-                        <li><strong>Mini Pig:</strong> 40 kg</li>
                     </ul>
                 </div>
             </div>
-            
             <div id="hed-result" class="result"></div>
         </section>
 
         <section id="help-section" class="calculator">
             <h2>User Guide & References</h2>
-            
             <div class="help-block">
                 <h3>🧪 Molarity Calculator</h3>
-                <p>
-                    This tool assists researchers in preparing solutions by calculating the required <strong>Mass, Concentration, Volume, or Molecular Weight (MW)</strong>. 
-                    Based on the fundamental formula:
-                </p>
-                <div class="formula-box">Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</div>
-                <p>
-                    Simply enter three known values, and the calculator will determine the fourth. 
-                    It supports automatic unit conversion (e.g., mg, µM, mL) to minimize manual calculation errors during experiments.
-                </p>
+                <p>Formula: Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</p>
             </div>
-
             <div class="help-block">
-                <h3>📊 Outlier Checker & Normality</h3>
-                <p>
-                    This statistical tool identifies potential outliers in your experimental data using the <strong>Interquartile Range (IQR) method</strong>.
-                    It defines outliers as data points falling below Q1 - 1.5*IQR or above Q3 + 1.5*IQR.
-                </p>
-                <p>
-                    Additionally, it performs a basic normality check using <strong>Skewness and Z-score analysis</strong> to help you decide whether to use parametric or non-parametric tests for downstream analysis.
-                </p>
+                <h3>📊 Outlier Checker</h3>
+                <p>Uses the IQR method: Q1 - 1.5*IQR to Q3 + 1.5*IQR.</p>
             </div>
-
             <div class="help-block">
-                <h3>🐁 HED (Human Equivalent Dose) Calculator</h3>
-                <p>
-                    The HED Calculator converts drug doses between different animal species and humans based on <strong>Body Surface Area (BSA) normalization</strong>. 
-                    This method is widely used in the initial stages of clinical trials to estimate the Maximum Safe Starting Dose (MRSD).
-                </p>
-                <p>
-                    The calculation uses standard <strong>Km factors</strong> (Body Weight / Body Surface Area) for various species.
-                </p>
-                
+                <h3>🐁 HED Calculator</h3>
                 <div class="reference-box">
-                    <strong>Reference (FDA Guidance):</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">
-                        Estimating the Maximum Safe Starting Dose in Initial Clinical Trials for Therapeutics in Adult Healthy Volunteers
-                    </a>
-                    <br>
-                    <em>U.S. Food and Drug Administration (July 2005)</em>
+                    <strong>FDA Guidance Reference:</strong><br>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA July 2005 Guidelines</a>
                 </div>
-                <p class="warning-text" style="margin-top: 10px;">
-                    ⚠️ Note: This tool is for research and educational purposes only. Always consult official guidelines and professionals for clinical dosing.
-                </p>
             </div>
         </section>
 
+        <section id="comments-section" class="calculator">
+            <h2>Comments & Inquiries</h2>
+            <p>Feel free to leave feedback or ask questions about the toolkit.</p>
+            <div id="disqus_thread"></div>
+            <script>
+                var disqus_config = function () {
+                    this.page.url = 'https://scientisttoolkit.xyz/comments-section';
+                    this.page.identifier = 'comments-section';
+                };
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://scientisttoolkit.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
+        </section>
     </main>
 
     <script src="main.js"></script>

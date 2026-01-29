@@ -273,6 +273,17 @@ nav button.active {
     padding-bottom: 5px;
     margin-bottom: 25px;
 }
+
+#comments-section {
+    min-height: 500px; /* 댓글창 로딩 전 영역 확보 */
+}
+
+#comments-section p {
+    margin-bottom: 30px;
+    color: #64748b;
+    font-style: italic;
+}
+
 .ad-container {
     width: 100%;
     max-width: 700px;  /* 메인 콘텐츠 너비와 맞춤 */
