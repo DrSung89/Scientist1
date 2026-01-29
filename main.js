@@ -118,29 +118,111 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 3. Outlier Checker 로직
+    // 3. Outlier Checker 로직 (대폭 수정됨)
     // ----------------------------------------------------
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
         outlierButton.addEventListener('click', () => {
             const rawData = document.getElementById('outlier-data').value;
-            const data = rawData.split(',').map(s => s.trim()).filter(s => s !== '' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
+            const data = rawData.split(',')
+                .map(s => s.trim())
+                .filter(s => s !== '' && !isNaN(s))
+                .map(Number)
+                .sort((a, b) => a - b);
+
             const resDiv = document.getElementById('outlier-result');
             
             if (data.length < 3) {
-                resDiv.innerHTML = "<span style='color:red;'>Error: Need at least 3 numbers.</span>";
+                resDiv.innerHTML = "<span style='color:red;'>Error: Need at least 3 numbers for statistical analysis.</span>";
                 return;
             }
 
             const n = data.length;
             const mean = data.reduce((a, b) => a + b, 0) / n;
-            const stdev = Math.sqrt(data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1));
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
+            const stdev = Math.sqrt(variance);
+
+            // Skewness 계산 (Sample Skewness)
+            // g1 = [n / ((n-1)(n-2))] * sum((x-mean)/s)^3
+            let skewness = 0;
+            if (n > 2) {
+                const sumCubicDiff = data.reduce((acc, val) => acc + Math.pow((val - mean)/stdev, 3), 0);
+                skewness = (n / ((n - 1) * (n - 2))) * sumCubicDiff;
+            }
+
+            // Normality 해석
+            let distributionType = "Approximately Symmetric";
+            let skewnessColor = "green";
+            if (skewness > 1) {
+                distributionType = "Highly Skewed (Right Tail)";
+                skewnessColor = "#d97706"; // amber
+            } else if (skewness < -1) {
+                distributionType = "Highly Skewed (Left Tail)";
+                skewnessColor = "#d97706";
+            } else if (Math.abs(skewness) > 0.5) {
+                distributionType = "Moderately Skewed";
+                skewnessColor = "#2563eb"; // blue
+            }
+
+            // Quartile 계산
             const q1 = data[Math.floor((n - 1) / 4)];
             const q3 = data[Math.floor((n - 1) * 3 / 4)];
             const iqr = q3 - q1;
-            const outliers = data.filter(x => x < q1 - 1.5 * iqr || x > q3 + 1.5 * iqr);
+            
+            // Fence 계산
+            const lowerFence = q1 - 1.5 * iqr;
+            const upperFence = q3 + 1.5 * iqr;
 
-            resDiv.innerHTML = `<strong>Results:</strong><br>Mean: ${mean.toFixed(2)}<br>SD: ${stdev.toFixed(2)}<br><br><strong>Outliers:</strong> ${outliers.length > 0 ? `<span style='color:red; font-weight:bold;'>${outliers.join(', ')}</span>` : "None"}`;
+            // 이상치 판별
+            const outliers = data.filter(x => x < lowerFence || x > upperFence);
+
+            // 결과 HTML 구성
+            let resultHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <strong>Descriptive Statistics:</strong><br>
+                        Mean: ${mean.toFixed(2)}<br>
+                        SD: ${stdev.toFixed(2)}<br>
+                        N: ${n}
+                    </div>
+                    <div>
+                        <strong>Normality Check:</strong><br>
+                        Skewness: <strong>${skewness.toFixed(3)}</strong><br>
+                        <span style="color:${skewnessColor}; font-weight:bold;">${distributionType}</span>
+                    </div>
+                </div>
+
+                <div style="background-color: #fffbeb; padding: 10px; border-left: 4px solid #f59e0b; margin-bottom: 15px; font-size: 0.9em;">
+                    <strong>Why IQR?</strong><br>
+                    Since the data may not follow a perfect normal distribution (Skewness ≠ 0), 
+                    the <strong>IQR method</strong> is used as a robust statistical standard. 
+                    It effectively identifies outliers regardless of normality.
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Detection Range (1.5 × IQR):</strong><br>
+                    Any value <strong>below ${lowerFence.toFixed(2)}</strong> or <strong>above ${upperFence.toFixed(2)}</strong> is considered an outlier.
+                </div>
+            `;
+
+            if (outliers.length > 0) {
+                resultHTML += `
+                    <div style="padding: 15px; background-color: #fee2e2; border-radius: 5px; border: 1px solid #ef4444;">
+                        <h3 style="margin:0 0 10px 0; color:#b91c1c;">🚨 Outliers Detected</h3>
+                        <div style="font-size: 1.2em; font-weight: bold; color: #b91c1c;">
+                            ${outliers.join(', ')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div style="padding: 15px; background-color: #dcfce7; border-radius: 5px; border: 1px solid #22c55e; color: #166534; font-weight: bold;">
+                        ✅ No outliers found within the calculated range.
+                    </div>
+                `;
+            }
+
+            resDiv.innerHTML = resultHTML;
         });
     }
 

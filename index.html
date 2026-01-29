@@ -165,29 +165,69 @@
             <div id="hed-result" class="result"></div>
         </section>
 
-        <section id="help-section" class="calculator">
+<section id="help-section" class="calculator">
             <h2>User Guide & Detailed Information</h2>
+
             <div class="help-block">
                 <h3>🧪 Molarity Calculation</h3>
-                <p>Molarity is a measure of the concentration of a solute in a solution.</p>
+                <p>
+                    Molarity is the most common measure of concentration in biology and chemistry. 
+                    It is defined as the number of moles of solute per liter of solution.
+                </p>
                 <div class="formula-box">
                     Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)
                 </div>
             </div>
+
             <div class="help-block">
-                <h3>📊 Statistics: IQR and Skewness</h3>
-                <p><strong>IQR:</strong> Used when data is not normally distributed. Robust against outliers.</p>
+                <h3>📊 Outlier Detection: Why IQR?</h3>
+                <p>
+                    Generally, outliers are detected using <strong>Z-scores</strong> (Standard Deviation), which assumes the data follows a normal distribution (Bell curve).
+                </p>
+                <p>
+                    However, <strong>biological data is often skewed</strong> (asymmetric) and does not follow a perfect normal distribution. 
+                    In these cases, using Z-scores can lead to errors. Therefore, we use the <strong>Interquartile Range (IQR)</strong> method, which is robust and reliable for non-normal distributions.
+                </p>
+                <div class="formula-box" style="text-align: left; line-height: 1.8;">
+                    <strong>Calculation Formula:</strong><br>
+                    1. Calculate IQR = Q3 (75th percentile) - Q1 (25th percentile)<br>
+                    2. Define Fences (Thresholds):<br>
+                    &nbsp;&nbsp;&nbsp; • <strong>Lower Limit:</strong> Q1 - 1.5 × IQR<br>
+                    &nbsp;&nbsp;&nbsp; • <strong>Upper Limit:</strong> Q3 + 1.5 × IQR<br>
+                    <br>
+                    <em>*Any data point outside these limits is considered an outlier.</em>
+                </div>
             </div>
+
             <div class="help-block">
                 <h3>🐁 Human Equivalent Dose (HED)</h3>
-                <p>Based on Body Surface Area (BSA). Reference human weight: 60 kg.</p>
+                <p>
+                    This calculator converts doses between species based on <strong>Body Surface Area (BSA)</strong> normalization, not just body weight.
+                </p>
+                <p>
+                    <strong>Planning Animal Studies from Human Doses:</strong><br>
+                    When calculating a starting dose for animal experiments based on a human approved dose (e.g., a flat dose in mg), 
+                    you must first convert it to <strong>mg/kg</strong>.
+                </p>
+                <p style="background-color: #fff7ed; padding: 10px; border-left: 4px solid #f97316;">
+                    <strong>⚠️ Important Note:</strong><br>
+                    For this conversion, use the <strong>FDA standard human body weight of 60 kg</strong>. 
+                    Do not use arbitrary weights unless specific data is available.
+                </p>
+                <div class="formula-box">
+                    <strong>Step 1 (Human Dose to mg/kg):</strong><br>
+                    Human Dose (mg/kg) = Total Human Dose (mg) / 60 kg
+                    <br><br>
+                    <strong>Step 2 (Conversion to Animal Dose):</strong><br>
+                    Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human Km / Animal Km)
+                </div>
+
                 <div class="reference-box">
                     <strong>Official Reference:</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance (July 2005)</a>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
                 </div>
             </div>
         </section>
-
         <section id="comments-section" class="calculator">
             <h2>Comments & Inquiries</h2>
             <p>Please feel free to leave your feedback here.</p>
