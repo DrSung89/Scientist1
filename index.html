@@ -16,6 +16,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 </head>
 <body>
+
     <header>
         <h1>Scientist's Toolkit</h1>
     </header>
@@ -91,7 +92,7 @@
         </section>
 
         <section id="hed-calculator" class="calculator">
-            <h2>HED Calculator</h2>
+            <h2>HED (Human Equivalent Dose) Calculator</h2>
             <p>Calculates equivalent dose based on BSA (Body Surface Area).</p>
             <div class="hed-container">
                 <div class="hed-inputs">
@@ -103,14 +104,22 @@
                                 <option value="Mouse">Mouse</option>
                                 <option value="Hamster">Hamster</option>
                                 <option value="Rat">Rat</option>
-                                <option value="Human">Human</option>
-                                <option value="Monkey">Monkey</option>
+                                <option value="Ferret">Ferret</option>
+                                <option value="Guinea Pig">Guinea Pig</option>
+                                <option value="Rabbit">Rabbit</option>
                                 <option value="Dog">Dog</option>
-                                </select>
+                                <option value="Monkey">Monkey</option>
+                                <option value="Marmoset">Marmoset</option>
+                                <option value="Baboon">Baboon</option>
+                                <option value="Micro Pig">Micro Pig</option>
+                                <option value="Mini Pig">Mini Pig</option>
+                                <option value="Human">Human</option>
+                            </select>
                         </div>
                         <div class="input-group">
                             <label for="dose-a">Dose (mg/kg)</label>
                             <input type="number" id="dose-a" placeholder="mg/kg">
+                            <span>mg/kg</span>
                         </div>
                     </div>
                     <div class="hed-group">
@@ -121,6 +130,8 @@
                                 <option value="Human" selected>Human</option>
                                 <option value="Mouse">Mouse</option>
                                 <option value="Rat">Rat</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Monkey">Monkey</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -131,22 +142,61 @@
                     </div>
                     <button id="calculate-hed">Calculate HED</button>
                 </div>
+                <div class="hed-reference">
+                    <h4>Reference Body Weights</h4>
+                    <ul>
+                        <li><strong>Human:</strong> 60 kg</li>
+                        <li><strong>Mouse:</strong> 0.02 kg</li>
+                        <li><strong>Rat:</strong> 0.15 kg</li>
+                        <li><strong>Dog:</strong> 10 kg</li>
+                        <li><strong>Monkey:</strong> 3 kg</li>
+                    </ul>
+                </div>
             </div>
             <div id="hed-result" class="result"></div>
         </section>
 
         <section id="help-section" class="calculator">
-            <h2>User Guide & Information</h2>
+            <h2>User Guide & Detailed Information</h2>
+            
             <div class="help-block">
                 <h3>🧪 Molarity Calculation</h3>
-                <p>Formula: Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</p>
+                <p>Molarity is a measure of the concentration of a solute in a solution. This tool uses the standard chemical formula:</p>
+                <div class="formula-box" style="background: #f0f4f8; padding: 15px; border-radius: 8px; font-family: monospace; text-align: center; margin: 10px 0; font-weight: bold;">
+                    Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)
+                </div>
+                <p>Precise molarity calculation is the foundation of any wet lab experiment. By automating unit conversions (mg to g, µM to M, etc.), we help prevent common scaling errors.</p>
+            </div>
+
+            <div class="help-block">
+                <h3>📊 Statistics: IQR and Skewness</h3>
+                <p><strong>IQR (Interquartile Range) Method:</strong> Standard Z-score methods assume your data follows a Normal Distribution. However, in many biological experiments, data may be skewed. <strong>IQR is used when the data does not follow a normal distribution</strong> because it is based on percentiles rather than the mean and standard deviation, making it robust against extreme outliers.</p>
+                <p><strong>Skewness:</strong> This is a measure of the asymmetry of the probability distribution.
+                    <ul>
+                        <li>Positive Skew: The tail on the right side is longer.</li>
+                        <li>Negative Skew: The tail on the left side is longer.</li>
+                    </ul>
+                    We provide a Z-score based normality check to help you decide between parametric (T-test) and non-parametric (Mann-Whitney) tests.
+                </p>
+            </div>
+
+            <div class="help-block">
+                <h3>🐁 Human Equivalent Dose (HED)</h3>
+                <p>Animal doses cannot be directly applied to humans simply by adjusting body weight. Instead, they must be normalized based on Body Surface Area (BSA).</p>
+                <p><strong>Clinical Tip:</strong> When you are determining the dose for an animal study based on a drug's <strong>approved human dose</strong>, you should typically enter <strong>60 kg</strong> as the reference human body weight to ensure standardized conversion factors.</p>
+                
+                <div class="reference-box" style="border-left: 4px solid #3b82f6; padding-left: 15px; margin-top: 10px; background-color: #f8f9fa; padding: 10px;">
+                    <strong>Official Reference:</strong><br>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank" style="color: #3b82f6; text-decoration: none;">FDA Guidance (July 2005): Estimating the Maximum Safe Starting Dose in Initial Clinical Trials.</a>
+                </div>
             </div>
         </section>
 
         <section id="comments-section" class="calculator">
             <h2>Comments & Inquiries</h2>
-            <p>Feel free to leave your feedback here.</p>
-            <div id="disqus_thread"></div> </section>
+            <p>Please feel free to leave your feedback here.</p>
+            <div id="disqus_thread"></div>
+        </section>
     </main>
 
     <script src="main.js"></script>
