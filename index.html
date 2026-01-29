@@ -120,7 +120,6 @@
                         <div class="input-group">
                             <label for="dose-a">Dose (mg/kg)</label>
                             <input type="number" id="dose-a" placeholder="mg/kg">
-                            <span>mg/kg</span>
                         </div>
                     </div>
                     <div class="hed-group">
@@ -168,36 +167,23 @@
 
         <section id="help-section" class="calculator">
             <h2>User Guide & Detailed Information</h2>
-            
             <div class="help-block">
                 <h3>🧪 Molarity Calculation</h3>
-                <p>Molarity is a measure of the concentration of a solute in a solution. This tool uses the standard chemical formula:</p>
+                <p>Molarity is a measure of the concentration of a solute in a solution.</p>
                 <div class="formula-box" style="background: #f0f4f8; padding: 15px; border-radius: 8px; font-family: monospace; text-align: center; margin: 10px 0; font-weight: bold;">
-                    Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)
+                    Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)
                 </div>
-                <p>Precise molarity calculation is the foundation of any wet lab experiment. By automating unit conversions (mg to g, µM to M, etc.), we help prevent common scaling errors.</p>
             </div>
-
             <div class="help-block">
                 <h3>📊 Statistics: IQR and Skewness</h3>
-                <p><strong>IQR (Interquartile Range) Method:</strong> Standard Z-score methods assume your data follows a Normal Distribution. However, in many biological experiments, data may be skewed. <strong>IQR is used when the data does not follow a normal distribution</strong> because it is based on percentiles rather than the mean and standard deviation, making it robust against extreme outliers.</p>
-                <p><strong>Skewness:</strong> This is a measure of the asymmetry of the probability distribution.
-                    <ul>
-                        <li>Positive Skew: The tail on the right side is longer.</li>
-                        <li>Negative Skew: The tail on the left side is longer.</li>
-                    </ul>
-                    We provide a Z-score based normality check to help you decide between parametric (T-test) and non-parametric (Mann-Whitney) tests.
-                </p>
+                <p><strong>IQR:</strong> Used when data is not normally distributed. Robust against outliers.</p>
             </div>
-
             <div class="help-block">
                 <h3>🐁 Human Equivalent Dose (HED)</h3>
-                <p>Animal doses cannot be directly applied to humans simply by adjusting body weight. Instead, they must be normalized based on Body Surface Area (BSA).</p>
-                <p><strong>Clinical Tip:</strong> When you are determining the dose for an animal study based on a drug's <strong>approved human dose</strong>, you should typically enter <strong>60 kg</strong> as the reference human body weight to ensure standardized conversion factors.</p>
-                
+                <p>Based on Body Surface Area (BSA). Reference human weight: 60 kg.</p>
                 <div class="reference-box" style="border-left: 4px solid #3b82f6; padding-left: 15px; margin-top: 10px; background-color: #f8f9fa; padding: 10px;">
                     <strong>Official Reference:</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank" style="color: #3b82f6; text-decoration: none;">FDA Guidance (July 2005): Estimating the Maximum Safe Starting Dose in Initial Clinical Trials.</a>
+                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank" style="color: #3b82f6;">FDA Guidance (July 2005)</a>
                 </div>
             </div>
         </section>
