@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// ----------------------------------------------------
+    // ----------------------------------------------------
     // 3. Outlier Checker 로직 (공백 및 폰트 사이즈 최적화 버전)
     // ----------------------------------------------------
     const outlierButton = document.getElementById('check-outliers');
