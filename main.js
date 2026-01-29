@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "Help & References | Scientist's Toolkit",
             desc: "User guide and official FDA references for molarity, outlier detection, and HED calculation.",
             url: "https://scientisttoolkit.xyz/help-section"
-        }
+        }, // <--- 여기에 쉼표가 추가되었습니다!
         'comments-section': {
             title: "Comments & Inquiries | Scientist's Toolkit",
             desc: "Leave your feedback, feature requests, or questions about the scientist toolkit.",
@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. 섹션 전환 및 SEO 업데이트 함수
     function showSection(targetId, updateHistory = true) {
-        // 모든 버튼과 섹션 비활성화
         navButtons.forEach(btn => btn.classList.remove('active'));
         sections.forEach(sec => sec.classList.remove('active'));
 
@@ -44,17 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
             targetSection.classList.add('active');
             targetBtn.classList.add('active');
 
-            // --- [SEO 메타 태그 업데이트] ---
             const data = seoData[targetId];
             if (data) {
-                document.title = data.title; // 브라우저 탭 제목
+                document.title = data.title;
                 if(document.getElementById('meta-desc')) document.getElementById('meta-desc').setAttribute('content', data.desc);
                 if(document.getElementById('og-title')) document.getElementById('og-title').setAttribute('content', data.title);
                 if(document.getElementById('og-desc')) document.getElementById('og-desc').setAttribute('content', data.desc);
                 if(document.getElementById('og-url')) document.getElementById('og-url').setAttribute('content', data.url);
             }
 
-            // URL 주소 업데이트 (새로고침 없이 경로만 변경)
             if (updateHistory) {
                 const path = targetId === 'mass-calculator' ? '/' : '/' + targetId;
                 history.pushState({ targetId }, '', path);
@@ -62,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. 네비게이션 클릭 이벤트 연결
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.getAttribute('data-target');
@@ -70,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. 브라우저 뒤로가기/앞으로가기 버튼 대응
     window.addEventListener('popstate', (e) => {
         if (e.state && e.state.targetId) {
             showSection(e.state.targetId, false);
@@ -79,10 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. 초기 접속 경로 처리 (404 리다이렉트 대응)
     const urlPath = window.location.pathname.replace('/', '');
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectPath = urlParams.get('p'); // 404.html에서 p 파라미터로 보낸 경우
+    const redirectPath = urlParams.get('p');
 
     const finalPath = redirectPath ? redirectPath.replace('/', '') : urlPath;
 
@@ -92,11 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection('mass-calculator', false);
     }
 
-    // ==========================================
-    // 6. 계산기 로직 (수정된 소수점 표기 포함)
-    // ==========================================
-
-    // [Molarity Calculator]
+    // --- 계산기 로직 시작 ---
     const massCalcButton = document.getElementById('calculate-mass');
     const units = {
         mass: { g: 1, mg: 1e-3, ug: 1e-6, ng: 1e-9, pg: 1e-12 },
@@ -110,16 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const concInput = document.getElementById('concentration');
             const volInput = document.getElementById('volume');
             const mwInput = document.getElementById('mw');
-
             const massVal = parseFloat(massInput.value);
             const concVal = parseFloat(concInput.value);
             const volVal = parseFloat(volInput.value);
             const mwVal = parseFloat(mwInput.value);
-
             const massUnit = units.mass[document.getElementById('mass-unit').value];
             const concUnit = units.conc[document.getElementById('concentration-unit').value];
             const volUnit = units.vol[document.getElementById('volume-unit').value];
-
             const resultDiv = document.getElementById('mass-result');
             let resultText = "";
 
@@ -142,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // [Outlier Checker]
     const outlierButton = document.getElementById('check-outliers');
     function normalcdf(X) {
         var T = 1 / (1 + .2316419 * Math.abs(X));
@@ -157,12 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rawData = document.getElementById('outlier-data').value;
             const data = rawData.split(',').map(s => s.trim()).filter(s => s !== '' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
             const resultDiv = document.getElementById('outlier-result');
-            
-            if (data.length < 3) {
-                resultDiv.innerHTML = "<span style='color:red;'>Error: Need at least 3 points.</span>";
-                return;
-            }
-
+            if (data.length < 3) { resultDiv.innerHTML = "Error: Need at least 3 points."; return; }
             const n = data.length;
             const mean = data.reduce((a, b) => a + b, 0) / n;
             const stdev = Math.sqrt(data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1));
@@ -170,15 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const q3 = data[Math.floor((n - 1) * 3 / 4)];
             const iqr = q3 - q1;
             const outliers = data.filter(x => x < q1 - 1.5 * iqr || x > q3 + 1.5 * iqr);
-
-            resultDiv.innerHTML = `<strong>Statistics:</strong> Mean=${mean.toFixed(2)}, SD=${stdev.toFixed(2)}<br><strong>Outliers:</strong> ${outliers.length > 0 ? `<span style='color:red;'>${outliers.join(', ')}</span>` : "None"}`;
+            resultDiv.innerHTML = `<strong>Statistics:</strong> Mean=${mean.toFixed(2)}, SD=${stdev.toFixed(2)}<br><strong>Outliers:</strong> ${outliers.length > 0 ? outliers.join(', ') : "None"}`;
         });
     }
 
-    // [HED Calculator]
     const kmFactors = { "Mouse": 3, "Hamster": 5, "Rat": 6, "Ferret": 7, "Guinea Pig": 8, "Rabbit": 12, "Dog": 20, "Monkey": 12, "Marmoset": 6, "Squirrel Monkey": 7, "Baboon": 20, "Micro Pig": 27, "Mini Pig": 35, "Human": 37 };
     const hedButton = document.getElementById('calculate-hed');
-    
     if (hedButton) {
         hedButton.addEventListener('click', () => {
             const sA = document.getElementById('species-a').value;
@@ -187,17 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const wB = parseFloat(document.getElementById('weight-b').value);
             const unitB = document.getElementById('weight-b-unit').value;
             const resDiv = document.getElementById('hed-result');
-
-            if(isNaN(dA)) { resDiv.innerHTML = "<span style='color:red;'>Error: Enter dose.</span>"; return; }
-
+            if(isNaN(dA)) { resDiv.innerHTML = "Error: Enter dose."; return; }
             const doseB = dA * (kmFactors[sA] / kmFactors[sB]);
             let absDose = "";
-
             if(!isNaN(wB)) {
                 const wbkg = unitB === 'kg' ? wB : wB / 1000;
-                absDose = `<br><strong>Total Absolute Dose for ${sB}:</strong><br>${(doseB * wbkg).toFixed(4)} mg`;
+                absDose = `<br>Absolute Dose: ${(doseB * wbkg).toFixed(4)} mg`;
             }
-            resDiv.innerHTML = `<strong>Equivalent Dose (${sB}):</strong><br><span style="color:blue; font-weight:bold;">${doseB.toFixed(4)} mg/kg</span>${absDose}`;
+            resDiv.innerHTML = `Equivalent Dose: <strong>${doseB.toFixed(4)} mg/kg</strong>${absDose}`;
         });
     }
 });
