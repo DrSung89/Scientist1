@@ -311,36 +311,89 @@ document.addEventListener('DOMContentLoaded', () => {
         })();
     }
 // ====================================================
-    // 5. Dilution Calculator 로직 (New!)
+    // 5. Dilution Calculator 로직 (Any 3 Variables & All Units)
     // ====================================================
     const dilutionButton = document.getElementById('calculate-dilution');
     if (dilutionButton) {
         dilutionButton.addEventListener('click', () => {
-            const c1 = parseFloat(document.getElementById('c1').value);
-            const c2 = parseFloat(document.getElementById('c2').value);
-            const v2 = parseFloat(document.getElementById('v2').value);
-            const unit = document.getElementById('v2-unit').value;
+            // 1. 값과 단위 가져오기
+            const m1Val = parseFloat(document.getElementById('m1').value);
+            const v1Val = parseFloat(document.getElementById('v1').value);
+            const m2Val = parseFloat(document.getElementById('m2').value);
+            const v2Val = parseFloat(document.getElementById('v2').value);
+
+            // 2. 단위 변환 계수 (Base: Molar, Liter)
+            const cFactors = { "M": 1, "mM": 1e-3, "uM": 1e-6, "nM": 1e-9 };
+            const vFactors = { "L": 1, "mL": 1e-3, "uL": 1e-6 };
+
+            const m1Unit = cFactors[document.getElementById('m1-unit').value];
+            const v1Unit = vFactors[document.getElementById('v1-unit').value];
+            const m2Unit = cFactors[document.getElementById('m2-unit').value];
+            const v2Unit = vFactors[document.getElementById('v2-unit').value];
+
+            const m1Text = document.getElementById('m1-unit').value;
+            const v1Text = document.getElementById('v1-unit').value;
+            const m2Text = document.getElementById('m2-unit').value;
+            const v2Text = document.getElementById('v2-unit').value;
+
             const resDiv = document.getElementById('dilution-result');
+            
+            // 결과창 초기화 및 스타일 (줄간격 좁게)
+            resDiv.innerHTML = "";
+            resDiv.style.whiteSpace = "normal";
 
-            // 유효성 검사
-            if (isNaN(c1) || isNaN(c2) || isNaN(v2)) {
-                resDiv.innerHTML = "<span style='color:red;'>Please enter all 3 values.</span>";
+            // 3. 어떤 값이 비었는지 확인
+            const isNaN_m1 = isNaN(m1Val);
+            const isNaN_v1 = isNaN(v1Val);
+            const isNaN_m2 = isNaN(m2Val);
+            const isNaN_v2 = isNaN(v2Val);
+
+            // 정확히 1개만 비어있어야 함 (true가 1개일 때)
+            const emptyCount = [isNaN_m1, isNaN_v1, isNaN_m2, isNaN_v2].filter(Boolean).length;
+
+            if (emptyCount !== 1) {
+                resDiv.innerHTML = "<span style='color:red;'>Please enter exactly 3 values. Leave the target field empty.</span>";
                 return;
             }
-            if (c1 <= c2) {
-                resDiv.innerHTML = "<span style='color:red;'>Stock conc (M₁) must be greater than Target conc (M₂).</span>";
-                return;
+
+            // 4. 계산 로직 (기본 단위 M, L로 변환 후 계산)
+            let resultHTML = "";
+
+            if (isNaN_m1) {
+                // Calculate M1 = (M2 * V2) / V1
+                const calcM1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (v1Val * v1Unit);
+                const finalM1 = calcM1_Base / m1Unit; // 사용자가 선택한 단위로 변환
+                resultHTML = `Required Stock Conc (M₁): <strong>${finalM1.toPrecision(4)} ${m1Text}</strong>`;
+            } 
+            else if (isNaN_v1) {
+                // Calculate V1 = (M2 * V2) / M1
+                const calcV1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (m1Val * m1Unit);
+                const finalV1 = calcV1_Base / v1Unit;
+                
+                // V1을 구할 때는 Solvent(용매) 양도 알려주면 친절함 (단, 단위가 같을 때만 계산)
+                let solventText = "";
+                // 같은 부피 단위일 때만 뺄셈 표시 (예: 둘 다 mL)
+                if (document.getElementById('v1-unit').value === document.getElementById('v2-unit').value) {
+                    const solventVol = v2Val - finalV1;
+                    solventText = `<br><span style="font-size:0.9em; color:#555;">(Add <strong>${finalV1.toPrecision(4)} ${v1Text}</strong> of Stock + <strong>${solventVol.toPrecision(4)} ${v1Text}</strong> of Solvent)</span>`;
+                }
+
+                resultHTML = `Required Stock Vol (V₁): <strong>${finalV1.toPrecision(4)} ${v1Text}</strong>${solventText}`;
+            } 
+            else if (isNaN_m2) {
+                // Calculate M2 = (M1 * V1) / V2
+                const calcM2_Base = (m1Val * m1Unit * v1Val * v1Unit) / (v2Val * v2Unit);
+                const finalM2 = calcM2_Base / m2Unit;
+                resultHTML = `Final Concentration (M₂): <strong>${finalM2.toPrecision(4)} ${m2Text}</strong>`;
+            } 
+            else if (isNaN_v2) {
+                // Calculate V2 = (M1 * V1) / M2
+                const calcV2_Base = (m1Val * m1Unit * v1Val * v1Unit) / (m2Val * m2Unit);
+                const finalV2 = calcV2_Base / v2Unit;
+                resultHTML = `Final Volume (V₂): <strong>${finalV2.toPrecision(4)} ${v2Text}</strong>`;
             }
 
-            // 계산: V1 = (M2 * V2) / M1
-            const v1 = (c2 * v2) / c1;
-            const solvent = v2 - v1;
-
-            resDiv.innerHTML = `
-                To make <strong>${v2} ${unit}</strong> of <strong>${c2}</strong> solution:<br><br>
-                1. Take <strong>${v1.toFixed(4)} ${unit}</strong> of Stock Solution (M₁).<br>
-                2. Add <strong>${solvent.toFixed(4)} ${unit}</strong> of solvent (e.g., water).
-            `;
+            resDiv.innerHTML = `<div style="font-size: 1rem; color: #1f2937;">${resultHTML}</div>`;
         });
     }
 });

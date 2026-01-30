@@ -30,30 +30,55 @@
     <main>
         <section id="dilution-calculator" class="calculator active" style="display:block;">
             <h2>🧪 Dilution Calculator</h2>
-            <p>Calculate dilution using the equation <strong>M₁V₁ = M₂V₂</strong></p>
+            <p>Enter 3 values to calculate the 4th. (M₁V₁ = M₂V₂)</p>
             
-            <div class="input-group">
-                <label for="c1">Stock Conc. (M₁)</label>
-                <input type="number" id="c1" placeholder="Stock Concentration">
-            </div>
-            
-            <div class="input-group">
-                <label for="c2">Target Conc. (M₂)</label>
-                <input type="number" id="c2" placeholder="Desired Concentration">
-            </div>
+            <div class="dilution-grid" style="display: grid; gap: 15px; margin-bottom: 20px;">
+                <div class="input-group" style="margin-bottom:0;">
+                    <label for="m1" style="width:140px;">Stock Conc. (M₁)</label>
+                    <input type="number" id="m1" placeholder="Input...">
+                    <select id="m1-unit">
+                        <option value="M">M</option>
+                        <option value="mM">mM</option>
+                        <option value="uM">µM</option>
+                        <option value="nM">nM</option>
+                    </select>
+                </div>
 
-            <div class="input-group">
-                <label for="v2">Target Vol. (V₂)</label>
-                <input type="number" id="v2" placeholder="Desired Volume">
-                <select id="v2-unit">
-                    <option value="mL" selected>mL</option>
-                    <option value="L">L</option>
-                    <option value="uL">µL</option>
-                </select>
+                <div class="input-group" style="margin-bottom:0;">
+                    <label for="v1" style="width:140px;">Stock Vol. (V₁)</label>
+                    <input type="number" id="v1" placeholder="Input...">
+                    <select id="v1-unit">
+                        <option value="L">L</option>
+                        <option value="mL" selected>mL</option>
+                        <option value="uL">µL</option>
+                    </select>
+                </div>
+                
+                <div class="input-group" style="margin-bottom:0;">
+                    <label for="m2" style="width:140px;">Target Conc. (M₂)</label>
+                    <input type="number" id="m2" placeholder="Input...">
+                    <select id="m2-unit">
+                        <option value="M">M</option>
+                        <option value="mM" selected>mM</option>
+                        <option value="uM">µM</option>
+                        <option value="nM">nM</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="margin-bottom:0;">
+                    <label for="v2" style="width:140px;">Target Vol. (V₂)</label>
+                    <input type="number" id="v2" placeholder="Input...">
+                    <select id="v2-unit">
+                        <option value="L">L</option>
+                        <option value="mL" selected>mL</option>
+                        <option value="uL">µL</option>
+                    </select>
+                </div>
             </div>
 
             <button id="calculate-dilution">Calculate</button>
-            <div id="dilution-result" class="result"></div>
+            
+            <div id="dilution-result" class="result" style="line-height: 1.4; padding: 12px;"></div>
         </section>
     </main>
 
