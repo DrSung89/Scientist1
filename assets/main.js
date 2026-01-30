@@ -6,22 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function smartFormat(value, unit, type) {
         if (isNaN(value) || value === 0) return `0.000 ${unit}`;
 
-        // 단위별 크기 정의
         const volUnits = ['L', 'mL', 'uL', 'nL'];
         const concUnits = ['M', 'mM', 'uM', 'nM'];
         
-        // 단위 간 변환 계수 (L, M 기준)
         const factors = {
             'L': 1, 'mL': 1e-3, 'uL': 1e-6, 'nL': 1e-9,
             'M': 1, 'mM': 1e-3, 'uM': 1e-6, 'nM': 1e-9
         };
 
         const units = type === 'vol' ? volUnits : concUnits;
-        
-        // 1. 현재 값을 '기준 단위(L 또는 M)'로 변환
         let baseValue = value * factors[unit];
-
-        // 2. 가장 적절한 단위 찾기
         let bestUnit = units[units.length - 1]; 
         
         for (let u of units) {
@@ -31,10 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 3. 최적 단위로 값 변환
         let scaledValue = baseValue / factors[bestUnit];
-
-        // 4. 소수점 3자리 + 단위 반환
         return `<strong>${scaledValue.toFixed(3)} ${bestUnit}</strong>`;
     }
 
@@ -64,19 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Calculate Mass
             if (isNaN(mass) && !isNaN(vol) && !isNaN(conc)) {
                 const calcMass = mw * (vol * vFactor) * (conc * cFactor);
                 resultText = `Required Mass: <strong>${calcMass.toFixed(3)} g</strong>`;
-            }
-            // Calculate Concentration
-            else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
+            } else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
                 const calcConc = mass / (mw * (vol * vFactor));
                 const finalConc = calcConc / cFactor;
                 resultText = `Concentration: <strong>${finalConc.toFixed(3)} ${concUnit}</strong>`;
-            }
-            // Calculate Volume
-            else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
+            } else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
                 const calcVol = mass / (mw * (conc * cFactor));
                 const finalVol = calcVol / vFactor;
                 resultText = `Required Volume: <strong>${finalVol.toFixed(3)} ${volUnit}</strong>`;
@@ -89,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 2. Outlier Checker Logic (IQR + Shapiro-Wilk)
+    // 2. Outlier Checker Logic (IQR + Shapiro-Wilk) - [복구됨]
     // ====================================================
     function normalCDF(x) {
         var t = 1 / (1 + 0.2316419 * Math.abs(x));
@@ -119,42 +105,30 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i=0; i<n; i++) c[i] = m[i] / mNorm;
 
         let a = new Array(n).fill(0);
-        
         if (n === 3) {
             a[0] = 0.7071; a[2] = -0.7071; 
         } else {
             const an = c[n-1] + 0.221157*Math.pow(n, -1) - 0.147981*Math.pow(n, -2) - 2.07119*Math.pow(n, -3) + 4.434685*Math.pow(n, -4) - 2.706056*Math.pow(n, -5);
             const an_1 = c[n-2] + 0.042981*Math.pow(n, -1) - 0.293762*Math.pow(n, -2) - 1.752461*Math.pow(n, -3) + 5.682633*Math.pow(n, -4) - 3.582633*Math.pow(n, -5);
-            
-            a[n-1] = an;
-            a[n-2] = an_1;
-            a[0] = -an;
-            a[1] = -an_1;
+            a[n-1] = an; a[n-2] = an_1; a[0] = -an; a[1] = -an_1;
 
             let epsilon = (mNorm*mNorm - 2*an*an - 2*an_1*an_1) / (1 - 2*a[n-1]*a[n-1] - 2*a[n-2]*a[n-2]); 
             if (epsilon < 0) epsilon = 0;
             epsilon = Math.sqrt(epsilon);
 
-            for (let i = 2; i < n - 2; i++) {
-                a[i] = c[i]; 
-            }
+            for (let i = 2; i < n - 2; i++) { a[i] = c[i]; }
         }
 
         let b = 0;
-        for (let i = 0; i < n; i++) {
-            b += a[i] * data[i];
-        }
+        for (let i = 0; i < n; i++) { b += a[i] * data[i]; }
 
         const w = (b * b) / ss;
-
         const mu = 0.0038915 * Math.pow(Math.log(n), 3) - 0.083751 * Math.pow(Math.log(n), 2) - 0.31082 * Math.log(n) - 1.5861;
         const sigma = Math.exp(0.0030302 * Math.pow(Math.log(n), 2) - 0.082676 * Math.log(n) - 0.4803);
         const z = (Math.log(1 - w) - mu) / sigma;
         let p = 1 - normalCDF(z);
 
-        if (p > 1) p = 1;
-        if (p < 0) p = 0;
-
+        if (p > 1) p = 1; if (p < 0) p = 0;
         return { w: w, p: p, valid: true };
     }
 
@@ -179,6 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const n = data.length;
             const mean = data.reduce((a, b) => a + b, 0) / n;
+            // ▼▼▼ SD 계산 복구 ▼▼▼
+            const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
+            const stdev = Math.sqrt(variance);
+
             const swResult = calculateShapiroWilk(data);
             const pValue = swResult.p;
 
@@ -193,45 +171,57 @@ document.addEventListener('DOMContentLoaded', () => {
             const upperFence = q3 + 1.5 * iqr;
             const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
+            // ▼▼▼ 결과창 상세 설명 복구 ▼▼▼
             let resultHTML = `<div style="font-size: 0.9rem; line-height: 1.4; color: #374151;">
                     <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb;">
-                        <div>
-                            <div style="font-weight: 700; color:#111;">Desc. Stats</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Desc. Stats</div>
                             <div style="font-size: 0.8rem; color: #4b5563;">
-                                Mean: <strong>${mean.toFixed(2)}</strong> | N: <strong>${n}</strong>
+                                Mean: <strong>${mean.toFixed(2)}</strong> | N: <strong>${n}</strong><br>
+                                SD: <strong>${stdev.toFixed(2)}</strong>
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-weight: 700; color:#111;">Normality (S-W)</div>
+                        <div style="flex: 1.2; text-align: right;">
+                            <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Normality (S-W)</div>
                             <div style="font-size: 0.8rem; color: #4b5563;">
-                                P-value: <strong style="color:${pValueColor};">${pValue.toFixed(3)}</strong> <span style="font-size:0.75rem;">(${pValueText})</span>
+                                W: <strong>${swResult.w.toFixed(3)}</strong> <br>
+                                P-value: <strong style="color:${pValueColor};">${pValue.toFixed(3)}</strong> <span style="font-size:0.75rem; color:#666;">(${pValueText})</span>
                             </div>
                         </div>
                     </div>
-                    <div style="margin-bottom: 8px;">
-                        <span style="color:#111; font-weight: 600;">Limit (1.5×IQR):</span>
-                        <span style="font-family: monospace; background: #f3f4f6; padding: 2px 6px;">
-                            ${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}
-                        </span>
+                    <div style="margin-bottom: 8px; font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color:#111; font-weight: 600;">Detection Limit (1.5×IQR):</span>
+                            <span style="font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 3px;">
+                                ${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}
+                            </span>
+                        </div>
                     </div>`;
 
             if (outliers.length > 0) {
                 if (isNormal) {
                     resultHTML += `<div style="padding: 10px; background-color: #fff7ed; border-radius: 4px; border: 1px solid #f97316; margin-top: 10px;">
-                        <strong style="color:#c2410c;">⚠️ Outliers Detected, but...</strong>
-                        <div style="font-size: 0.85rem; color: #9a3412; margin-top:5px;">
-                            Data is <strong>Normal</strong>. Do NOT exclude them.
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                            <strong style="color:#c2410c; font-size: 0.95rem;">⚠️ Outliers Detected, but...</strong>
+                        </div>
+                        <div style="font-size: 0.85rem; color: #9a3412; margin-bottom: 8px;">
+                            P-value (S-W) is <strong>${pValue.toFixed(3)}</strong> (≥ 0.05). Data follows a <strong>Normal Distribution</strong>.
+                        </div>
+                        <div style="font-weight: bold; color: #c2410c; text-align: center; border-top: 1px dashed #fdba74; padding-top: 5px;">
+                            Recommendation: Do NOT exclude them.
                         </div></div></div>`;
                 } else {
                     resultHTML += `<div style="padding: 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; margin-top: 10px;">
-                        <strong style="color:#b91c1c;">🚨 Outliers Confirmed:</strong>
-                        <strong style="font-size: 1rem; color: #b91c1c;">${outliers.join(', ')}</strong>
-                        <div style="font-size: 0.8rem; color: #b91c1c; margin-top:5px;">
-                             Data is Non-normal. IQR method is appropriate.
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                            <strong style="color:#b91c1c; font-size: 0.95rem;">🚨 Outliers Confirmed:</strong>
+                            <strong style="font-size: 1rem; color: #b91c1c;">${outliers.join(', ')}</strong>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #b91c1c;">
+                             P-value (${pValue.toFixed(3)}) < 0.05. Data is Non-normal. <br><strong>IQR method is appropriate.</strong>
                         </div></div></div>`;
                 }
             } else {
-                resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; text-align: center; margin-top: 10px;">✅ No outliers found.</div></div>`;
+                resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found.</div></div>`;
             }
             resDiv.innerHTML = resultHTML;
         });
@@ -268,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 4. Dilution Calculator Logic (Smart Units & 3 Decimals)
+    // 4. Dilution Calculator Logic
     // ====================================================
     const dilutionButton = document.getElementById('calculate-dilution');
     if (dilutionButton) {
