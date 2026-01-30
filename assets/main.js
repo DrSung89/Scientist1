@@ -1,62 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ====================================================
-    // Helper: 스마트 단위 변환기 (Mass, Volume, Conc 모두 지원)
+    // Helper: 스마트 단위 변환기
     // ====================================================
     function smartFormat(value, unit, type) {
         if (isNaN(value) || value === 0) return `0.000 ${unit}`;
 
-        // 1. 단위 정의 (가장 큰 단위 -> 가장 작은 단위 순서)
         const volUnits = ['L', 'mL', 'uL', 'nL'];
         const concUnits = ['M', 'mM', 'uM', 'nM'];
-        const massUnits = ['kg', 'g', 'mg', 'ug', 'ng']; // Mass 추가
+        const massUnits = ['kg', 'g', 'mg', 'ug', 'ng'];
 
-        // 2. 기준 단위(Base Unit)로 변환하기 위한 계수 (L, M, g 기준)
         const factors = {
             'L': 1, 'mL': 1e-3, 'uL': 1e-6, 'nL': 1e-9,
             'M': 1, 'mM': 1e-3, 'uM': 1e-6, 'nM': 1e-9,
             'kg': 1000, 'g': 1, 'mg': 1e-3, 'ug': 1e-6, 'ng': 1e-9
         };
 
-        // 타입에 따른 단위 목록 선택
         let units;
         if (type === 'vol') units = volUnits;
         else if (type === 'conc') units = concUnits;
         else units = massUnits;
         
-        // 3. 현재 값을 일단 '기준 단위(Base Unit)'로 변환
-        // 예: 10000 mM (unit='mM') -> 10 M (baseValue)
         let baseValue = value * factors[unit];
-
-        // 4. 가장 적절한 단위 찾기
-        // 숫자가 1보다 커지는 단위 중 가장 먼저 나오는(큰) 단위를 선택
-        let bestUnit = units[units.length - 1]; // 기본값: 가장 작은 단위
+        let bestUnit = units[units.length - 1]; 
         
         for (let u of units) {
-            // 기준값으로 환산했을 때 0.1 이상이면 그 단위를 채택
-            // 예: 10 M를 mM로 나누면 10000 (>1) -> M 채택
-            // 예: 0.005 M를 mM로 나누면 5 (>1) -> mM 채택
             if (Math.abs(baseValue) / factors[u] >= 1) { 
                 bestUnit = u;
                 break;
             }
         }
         
-        // 만약 값이 0.000...1 처럼 너무 작으면 그냥 가장 작은 단위 사용
         if (Math.abs(baseValue) < factors[units[units.length-1]]) {
              bestUnit = units[units.length-1];
         }
 
-        // 5. 최적 단위로 값 재변환
         let scaledValue = baseValue / factors[bestUnit];
-
-        // 6. 소수점 3자리 + 단위 반환
         return `<strong>${scaledValue.toFixed(3)} ${bestUnit}</strong>`;
     }
 
 
     // ====================================================
-    // 1. Molarity Calculator Logic (스마트 변환 적용)
+    // 1. Molarity Calculator Logic (Mass Unit Support Added)
     // ====================================================
     const molButton = document.getElementById('calculate-molarity');
     if (molButton) {
@@ -66,13 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const vol = parseFloat(document.getElementById('volume').value);
             const conc = parseFloat(document.getElementById('concentration').value);
 
-            // 사용자가 선택한 드롭다운 단위 (입력값 해석용)
+            // 사용자가 선택한 단위들
+            const massUnit = document.getElementById('mass-unit').value; // 이제 선택 가능!
             const volUnit = document.getElementById('vol-unit').value;
             const concUnit = document.getElementById('conc-unit').value;
-            // Mass는 화면엔 g라고 되어있지만 확장성을 위해 g로 고정 계산
-            const massUnit = 'g'; 
 
-            // Base Unit(L, M)으로 변환하기 위한 팩터
+            // Base Unit(g, L, M)으로 변환하기 위한 팩터
+            const mFactor = { 'kg': 1000, 'g': 1, 'mg': 1e-3, 'ug': 1e-6 }[massUnit];
             const vFactor = volUnit === 'L' ? 1 : (volUnit === 'mL' ? 1e-3 : 1e-6);
             const cFactor = concUnit === 'M' ? 1 : (concUnit === 'mM' ? 1e-3 : 1e-6);
 
@@ -84,25 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Case 1: Calculate Mass (결과: Grams -> 스마트 변환)
+            // Case 1: Calculate Mass (Output)
             if (isNaN(mass) && !isNaN(vol) && !isNaN(conc)) {
                 // Mass(g) = MW * Vol(L) * Conc(M)
                 const calcMassGram = mw * (vol * vFactor) * (conc * cFactor);
-                // g 단위를 기준으로 스마트 포맷팅 호출
+                // 결과는 스마트 포맷으로 자동 변환 (예: 0.001 g -> 1.000 mg)
                 resultText = `Required Mass: ${smartFormat(calcMassGram, 'g', 'mass')}`;
             }
-            // Case 2: Calculate Concentration (결과: Molar -> 스마트 변환)
+            // Case 2: Calculate Concentration (Mass Input)
             else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
                 // Conc(M) = Mass(g) / (MW * Vol(L))
-                const calcConcMolar = mass / (mw * (vol * vFactor));
-                // M 단위를 기준으로 스마트 포맷팅 호출 (사용자가 mM을 선택했어도 무시하고 최적 단위 추천)
+                // 여기서 입력받은 mass에 mFactor를 곱해 'g' 단위로 맞춰줍니다.
+                const calcConcMolar = (mass * mFactor) / (mw * (vol * vFactor));
                 resultText = `Concentration: ${smartFormat(calcConcMolar, 'M', 'conc')}`;
             }
-            // Case 3: Calculate Volume (결과: Liter -> 스마트 변환)
+            // Case 3: Calculate Volume (Mass Input)
             else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
                 // Vol(L) = Mass(g) / (MW * Conc(M))
-                const calcVolLiter = mass / (mw * (conc * cFactor));
-                // L 단위를 기준으로 스마트 포맷팅 호출
+                const calcVolLiter = (mass * mFactor) / (mw * (conc * cFactor));
                 resultText = `Required Volume: ${smartFormat(calcVolLiter, 'L', 'vol')}`;
             } else {
                 resultText = "<span style='color:red;'>Please fill in exactly 3 fields (MW is required).</span>";

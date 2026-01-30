@@ -32,7 +32,12 @@
             <div class="input-group">
                 <label for="mass">Mass</label>
                 <input type="number" id="mass" placeholder="Input value...">
-                <span style="margin-left:5px; font-weight:bold;">g</span>
+                <select id="mass-unit">
+                    <option value="g" selected>g</option>
+                    <option value="mg">mg</option>
+                    <option value="ug">µg</option>
+                    <option value="kg">kg</option>
+                </select>
             </div>
             
             <div class="input-group">
@@ -62,7 +67,6 @@
             </div>
 
             <button id="calculate-molarity">Calculate</button>
-            
             <div id="molarity-result" class="result"></div>
         </section>
     </main>
