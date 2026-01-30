@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dilution Calculator (M1V1=M2V2) | Scientist's Toolkit</title>
+    <meta name="description" content="Calculate the volume needed to dilute a stock solution to a desired concentration (M1V1=M2V2).">
+    
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/dilution-calculator/">
+
+    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
+    <meta property="og:url" content="https://scientisttoolkit.xyz/dilution-calculator/">
+    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution Calc</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+    </nav>
+
+    <main>
+        <section id="dilution-calculator" class="calculator active" style="display:block;">
+            <h2>🧪 Dilution Calculator</h2>
+            <p>Calculate dilution using the equation <strong>M₁V₁ = M₂V₂</strong></p>
+            
+            <div class="input-group">
+                <label for="c1">Stock Conc. (M₁)</label>
+                <input type="number" id="c1" placeholder="Stock Concentration">
+            </div>
+            
+            <div class="input-group">
+                <label for="c2">Target Conc. (M₂)</label>
+                <input type="number" id="c2" placeholder="Desired Concentration">
+            </div>
+
+            <div class="input-group">
+                <label for="v2">Target Vol. (V₂)</label>
+                <input type="number" id="v2" placeholder="Desired Volume">
+                <select id="v2-unit">
+                    <option value="mL" selected>mL</option>
+                    <option value="L">L</option>
+                    <option value="uL">µL</option>
+                </select>
+            </div>
+
+            <button id="calculate-dilution">Calculate</button>
+            <div id="dilution-result" class="result"></div>
+        </section>
+    </main>
+
+    <script src="../assets/main.js"></script>
+</body>
+</html>

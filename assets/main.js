@@ -310,4 +310,37 @@ document.addEventListener('DOMContentLoaded', () => {
             (d.head || d.body).appendChild(s);
         })();
     }
+// ====================================================
+    // 5. Dilution Calculator 로직 (New!)
+    // ====================================================
+    const dilutionButton = document.getElementById('calculate-dilution');
+    if (dilutionButton) {
+        dilutionButton.addEventListener('click', () => {
+            const c1 = parseFloat(document.getElementById('c1').value);
+            const c2 = parseFloat(document.getElementById('c2').value);
+            const v2 = parseFloat(document.getElementById('v2').value);
+            const unit = document.getElementById('v2-unit').value;
+            const resDiv = document.getElementById('dilution-result');
+
+            // 유효성 검사
+            if (isNaN(c1) || isNaN(c2) || isNaN(v2)) {
+                resDiv.innerHTML = "<span style='color:red;'>Please enter all 3 values.</span>";
+                return;
+            }
+            if (c1 <= c2) {
+                resDiv.innerHTML = "<span style='color:red;'>Stock conc (M₁) must be greater than Target conc (M₂).</span>";
+                return;
+            }
+
+            // 계산: V1 = (M2 * V2) / M1
+            const v1 = (c2 * v2) / c1;
+            const solvent = v2 - v1;
+
+            resDiv.innerHTML = `
+                To make <strong>${v2} ${unit}</strong> of <strong>${c2}</strong> solution:<br><br>
+                1. Take <strong>${v1.toFixed(4)} ${unit}</strong> of Stock Solution (M₁).<br>
+                2. Add <strong>${solvent.toFixed(4)} ${unit}</strong> of solvent (e.g., water).
+            `;
+        });
+    }
 });

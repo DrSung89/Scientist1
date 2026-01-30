@@ -13,6 +13,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  
+  <url>
+    <loc>https://scientisttoolkit.xyz/dilution-calculator/</loc>
+    <lastmod>2024-05-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
   <url>
     <loc>https://scientisttoolkit.xyz/outlier-detector/</loc>
