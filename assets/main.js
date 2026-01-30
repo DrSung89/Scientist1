@@ -31,41 +31,100 @@ document.addEventListener('DOMContentLoaded', () => {
     showSection(initialId);
 
 
-    // ----------------------------------------------------
-    // 2. Molarity Calculator 로직
-    // ----------------------------------------------------
-    const massCalcButton = document.getElementById('calculate-mass');
-    if (massCalcButton) {
-        massCalcButton.addEventListener('click', () => {
-            const massVal = parseFloat(document.getElementById('mass').value);
-            const concVal = parseFloat(document.getElementById('concentration').value);
-            const volVal = parseFloat(document.getElementById('volume').value);
-            const mwVal = parseFloat(document.getElementById('mw').value);
+ document.addEventListener('DOMContentLoaded', () => {
 
-            const mUnits = { g: 1, mg: 1e-3, ug: 1e-6, ng: 1e-9, pg: 1e-12 };
-            const cUnits = { M: 1, mM: 1e-3, uM: 1e-6, nM: 1e-9, pM: 1e-12 };
-            const vUnits = { L: 1, mL: 1e-3, uL: 1e-6 };
+    // ====================================================
+    // Helper: 스마트 단위 변환기 (자동 단위 최적화 + 소수점 3자리)
+    // ====================================================
+    function smartFormat(value, unit, type) {
+        if (isNaN(value) || value === 0) return `0.000 ${unit}`;
 
-            const mUnit = mUnits[document.getElementById('mass-unit').value];
-            const cUnit = cUnits[document.getElementById('concentration-unit').value];
-            const vUnit = vUnits[document.getElementById('volume-unit').value];
-            const resultDiv = document.getElementById('mass-result');
+        // 단위별 크기 정의 (기준: L, M)
+        const volUnits = ['L', 'mL', 'uL', 'nL'];
+        const concUnits = ['M', 'mM', 'uM', 'nM'];
+        
+        // 단위 간 변환 계수 (L, M 기준)
+        const factors = {
+            'L': 1, 'mL': 1e-3, 'uL': 1e-6, 'nL': 1e-9,
+            'M': 1, 'mM': 1e-3, 'uM': 1e-6, 'nM': 1e-9
+        };
 
-            if (!isNaN(concVal) && !isNaN(volVal) && !isNaN(mwVal) && isNaN(massVal)) {
-                const calcMassG = (concVal * cUnit) * (volVal * vUnit) * mwVal;
-                resultDiv.innerHTML = `Calculated Mass: <strong>${(calcMassG / mUnit).toFixed(4)}</strong> ${document.getElementById('mass-unit').value}`;
-            } else if (!isNaN(massVal) && !isNaN(volVal) && !isNaN(mwVal) && isNaN(concVal)) {
-                const calcConcM = (massVal * mUnit) / (mwVal * (volVal * vUnit));
-                resultDiv.innerHTML = `Calculated Concentration: <strong>${(calcConcM / cUnit).toFixed(4)}</strong> ${document.getElementById('concentration-unit').value}`;
-            } else if (!isNaN(massVal) && !isNaN(concVal) && !isNaN(mwVal) && isNaN(volVal)) {
-                const calcVolL = (massVal * mUnit) / (mwVal * (concVal * cUnit));
-                resultDiv.innerHTML = `Calculated Volume: <strong>${(calcVolL / vUnit).toFixed(4)}</strong> ${document.getElementById('volume-unit').value}`;
-            } else if (!isNaN(massVal) && !isNaN(concVal) && !isNaN(volVal) && isNaN(mwVal)) {
-                const calcMW = (massVal * mUnit) / ((concVal * cUnit) * (volVal * vUnit));
-                resultDiv.innerHTML = `Calculated MW: <strong>${calcMW.toFixed(2)}</strong> g/mol`;
-            } else {
-                resultDiv.innerHTML = "<span style='color:red;'>Please enter exactly 3 values. Leave the target field empty.</span>";
+        const units = type === 'vol' ? volUnits : concUnits;
+        
+        // 1. 현재 값을 '기준 단위(L 또는 M)'로 변환
+        let baseValue = value * factors[unit];
+
+        // 2. 가장 적절한 단위 찾기 (값이 1 이상이 되는 가장 작은 단위)
+        let bestUnit = units[units.length - 1]; // 기본값: 가장 작은 단위(nL, nM)
+        
+        for (let u of units) {
+            // 기준 단위 값에서 해당 단위 계수를 나눴을 때 1 이상이면 채택 (단, 0.1~1 사이도 허용하려면 조정 가능)
+            if (Math.abs(baseValue) >= factors[u] * 0.1) { 
+                bestUnit = u;
+                break;
             }
+        }
+
+        // 3. 최적 단위로 값 변환
+        let scaledValue = baseValue / factors[bestUnit];
+
+        // 4. 소수점 3자리 + 단위 반환
+        return `<strong>${scaledValue.toFixed(3)} ${bestUnit}</strong>`;
+    }
+
+
+    // ====================================================
+    // 1. Molarity Calculator Logic
+    // ====================================================
+    const molButton = document.getElementById('calculate-molarity');
+    if (molButton) {
+        molButton.addEventListener('click', () => {
+            const mass = parseFloat(document.getElementById('mass').value);
+            const mw = parseFloat(document.getElementById('mw').value);
+            const vol = parseFloat(document.getElementById('volume').value);
+            const conc = parseFloat(document.getElementById('concentration').value);
+
+            const volUnit = document.getElementById('vol-unit').value;
+            const concUnit = document.getElementById('conc-unit').value;
+
+            // Unit factors to base (Liters, Molar)
+            const vFactor = volUnit === 'L' ? 1 : (volUnit === 'mL' ? 1e-3 : 1e-6);
+            const cFactor = concUnit === 'M' ? 1 : (concUnit === 'mM' ? 1e-3 : 1e-6);
+
+            const resDiv = document.getElementById('molarity-result');
+            let resultText = "";
+
+            if (isNaN(mw)) {
+                resDiv.innerHTML = "<span style='color:red;'>Please enter Molecular Weight.</span>";
+                return;
+            }
+
+            // Calculate Mass
+            if (isNaN(mass) && !isNaN(vol) && !isNaN(conc)) {
+                // Mass = MW * Vol(L) * Conc(M)
+                const calcMass = mw * (vol * vFactor) * (conc * cFactor);
+                resultText = `Required Mass: <strong>${calcMass.toFixed(3)} g</strong>`;
+            }
+            // Calculate Concentration
+            else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
+                // Conc = Mass / (MW * Vol(L))
+                const calcConc = mass / (mw * (vol * vFactor));
+                // 결과값을 사용자가 선택한 단위로 변환 후 출력 (소수점 3자리)
+                const finalConc = calcConc / cFactor;
+                resultText = `Concentration: <strong>${finalConc.toFixed(3)} ${concUnit}</strong>`;
+            }
+            // Calculate Volume
+            else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
+                // Vol = Mass / (MW * Conc)
+                const calcVol = mass / (mw * (conc * cFactor));
+                // 결과값을 사용자가 선택한 단위로 변환
+                const finalVol = calcVol / vFactor;
+                resultText = `Required Volume: <strong>${finalVol.toFixed(3)} ${volUnit}</strong>`;
+            } else {
+                resultText = "<span style='color:red;'>Please fill in exactly 3 fields (MW is required).</span>";
+            }
+
+            resDiv.innerHTML = resultText;
         });
     }
 
@@ -311,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })();
     }
 // ====================================================
-    // 5. Dilution Calculator 로직 (Any 3 Variables & All Units)
+    // 5. Dilution Calculator Logic (Smart Units & 3 Decimals)
     // ====================================================
     const dilutionButton = document.getElementById('calculate-dilution');
     if (dilutionButton) {
@@ -337,8 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const v2Text = document.getElementById('v2-unit').value;
 
             const resDiv = document.getElementById('dilution-result');
-            
-            // 결과창 초기화 및 스타일 (줄간격 좁게)
             resDiv.innerHTML = "";
             resDiv.style.whiteSpace = "normal";
 
@@ -348,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isNaN_m2 = isNaN(m2Val);
             const isNaN_v2 = isNaN(v2Val);
 
-            // 정확히 1개만 비어있어야 함 (true가 1개일 때)
             const emptyCount = [isNaN_m1, isNaN_v1, isNaN_m2, isNaN_v2].filter(Boolean).length;
 
             if (emptyCount !== 1) {
@@ -356,41 +412,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 4. 계산 로직 (기본 단위 M, L로 변환 후 계산)
+            // 4. 계산 및 스마트 포맷팅
             let resultHTML = "";
 
             if (isNaN_m1) {
-                // Calculate M1 = (M2 * V2) / V1
+                // Calculate M1
                 const calcM1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (v1Val * v1Unit);
-                const finalM1 = calcM1_Base / m1Unit; // 사용자가 선택한 단위로 변환
-                resultHTML = `Required Stock Conc (M₁): <strong>${finalM1.toPrecision(4)} ${m1Text}</strong>`;
+                // M1은 사용자가 선택한 단위 그대로 보여줄지, 최적화할지 결정 (여기서는 선택 단위 유지하되 값만 정제)
+                const finalM1 = calcM1_Base / m1Unit; 
+                // 만약 M1도 스마트 변환을 원하면: resultHTML = `Required Stock Conc (M₁): ${smartFormat(finalM1, m1Text, 'conc')}`;
+                // 하지만 Stock 농도는 보통 정해져 있으므로 선택한 단위 유지가 낫습니다.
+                resultHTML = `Required Stock Conc (M₁): <strong>${finalM1.toFixed(3)} ${m1Text}</strong>`;
             } 
             else if (isNaN_v1) {
-                // Calculate V1 = (M2 * V2) / M1
-                const calcV1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (m1Val * m1Unit);
-                const finalV1 = calcV1_Base / v1Unit;
-                
-                // V1을 구할 때는 Solvent(용매) 양도 알려주면 친절함 (단, 단위가 같을 때만 계산)
-                let solventText = "";
-                // 같은 부피 단위일 때만 뺄셈 표시 (예: 둘 다 mL)
-                if (document.getElementById('v1-unit').value === document.getElementById('v2-unit').value) {
-                    const solventVol = v2Val - finalV1;
-                    solventText = `<br><span style="font-size:0.9em; color:#555;">(Add <strong>${finalV1.toPrecision(4)} ${v1Text}</strong> of Stock + <strong>${solventVol.toPrecision(4)} ${v1Text}</strong> of Solvent)</span>`;
-                }
+                // Calculate V1 (여기가 핵심!)
+                const calcV1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (m1Val * m1Unit); // Base unit (Liter)
+                const finalV1 = calcV1_Base / v1Unit; // User selected unit value
 
-                resultHTML = `Required Stock Vol (V₁): <strong>${finalV1.toPrecision(4)} ${v1Text}</strong>${solventText}`;
+                // 스마트 포맷팅 적용 (0.001 mL -> 1.000 uL)
+                const smartV1 = smartFormat(finalV1, v1Text, 'vol');
+
+                // 용매(Solvent) 계산
+                let solventText = "";
+                // 용매 양은 굳이 uL로 안 바꾸고 원래 타겟 부피 단위(mL 등)로 보여주는 게 "1mL 맞춤"할 때 편함
+                // 하지만 V1이 너무 작으면 뺄셈이 의미가 없으므로...
+                
+                // 계산용 Solvent 양 (Target V2 - Calculated V1)
+                // 단위 통일을 위해 Base(Liter)에서 뺌
+                const solventBase = (v2Val * v2Unit) - calcV1_Base;
+                const solventInV2Unit = solventBase / v2Unit;
+
+                solventText = `<br><span style="font-size:0.9em; color:#555;">(Add ${smartV1} of Stock + <strong>${solventInV2Unit.toFixed(3)} ${v2Text}</strong> of Solvent)</span>`;
+
+                resultHTML = `Required Stock Vol (V₁): ${smartV1}${solventText}`;
             } 
             else if (isNaN_m2) {
-                // Calculate M2 = (M1 * V1) / V2
+                // Calculate M2
                 const calcM2_Base = (m1Val * m1Unit * v1Val * v1Unit) / (v2Val * v2Unit);
                 const finalM2 = calcM2_Base / m2Unit;
-                resultHTML = `Final Concentration (M₂): <strong>${finalM2.toPrecision(4)} ${m2Text}</strong>`;
+                resultHTML = `Final Concentration (M₂): <strong>${finalM2.toFixed(3)} ${m2Text}</strong>`;
             } 
             else if (isNaN_v2) {
-                // Calculate V2 = (M1 * V1) / M2
+                // Calculate V2
                 const calcV2_Base = (m1Val * m1Unit * v1Val * v1Unit) / (m2Val * m2Unit);
                 const finalV2 = calcV2_Base / v2Unit;
-                resultHTML = `Final Volume (V₂): <strong>${finalV2.toPrecision(4)} ${v2Text}</strong>`;
+                resultHTML = `Final Volume (V₂): <strong>${finalV2.toFixed(3)} ${v2Text}</strong>`;
             }
 
             resDiv.innerHTML = `<div style="font-size: 1rem; color: #1f2937;">${resultHTML}</div>`;
