@@ -38,26 +38,36 @@
                 </div>
             </div>
 
-            <div class="help-block">
-                <h3>📊 Outlier Detection: IQR & Normality</h3>
+<div class="help-block">
+                <h3>📊 Outlier Detection: Auto-Selection Algorithm</h3>
                 <p>
-                    Generally, outliers are detected using <strong>Z-scores</strong>, which assumes the data follows a normal distribution.
-                    However, biological data is often skewed. Therefore, we provide both a <strong>Normality Test</strong> and the <strong>IQR Method</strong>.
+                    This tool automatically runs a <strong>Shapiro-Wilk Normality Test</strong> first, then selects the appropriate statistical method based on the P-value.
                 </p>
                 
-                <div style="background-color: #f0fdf4; padding: 12px; border-left: 4px solid #16a34a; margin-bottom: 15px; font-size: 0.95rem;">
-                    <strong>📉 Normality Test (Shapiro-Wilk):</strong><br>
-                    To determine if data is normally distributed (P-value), this tool uses <strong>Royston's Approximation Algorithm (1992)</strong>. 
-                    This method allows for the accurate calculation of the Shapiro-Wilk <em>W</em> statistic and its significance level (P-value) directly in the browser without requiring extensive statistical tables.
+                <div style="background-color: #ecfdf5; padding: 15px; border-left: 4px solid #059669; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #065f46;">1. If Data is Normal (P ≥ 0.05) → Grubb's Test</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: #064e3b;">
+                        Grubb's test is the gold standard for detecting <strong>exactly one outlier</strong> in a normal distribution.
+                    </p>
+                    <ul style="margin: 8px 0 0 20px; color: #064e3b; font-size: 0.9rem;">
+                        <li><strong>How it works:</strong> It calculates a G score (distance from the mean relative to SD).</li>
+                        <li><strong>Stepwise Removal:</strong> Grubb's test detects only one outlier at a time. If an outlier is found, remove it and re-run the test to check for a second one.</li>
+                    </ul>
                 </div>
-                <div class="formula-box" style="text-align: left; line-height: 1.8;">
-                    <strong>IQR Calculation Formula:</strong><br>
-                    1. Calculate IQR = Q3 (75th percentile) - Q1 (25th percentile)<br>
-                    2. Define Fences (Thresholds):<br>
-                    &nbsp;&nbsp;&nbsp; • <strong>Lower Limit:</strong> Q1 - 1.5 × IQR<br>
-                    &nbsp;&nbsp;&nbsp; • <strong>Upper Limit:</strong> Q3 + 1.5 × IQR<br>
-                    <br>
-                    <em>*Data points outside these limits are outliers if P < 0.05.</em>
+
+                <div style="background-color: #fffbeb; padding: 15px; border-left: 4px solid #d97706; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #92400e;">2. If Data is Non-Normal (P < 0.05) → IQR Method</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: #78350f;">
+                        When data is skewed or the sample size is too small to prove normality, the Interquartile Range (IQR) method is more robust.
+                    </p>
+                    <div class="formula-box" style="margin-top: 10px; background: rgba(255,255,255,0.6);">
+                        <strong>Thresholds:</strong><br>
+                        Lower < Q1 - 1.5×IQR &nbsp;&nbsp;|&nbsp;&nbsp; Upper > Q3 + 1.5×IQR
+                    </div>
+                    <ul style="margin: 8px 0 0 20px; color: #78350f; font-size: 0.9rem;">
+                        <li><strong>Multiple Outliers:</strong> IQR can detect multiple outliers at once.</li>
+                        <li><strong>Warning:</strong> If multiple outliers are flagged, remove the <em>most extreme</em> value first and re-check, as removing data affects the quartiles.</li>
+                    </ul>
                 </div>
             </div>
 

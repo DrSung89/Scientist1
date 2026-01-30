@@ -39,9 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<strong>${scaledValue.toFixed(3)} ${bestUnit}</strong>`;
     }
 
-
     // ====================================================
-    // 1. Molarity Calculator Logic (Mass Unit Support Added)
+    // 1. Molarity Calculator Logic
     // ====================================================
     const molButton = document.getElementById('calculate-molarity');
     if (molButton) {
@@ -51,12 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const vol = parseFloat(document.getElementById('volume').value);
             const conc = parseFloat(document.getElementById('concentration').value);
 
-            // 사용자가 선택한 단위들
-            const massUnit = document.getElementById('mass-unit').value; // 이제 선택 가능!
+            const massUnit = document.getElementById('mass-unit').value;
             const volUnit = document.getElementById('vol-unit').value;
             const concUnit = document.getElementById('conc-unit').value;
 
-            // Base Unit(g, L, M)으로 변환하기 위한 팩터
             const mFactor = { 'kg': 1000, 'g': 1, 'mg': 1e-3, 'ug': 1e-6 }[massUnit];
             const vFactor = volUnit === 'L' ? 1 : (volUnit === 'mL' ? 1e-3 : 1e-6);
             const cFactor = concUnit === 'M' ? 1 : (concUnit === 'mM' ? 1e-3 : 1e-6);
@@ -69,36 +66,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Case 1: Calculate Mass (Output)
             if (isNaN(mass) && !isNaN(vol) && !isNaN(conc)) {
-                // Mass(g) = MW * Vol(L) * Conc(M)
                 const calcMassGram = mw * (vol * vFactor) * (conc * cFactor);
-                // 결과는 스마트 포맷으로 자동 변환 (예: 0.001 g -> 1.000 mg)
                 resultText = `Required Mass: ${smartFormat(calcMassGram, 'g', 'mass')}`;
-            }
-            // Case 2: Calculate Concentration (Mass Input)
-            else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
-                // Conc(M) = Mass(g) / (MW * Vol(L))
-                // 여기서 입력받은 mass에 mFactor를 곱해 'g' 단위로 맞춰줍니다.
+            } else if (!isNaN(mass) && !isNaN(vol) && isNaN(conc)) {
                 const calcConcMolar = (mass * mFactor) / (mw * (vol * vFactor));
                 resultText = `Concentration: ${smartFormat(calcConcMolar, 'M', 'conc')}`;
-            }
-            // Case 3: Calculate Volume (Mass Input)
-            else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
-                // Vol(L) = Mass(g) / (MW * Conc(M))
+            } else if (!isNaN(mass) && isNaN(vol) && !isNaN(conc)) {
                 const calcVolLiter = (mass * mFactor) / (mw * (conc * cFactor));
                 resultText = `Required Volume: ${smartFormat(calcVolLiter, 'L', 'vol')}`;
             } else {
                 resultText = "<span style='color:red;'>Please fill in exactly 3 fields (MW is required).</span>";
             }
-
             resDiv.innerHTML = resultText;
         });
     }
 
     // ====================================================
-    // 2. Outlier Checker Logic (IQR + Shapiro-Wilk)
+    // 2. Outlier Checker Logic (IQR + Grubb's + Shapiro-Wilk)
     // ====================================================
+    
+    // Grubb's Test Critical Values (Alpha = 0.05)
+    const grubbsCriticalValues = {
+        3: 1.153, 4: 1.463, 5: 1.672, 6: 1.822, 7: 1.938, 8: 2.032, 9: 2.110, 10: 2.176,
+        11: 2.234, 12: 2.285, 13: 2.331, 14: 2.371, 15: 2.409, 16: 2.443, 17: 2.475, 18: 2.504,
+        19: 2.532, 20: 2.557, 21: 2.580, 22: 2.603, 23: 2.624, 24: 2.644, 25: 2.663, 26: 2.681,
+        27: 2.698, 28: 2.714, 29: 2.730, 30: 2.745, 35: 2.811, 40: 2.866, 50: 2.956, 60: 3.025,
+        70: 3.082, 80: 3.130, 90: 3.171, 100: 3.207
+    };
+
+    function getGrubbsCriticalValue(n) {
+        if (grubbsCriticalValues[n]) return grubbsCriticalValues[n];
+        // 근사치 (N이 테이블에 없을 때 가장 가까운 작은 값 사용)
+        const keys = Object.keys(grubbsCriticalValues).map(Number).sort((a,b)=>a-b);
+        for (let i = keys.length - 1; i >= 0; i--) {
+            if (n >= keys[i]) return grubbsCriticalValues[keys[i]];
+        }
+        return 3.5; // N > 100 fallback
+    }
+
     function normalCDF(x) {
         var t = 1 / (1 + 0.2316419 * Math.abs(x));
         var d = 0.3989423 * Math.exp(-x * x / 2);
@@ -178,19 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
             const stdev = Math.sqrt(variance);
 
+            // 1. Normality Check
             const swResult = calculateShapiroWilk(data);
             const pValue = swResult.p;
-
             const isNormal = pValue >= 0.05;
             const pValueColor = isNormal ? "green" : "#d97706";
             const pValueText = isNormal ? "Probable Normal" : "Non-Normal";
-
-            const q1 = data[Math.floor((n - 1) / 4)];
-            const q3 = data[Math.floor((n - 1) * 3 / 4)];
-            const iqr = q3 - q1;
-            const lowerFence = q1 - 1.5 * iqr;
-            const upperFence = q3 + 1.5 * iqr;
-            const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
             let resultHTML = `<div style="font-size: 0.9rem; line-height: 1.4; color: #374151;">
                     <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb;">
@@ -204,44 +203,92 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="flex: 1.2; text-align: right;">
                             <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Normality (S-W)</div>
                             <div style="font-size: 0.8rem; color: #4b5563;">
-                                W: <strong>${swResult.w.toFixed(3)}</strong> <br>
                                 P-value: <strong style="color:${pValueColor};">${pValue.toFixed(3)}</strong> <span style="font-size:0.75rem; color:#666;">(${pValueText})</span>
                             </div>
                         </div>
-                    </div>
-                    <div style="margin-bottom: 8px; font-size: 0.85rem;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color:#111; font-weight: 600;">Detection Limit (1.5×IQR):</span>
-                            <span style="font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 3px;">
-                                ${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}
-                            </span>
-                        </div>
                     </div>`;
 
-            if (outliers.length > 0) {
-                if (isNormal) {
-                    resultHTML += `<div style="padding: 10px; background-color: #fff7ed; border-radius: 4px; border: 1px solid #f97316; margin-top: 10px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                            <strong style="color:#c2410c; font-size: 0.95rem;">⚠️ Outliers Detected, but...</strong>
+            // 2. Logic Branching: Grubb's (Normal) vs IQR (Non-normal)
+            
+            if (isNormal) {
+                // ==============================
+                // A. Grubb's Test Logic (For Normal Data)
+                // ==============================
+                resultHTML += `<div style="margin-bottom: 5px; font-size: 0.85rem; color:#065f46; background:#ecfdf5; padding:4px 8px; border-radius:4px;">
+                    <strong>✅ Method: Grubb's Test</strong> (Suitable for Normal Dist.)
+                </div>`;
+
+                // Calculate G Statistic
+                let maxDev = 0;
+                let outlierVal = null;
+                data.forEach(val => {
+                    const dev = Math.abs(val - mean);
+                    if (dev > maxDev) {
+                        maxDev = dev;
+                        outlierVal = val;
+                    }
+                });
+                const gStat = maxDev / stdev;
+                const gCrit = getGrubbsCriticalValue(n);
+
+                if (gStat > gCrit) {
+                    // Outlier Found
+                    resultHTML += `<div style="padding: 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; margin-top: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                            <strong style="color:#b91c1c; font-size: 0.95rem;">🚨 Outlier Confirmed:</strong>
+                            <strong style="font-size: 1rem; color: #b91c1c;">${outlierVal}</strong>
                         </div>
-                        <div style="font-size: 0.85rem; color: #9a3412; margin-bottom: 8px;">
-                            P-value (S-W) is <strong>${pValue.toFixed(3)}</strong> (≥ 0.05). Data follows a <strong>Normal Distribution</strong>.
-                        </div>
-                        <div style="font-weight: bold; color: #c2410c; text-align: center; border-top: 1px dashed #fdba74; padding-top: 5px;">
-                            Recommendation: Do NOT exclude them.
+                        <div style="font-size: 0.8rem; color: #b91c1c;">
+                             Grubb's G (${gStat.toFixed(2)}) > Critical Value (${gCrit}).<br>
+                             This data point is a significant outlier.<br>
+                             <strong>Advice:</strong> Remove this value and re-test.
                         </div></div></div>`;
                 } else {
+                    // No Outliers
+                    resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found (Grubb's Test).</div></div>`;
+                }
+
+            } else {
+                // ==============================
+                // B. IQR Method Logic (For Non-Normal Data)
+                // ==============================
+                const q1 = data[Math.floor((n - 1) / 4)];
+                const q3 = data[Math.floor((n - 1) * 3 / 4)];
+                const iqr = q3 - q1;
+                const lowerFence = q1 - 1.5 * iqr;
+                const upperFence = q3 + 1.5 * iqr;
+                const outliers = data.filter(x => x < lowerFence || x > upperFence);
+
+                resultHTML += `<div style="margin-bottom: 5px; font-size: 0.85rem; color:#92400e; background:#fffbeb; padding:4px 8px; border-radius:4px;">
+                    <strong>⚠️ Method: IQR (1.5×)</strong> (Suitable for Non-Normal/Skewed)
+                </div>
+                <div style="margin-bottom: 8px; font-size: 0.85rem;">
+                     Limit: <span style="font-family: monospace; background: #f3f4f6;">${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}</span>
+                </div>`;
+
+                if (outliers.length > 0) {
+                    let adviceText = "IQR method is appropriate.";
+                    let warningStyle = "";
+                    
+                    // [New!] 이상치가 2개 이상일 때 안내 문구 추가
+                    if (outliers.length > 1) {
+                        adviceText = `<strong style="text-decoration:underline;">Stepwise Removal Required:</strong><br>
+                        Removing multiple outliers at once can distort the distribution.<br>
+                        Please <strong>remove the most extreme value first</strong>, then re-check.`;
+                        warningStyle = "border-left: 4px solid #b91c1c; padding-left:8px;";
+                    }
+
                     resultHTML += `<div style="padding: 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; margin-top: 10px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
                             <strong style="color:#b91c1c; font-size: 0.95rem;">🚨 Outliers Confirmed:</strong>
                             <strong style="font-size: 1rem; color: #b91c1c;">${outliers.join(', ')}</strong>
                         </div>
-                        <div style="font-size: 0.8rem; color: #b91c1c;">
-                             P-value (${pValue.toFixed(3)}) < 0.05. Data is Non-normal. <br><strong>IQR method is appropriate.</strong>
+                        <div style="font-size: 0.8rem; color: #b91c1c; ${warningStyle}">
+                             ${adviceText}
                         </div></div></div>`;
+                } else {
+                    resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found (IQR).</div></div>`;
                 }
-            } else {
-                resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found.</div></div>`;
             }
             resDiv.innerHTML = resultHTML;
         });
