@@ -20,7 +20,46 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 // =========================================================
-// 3. 게시판 기능 로직 (페이지네이션 & 3개월 필터 적용)
+// [추가됨] 3. 방문자 수 카운터 (게시판 전용)
+// =========================================================
+function updateVisitorCount() {
+    const countSpan = document.getElementById('visitor-count');
+    
+    // 오늘 날짜 생성 (한국 시간 기준)
+    const today = new Date();
+    const offset = today.getTimezoneOffset() * 60000;
+    const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+
+    const docRef = db.collection('visitors').doc(dateStr);
+    const hasVisited = sessionStorage.getItem(`visited_${dateStr}`);
+
+    // 1. 방문 기록 없으면 카운트 증가
+    if (!hasVisited) {
+        docRef.set({
+            count: firebase.firestore.FieldValue.increment(1)
+        }, { merge: true })
+        .then(() => {
+            sessionStorage.setItem(`visited_${dateStr}`, 'true');
+        })
+        .catch(err => console.error("Error updating count:", err));
+    }
+
+    // 2. 실시간 숫자 표시
+    docRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const count = doc.data().count;
+            if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+        } else {
+            if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>1</strong>`;
+        }
+    });
+}
+// 페이지 로드 시 카운터 실행
+updateVisitorCount();
+
+
+// =========================================================
+// 4. 게시판 기능 로직 (페이지네이션 & 3개월 필터 적용)
 // =========================================================
 
 // 전역 변수 (페이지 관리용)
