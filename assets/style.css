@@ -286,3 +286,99 @@ button:hover {
     align-items: center;
     justify-content: center;
 }
+
+/* =========================================
+   Board Styles (게시판 전용)
+   ========================================= */
+.board-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left; /* 본문은 왼쪽 정렬 */
+}
+
+/* 글쓰기 박스 */
+.write-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.form-row {
+    margin-bottom: 15px;
+}
+
+.write-box input, .write-box textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+    font-family: inherit;
+}
+
+.action-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #1d4ed8;
+}
+
+/* 게시글 목록 */
+.list-box h3 {
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.post-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #eee;
+}
+
+.post-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #111;
+}
+
+.post-info {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.post-body {
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-wrap; /* 줄바꿈 보존 */
+}
+
+.loading-msg {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Board | Scientist's Toolkit</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    </head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution Calc</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
+        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+        <a href="./" class="nav-btn active">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+    </nav>
+
+    <main>
+        <section class="calculator active" style="display:block;">
+            <h2>📢 Researcher's Community</h2>
+            <p>Share ideas, report bugs, or request new tools.</p>
+
+            <div class="board-container">
+                <div class="write-box">
+                    <h3>✍️ Write a Post</h3>
+                    <div class="form-row">
+                        <input type="text" id="writer-name" placeholder="Nickname (e.g. LabRat01)" maxlength="20">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="post-title" placeholder="Title" maxlength="100">
+                    </div>
+                    <div class="form-row">
+                        <textarea id="post-content" rows="4" placeholder="Content..."></textarea>
+                    </div>
+                    <button id="save-btn" class="action-btn">Post</button>
+                </div>
+
+                <div class="list-box">
+                    <h3>Recent Posts</h3>
+                    <div id="post-list">
+                        <div class="loading-msg">Loading posts...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="board.js"></script>
+</body>
+</html>
