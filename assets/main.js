@@ -459,16 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ====================================================
-    // 5. Disqus Loader
-    // ====================================================
-    if (document.getElementById('disqus_thread')) {
-        (function() { 
-            var d = document, s = d.createElement('script');
-            s.src = 'https://scientisttoolkit.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        })();
-    }
+
 
 });
