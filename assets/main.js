@@ -1,5 +1,70 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+// =========================================================
+    // 0. Firebase 설정 & 초기화 (방문자 카운트용)
+    // =========================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+        authDomain: "scientisttoolkit.firebaseapp.com",
+        projectId: "scientisttoolkit",
+        storageBucket: "scientisttoolkit.firebasestorage.app",
+        messagingSenderId: "611412737478",
+        appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+        measurementId: "G-5K0XVX0TFM"
+    };
+
+    // Firebase가 아직 초기화되지 않았을 때만 초기화 (board.js와의 충돌 방지)
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    // =========================================================
+    // 1. 일일 방문자 수 카운터 로직
+    // =========================================================
+    function updateVisitorCount() {
+        if (typeof firebase === 'undefined') return; // SDK가 없으면 중단
+
+        const db = firebase.firestore();
+        const countSpan = document.getElementById('visitor-count');
+        
+        // 오늘 날짜를 ID로 사용 (예: "2024-05-21")
+        // 한국 시간 기준 날짜 생성
+        const today = new Date();
+        const offset = today.getTimezoneOffset() * 60000;
+        const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+
+        const docRef = db.collection('visitors').doc(dateStr);
+
+        // 1. 세션 스토리지 체크 (새로고침 시 카운트 증가 방지)
+        // 브라우저를 껐다 켜기 전까지는 'visited' 기록이 남아있음
+        const hasVisited = sessionStorage.getItem(`visited_${dateStr}`);
+
+        if (!hasVisited) {
+            // 처음 온 사람이면 -> 카운트 +1 증가 (Write)
+            docRef.set({
+                count: firebase.firestore.FieldValue.increment(1)
+            }, { merge: true })
+            .then(() => {
+                sessionStorage.setItem(`visited_${dateStr}`, 'true'); // 방문 기록
+            })
+            .catch(err => console.error("Error updating count:", err));
+        }
+
+        // 2. 현재 카운트 가져와서 표시 (Read)
+        // 실시간(onSnapshot)으로 하면 숫자가 올라가는게 보여서 더 멋짐
+        docRef.onSnapshot((doc) => {
+            if (doc.exists) {
+                const count = doc.data().count;
+                if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+            } else {
+                if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>1</strong>`; // 첫 방문자
+            }
+        });
+    }
+
+    // 카운터 실행
+    updateVisitorCount();
+
     // ====================================================
     // Helper: 스마트 단위 변환기
     // ====================================================
