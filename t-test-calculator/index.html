@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust T-Test Calculator | Scientist's Toolkit</title>
+    
+    <meta name="description" content="Calculate Welch's t-test, P-value, 95% CI, and Cohen's d. Publication-ready statistics for researchers.">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Robust T-Test Calculator | Scientist's Toolkit">
+    <meta property="og:description" content="Calculate Welch's t-test, P-value, 95% CI, and Cohen's d. Free robust statistical tool.">
+    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
+    <meta property="og:url" content="https://scientisttoolkit.xyz/t-test-calculator/">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Robust T-Test Calculator | Scientist's Toolkit">
+    <meta name="twitter:description" content="Calculate Welch's t-test, P-value, 95% CI, and Cohen's d.">
+    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
+
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/t-test-calculator/">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+<nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../board/" class="nav-btn">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+    </nav>
+
+    <main>
+        <section class="calculator active">
+            <h2>📉 Independent T-Test (Welch's)</h2>
+            <p>Calculates <strong>Welch's t-test</strong> (does not assume equal variance). <br>Includes Cohen's d and 95% CI for publication.</p>
+
+            <div class="input-group">
+                <label>Group A Data:</label>
+                <textarea id="group-a" rows="3" placeholder="e.g. 10.2  11.5  10.8 ..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Group B Data:</label>
+                <textarea id="group-b" rows="3" placeholder="e.g. 9.5  9.8  10.1 ..."></textarea>
+            </div>
+
+            <button onclick="runAnalysis()" class="action-btn">Run Robust Analysis</button>
+
+            <div id="result-area" class="result-box" style="display:none; margin-top: 20px;">
+                <h3>📊 Statistical Report</h3>
+                
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.9em;">
+                    <tr style="background:#f1f1f1; text-align:left;">
+                        <th style="padding:5px;">Group</th>
+                        <th style="padding:5px;">N</th>
+                        <th style="padding:5px;">Mean ± SD</th>
+                        <th style="padding:5px;">SE</th>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;"><strong>A</strong></td>
+                        <td id="n-a"></td>
+                        <td id="mean-sd-a"></td>
+                        <td id="se-a"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;"><strong>B</strong></td>
+                        <td id="n-b"></td>
+                        <td id="mean-sd-b"></td>
+                        <td id="se-b"></td>
+                    </tr>
+                </table>
+
+                <div style="padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
+                    <div style="font-size: 1.2rem; margin-bottom: 10px;">
+                        P-value = <strong id="p-value" style="font-size: 1.4rem;"></strong>
+                    </div>
+                    <div id="sig-msg" style="margin-bottom: 10px; font-weight: bold;"></div>
+                    
+                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; color: #555;">
+                        <div>t-statistic: <strong id="t-val" style="color:#333;"></strong></div>
+                        <div>df: <strong id="df-val" style="color:#333;"></strong></div>
+                        <div>Mean Diff: <strong id="mean-diff" style="color:#333;"></strong></div>
+                        <div>Cohen's d: <strong id="effect-size" style="color:#333;"></strong></div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.95em;">
+                        <strong>95% CI of Difference:</strong><br>
+                        [ <span id="ci-lower" style="color:#007bff;"></span> , <span id="ci-upper" style="color:#007bff;"></span> ]
+                    </div>
+                </div>
+                <p style="font-size:0.8rem; color:#888; margin-top:10px;">* Used Welch's t-test (Satterthwaite approximation).</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 기본 통계 함수 (직접 구현하여 신뢰성 확보)
+        const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+        const getVariance = (arr, mean) => {
+            return arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
+        };
+
+        function runAnalysis() {
+            // 1. 데이터 파싱
+            const parse = (id) => document.getElementById(id).value.split(/[\s,]+/).filter(v => v !== '' && !isNaN(v)).map(Number);
+            const A = parse('group-a');
+            const B = parse('group-b');
+
+            if (A.length < 2 || B.length < 2) {
+                alert("Need at least 2 values per group.");
+                return;
+            }
+
+            // 2. 기술 통계 계산
+            const n1 = A.length, n2 = B.length;
+            const m1 = getMean(A), m2 = getMean(B);
+            const v1 = getVariance(A, m1), v2 = getVariance(B, m2);
+            const sd1 = Math.sqrt(v1), sd2 = Math.sqrt(v2);
+            const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
+
+            // 3. Welch's t-test 수동 계산 (가장 안전한 방법)
+            const diff = m1 - m2;
+            const se_diff = Math.sqrt((v1 / n1) + (v2 / n2));
+            const t_stat = diff / se_diff;
+
+            // Welch-Satterthwaite df 공식
+            const num = Math.pow((v1/n1) + (v2/n2), 2);
+            const den = (Math.pow(v1/n1, 2) / (n1 - 1)) + (Math.pow(v2/n2, 2) / (n2 - 1));
+            const df = num / den;
+
+            // P-value (Two-tailed) using jStat CDF
+            const p_val = 2 * (1 - jStat.studentt.cdf(Math.abs(t_stat), df));
+
+            // 4. 추가 통계량 (CI, Effect Size)
+            // 95% CI Calculation
+            // Critical t-value for 95% CI (two-tailed alpha = 0.05)
+            const t_crit = Math.abs(jStat.studentt.inv(0.025, df));
+            const ci_lower = diff - (t_crit * se_diff);
+            const ci_upper = diff + (t_crit * se_diff);
+
+            // Cohen's d (using Pooled SD for standard reporting, though Welch implies unequal SD)
+            // 논문 리포팅용으로는 보통 Pooled SD를 사용한 d값을 많이 씁니다.
+            const s_pooled = Math.sqrt(((n1 - 1)*v1 + (n2 - 1)*v2) / (n1 + n2 - 2));
+            const cohens_d = Math.abs(diff) / s_pooled;
+
+            // 5. 결과 출력 (UI Update)
+            document.getElementById('n-a').innerText = n1;
+            document.getElementById('n-b').innerText = n2;
+            document.getElementById('mean-sd-a').innerText = `${m1.toFixed(2)} ± ${sd1.toFixed(2)}`;
+            document.getElementById('mean-sd-b').innerText = `${m2.toFixed(2)} ± ${sd2.toFixed(2)}`;
+            document.getElementById('se-a').innerText = se1.toFixed(2);
+            document.getElementById('se-b').innerText = se2.toFixed(2);
+
+            document.getElementById('p-value').innerText = p_val.toFixed(5);
+            document.getElementById('sig-msg').innerHTML = p_val < 0.05 
+                ? "<span style='color:red'>Significant Difference Found 🔴</span>" 
+                : "<span style='color:black'>No Significant Difference</span>";
+
+            document.getElementById('t-val').innerText = t_stat.toFixed(3);
+            document.getElementById('df-val').innerText = df.toFixed(2);
+            document.getElementById('mean-diff').innerText = diff.toFixed(3);
+            document.getElementById('effect-size').innerText = cohens_d.toFixed(3);
+            
+            document.getElementById('ci-lower').innerText = ci_lower.toFixed(3);
+            document.getElementById('ci-upper').innerText = ci_upper.toFixed(3);
+
+            document.getElementById('result-area').style.display = 'block';
+        }
+    </script>
+<script>
+        // 1. Firebase 설정 (Board와 동일)
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+            authDomain: "scientisttoolkit.firebaseapp.com",
+            projectId: "scientisttoolkit",
+            storageBucket: "scientisttoolkit.firebasestorage.app",
+            messagingSenderId: "611412737478",
+            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+            measurementId: "G-5K0XVX0TFM"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. 방문자 수 증가 함수
+        function updateVisitorCount() {
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const docRef = db.collection('visitors').doc(dateStr);
+
+            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+            }
+        }
+        updateVisitorCount();
+    </script>
+    </body>
+</html>
+</body>
+</html>

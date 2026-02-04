@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi-Square Calculator (2x2) | Scientist's Toolkit</title>
+    
+    <meta name="description" content="Analyze 2x2 contingency tables. Calculate Chi-square, P-value, and Cramér's V with expected count validation.">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Chi-Square Calculator (2x2) | Scientist's Toolkit">
+    <meta property="og:description" content="Calculate Chi-square, P-value, and Cramér's V. Checks expected counts for validity.">
+    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
+    <meta property="og:url" content="https://scientisttoolkit.xyz/chi-square-calculator/">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chi-Square Calculator | Scientist's Toolkit">
+    <meta name="twitter:description" content="Analyze categorical data with Chi-square test and Cramér's V effect size.">
+    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
+
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/chi-square-calculator/">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+    <style>
+        .chi-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size:0.9em; }
+        .chi-table th, .chi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .chi-table input { width: 90%; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius:4px;}
+        .expected { font-size: 0.8em; color: #888; display: block; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <header><h1>Scientist's Toolkit</h1></header>
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../board/" class="nav-btn">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+    </nav>
+
+    <main>
+        <section class="calculator active">
+            <h2>🎲 Chi-Square Test (2x2)</h2>
+            <p>Analyzes independence between two categorical variables.<br>Includes Expected Counts and Cramér's V.</p>
+
+            <table class="chi-table">
+                <tr style="background:#f8f9fa;">
+                    <th>Group</th>
+                    <th>Event (+)</th>
+                    <th>No Event (-)</th>
+                </tr>
+                <tr>
+                    <td><strong>Experimental</strong></td>
+                    <td>
+                        <input type="number" id="a" placeholder="Observed">
+                        <span id="exp-a" class="expected">Exp: -</span>
+                    </td>
+                    <td>
+                        <input type="number" id="b" placeholder="Observed">
+                        <span id="exp-b" class="expected">Exp: -</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Control</strong></td>
+                    <td>
+                        <input type="number" id="c" placeholder="Observed">
+                        <span id="exp-c" class="expected">Exp: -</span>
+                    </td>
+                    <td>
+                        <input type="number" id="d" placeholder="Observed">
+                        <span id="exp-d" class="expected">Exp: -</span>
+                    </td>
+                </tr>
+            </table>
+
+            <div style="text-align:center; margin-top:15px;">
+                <button onclick="calcChi()" class="action-btn">Calculate</button>
+            </div>
+
+            <div id="result-area" class="result-box" style="display:none; margin-top: 20px;">
+                <h3>📊 Result</h3>
+                <div style="padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
+                    <div style="font-size: 1.2rem; margin-bottom: 10px;">
+                        P-value = <strong id="p-val" style="font-size: 1.4rem;"></strong>
+                    </div>
+                    <div id="sig-msg" style="margin-bottom: 10px; font-weight: bold;"></div>
+
+                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; color: #555;">
+                        <div>Chi-square (χ²): <strong id="chi-stat" style="color:#333;"></strong></div>
+                        <div>df: <strong style="color:#333;">1</strong></div>
+                        <div style="grid-column: span 2;">
+                            Cramér's V (Effect Size): <strong id="cramers-v" style="color:#333;"></strong>
+                        </div>
+                    </div>
+                </div>
+                <p id="warning-msg" style="color:orange; font-size:0.8rem; display:none; margin-top:10px;">
+                    ⚠️ Warning: Some expected counts are < 5. Consider using Fisher's Exact Test.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function calcChi() {
+            const getVal = (id) => parseFloat(document.getElementById(id).value);
+            const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
+
+            if ([a,b,c,d].some(isNaN)) { alert("Fill all fields."); return; }
+
+            // Totals
+            const row1 = a + b, row2 = c + d;
+            const col1 = a + c, col2 = b + d;
+            const total = a + b + c + d;
+
+            // Expected Values
+            const ea = (row1 * col1) / total;
+            const eb = (row1 * col2) / total;
+            const ec = (row2 * col1) / total;
+            const ed = (row2 * col2) / total;
+
+            // Display Expected
+            document.getElementById('exp-a').innerText = `Exp: ${ea.toFixed(1)}`;
+            document.getElementById('exp-b').innerText = `Exp: ${eb.toFixed(1)}`;
+            document.getElementById('exp-c').innerText = `Exp: ${ec.toFixed(1)}`;
+            document.getElementById('exp-d').innerText = `Exp: ${ed.toFixed(1)}`;
+
+            // Check Low Frequency Assumption
+            const lowFreq = [ea, eb, ec, ed].some(v => v < 5);
+            document.getElementById('warning-msg').style.display = lowFreq ? 'block' : 'none';
+
+            // Chi-Square Statistic (Pearson)
+            const calcSq = (obs, exp) => Math.pow(obs - exp, 2) / exp;
+            const chiSq = calcSq(a, ea) + calcSq(b, eb) + calcSq(c, ec) + calcSq(d, ed);
+
+            // Cramér's V for 2x2 = sqrt(chiSq / (n * (min(r,c)-1))) -> sqrt(chiSq / total)
+            const cramersV = Math.sqrt(chiSq / total);
+
+            // P-value (df=1)
+            const pVal = 1 - jStat.chisquare.cdf(chiSq, 1);
+
+            // Output
+            document.getElementById('p-val').innerText = pVal.toFixed(5);
+            document.getElementById('sig-msg').innerHTML = pVal < 0.05 
+                ? "<span style='color:red'>Significant Association 🔴</span>" 
+                : "No Significant Association";
+            
+            document.getElementById('chi-stat').innerText = chiSq.toFixed(3);
+            document.getElementById('cramers-v').innerText = cramersV.toFixed(3);
+            
+            document.getElementById('result-area').style.display = 'block';
+        }
+    </script>
+<script>
+        // 1. Firebase 설정 (Board와 동일)
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+            authDomain: "scientisttoolkit.firebaseapp.com",
+            projectId: "scientisttoolkit",
+            storageBucket: "scientisttoolkit.firebasestorage.app",
+            messagingSenderId: "611412737478",
+            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+            measurementId: "G-5K0XVX0TFM"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. 방문자 수 증가 함수
+        function updateVisitorCount() {
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const docRef = db.collection('visitors').doc(dateStr);
+
+            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+            }
+        }
+        updateVisitorCount();
+    </script>
+    </body>
+</html>
+</body>
+</html>

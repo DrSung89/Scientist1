@@ -17,12 +17,14 @@
 <body>
     <header><h1>Scientist's Toolkit</h1></header>
     
-    <nav>
+<nav>
         <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity Calc</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution Calc</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier Checker</a>
-        <a href="../hed-calculator/" class="nav-btn">HED Calc</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
         <a href="../board/" class="nav-btn">Board</a>
         <a href="../help/" class="nav-btn">Help & Info</a>
     </nav>
@@ -103,6 +105,29 @@
                     <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
                 </div>
             </div>
+
+<div class="faq-item">
+                <h3>📉 T-Test Calculator (Robust)</h3>
+                <p>
+                    Performs an <strong>Independent Samples T-Test</strong> comparing two groups.
+                </p>
+                <ul style="margin-top:10px; padding-left:20px; color:#555;">
+                    <li><strong>Default Method:</strong> Uses <em>Welch's t-test</em> by default. This is safer for research data as it does not assume equal variances between groups (unlike the standard Student's t-test).</li>
+                    <li><strong>Reporting:</strong> Provides all necessary metrics for publication: Mean ± SD, Standard Error (SE), t-statistic, degrees of freedom (df), <strong>95% Confidence Interval (CI)</strong>, and <strong>Cohen's d</strong> (Effect Size).</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h3>🎲 Chi-Square Test (2x2)</h3>
+                <p>
+                    Analyzes the association between two categorical variables using a 2x2 contingency table.
+                </p>
+                <ul style="margin-top:10px; padding-left:20px; color:#555;">
+                    <li><strong>Validation:</strong> Automatically checks expected counts and warns if they are below 5 (which may require Fisher's Exact Test).</li>
+                    <li><strong>Effect Size:</strong> Calculates <strong>Cramér's V</strong> to measure the strength of association, not just statistical significance (P-value).</li>
+                </ul>
+            </div>
+
         </section>
     </main>
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
