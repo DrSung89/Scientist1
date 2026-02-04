@@ -227,6 +227,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size:0.85em">Small N (≤5). Recommend increasing replicates.</span>
                     </div>`;
                 } else {
+                    // [★추가됨★] Outliers > 1 이면 Stepwise 가이드 표시
+                    let tipText = "";
+                    if (outliers.length > 1) {
+                        tipText = `<div style="margin-top:8px; border-top:1px dashed #fca5a5; padding-top:5px; font-size:0.85em; color:#7f1d1d;">
+                            <strong>💡 Recommendation:</strong><br>
+                            Removing multiple outliers at once may bias results.<br>
+                            Try removing the <u>most extreme value</u> first, then re-check.
+                        </div>`;
+                    }
                     html += `<div style="background:#fef2f2; padding:10px; border-radius:4px; color:#b91c1c;">
                         <strong>🚨 Outlier: ${outliers.join(", ")}</strong>
                         <div style="font-size:0.85em; margin-top:2px;">Detected by ${methodUsed}</div>
