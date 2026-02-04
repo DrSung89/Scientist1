@@ -49,32 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // [정밀] Shapiro-Wilk 계산 (NaN 방지 로직 적용됨)
+    // [정밀] Shapiro-Wilk 계산 (NaN 방지)
     function calculateShapiroWilkInternal(data) {
         const n = data.length;
         if (n < 3) return { p: 0 };
         const mean = stat.mean(data);
         const ss = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
-        if (ss === 0) return { p: 1 }; // 분산 0이면 정규분포
+        if (ss === 0) return { p: 1 }; 
 
-        // 계수(Weights) 계산
         const m = new Array(n);
         for (let i = 0; i < n; i++) {
             m[i] = inverseNormalCDF((i + 1 - 0.375) / (n + 0.25));
         }
         
-        let mSumSq = 0; m.forEach(v => mSumSq += v * v);
-        const u = 1 / Math.sqrt(n);
-        
-        const a = new Array(n).fill(0);
-        a[n-1] = -2.706056 * Math.pow(u,5) + 4.434685 * Math.pow(u,4) - 2.071190 * Math.pow(u,3) - 0.147981 * Math.pow(u,2) + 0.221157 * u + m[n-1]/Math.sqrt(mSumSq);
-        a[n-2] = -3.582633 * Math.pow(u,5) + 5.682633 * Math.pow(u,4) - 1.752461 * Math.pow(u,3) - 0.293762 * Math.pow(u,2) + 0.042981 * u + m[n-2]/Math.sqrt(mSumSq);
-        
-        const epsilon = (mSumSq - 2 * m[n-1]**2 - 2 * m[n-2]**2) / (1 - 2 * a[n-1]**2 - 2 * a[n-2]**2);
-        const sqrtEps = Math.sqrt(Math.max(0, epsilon)); 
-        for (let i = 0; i < n - 2; i++) a[i] = m[i] / sqrtEps;
-
-        // W 계산 (Correlation approx for stability)
         const sorted = [...data].sort((x,y)=>x-y);
         let sumM = 0, sumD = 0;
         for(let val of m) sumM += val;
@@ -87,29 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
             den2 += (sorted[i]-mD)**2;
         }
         
-        // W 값 계산
         let W = (num**2) / (den1*den2);
 
-        // [★ 핵심 수정: Numeric Safety Clamp 적용 ★]
+        // [Safety Clamp]
         if (!isFinite(W)) return { p: 0, w: 0 };
-        if (W >= 1) W = 0.999999; // 1을 넘으면 log(음수)가 되어 NaN 발생 방지
-        if (W <= 0) W = 1e-8;     // 0 이하면 log 에러 방지
+        if (W >= 1) W = 0.999999; 
+        if (W <= 0) W = 1e-8;
 
-        // P-value (Royston)
         const mu = 0.0038915 * Math.pow(Math.log(n), 3) - 0.083751 * Math.pow(Math.log(n), 2) - 0.31082 * Math.log(n) - 1.5861;
         const sigma = Math.exp(0.0030302 * Math.pow(Math.log(n), 2) - 0.082676 * Math.log(n) - 0.4803);
         const z = (Math.log(1 - W) - mu) / sigma;
         
         let p = 1 - normalCDF(z);
-
-        // [★ 핵심 수정: P-value 범위 방어 ★]
         if (!isFinite(p) || p < 0) p = 0;
         if (p > 1) p = 1;
         
         return { p: p };
     }
 
-    function inverseNormalCDF(p) { // Hastings approximation
+    function inverseNormalCDF(p) { 
         if (p >= 1) return Infinity; if (p <= 0) return -Infinity;
         const a1 = -39.6968302866538, a2 = 220.946098424521, a3 = -275.928510446969;
         const a4 = 138.357751867269, a5 = -30.6647980661472, a6 = 2.50662827745924;
@@ -132,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 2. Outlier Checker (화면 표시 수정)
+    // 2. Outlier Checker (가이드 문구 추가됨)
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -151,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = raw.split(/[\s,]+/).filter(s=>s.trim()!=='' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
             const resDiv = document.getElementById('outlier-result');
             
-            // [★디자인 수정] 줄바꿈 제거
             resDiv.style.whiteSpace = 'normal'; 
             resDiv.style.display = 'block';
 
@@ -179,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pVal = sw.p;
                 isNormal = pVal >= 0.05;
                 pValueDisplay = pVal.toFixed(3);
-                // [★정상화★] 입력하신 152...250 데이터는 이제 P > 0.05로 나옵니다.
                 normMsg = isNormal ? "<span style='color:#059669; font-weight:bold;'>Passed (Normal)</span>" : "<span style='color:#d97706; font-weight:bold;'>Failed (Non-Normal)</span>";
             }
 
@@ -204,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 thresholdInfo = `Limit: ${lower.toFixed(1)} ~ ${upper.toFixed(1)}`;
             }
 
-            // [HTML 생성] 디자인 간결화 (줄바꿈 제거)
+            // [HTML 생성]
             let html = `
             <div style="border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:10px;">
                 <div style="font-size:0.9em; color:#666; margin-bottom:4px;">Desc. Stats (N=${n})</div>
@@ -222,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (outliers.length > 0) {
                 if (n <= 5) {
+                    // Small N Warning
                     html += `<div style="background:#fff7ed; padding:10px; border-radius:4px; color:#9a3412;">
                         <strong>⚠️ Potential: ${outliers.join(", ")}</strong><br>
                         <span style="font-size:0.85em">Small N (≤5). Recommend increasing replicates.</span>
@@ -236,9 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             Try removing the <u>most extreme value</u> first, then re-check.
                         </div>`;
                     }
-                    html += `<div style="background:#fef2f2; padding:10px; border-radius:4px; color:#b91c1c;">
-                        <strong>🚨 Outlier: ${outliers.join(", ")}</strong>
-                        <div style="font-size:0.85em; margin-top:2px;">Detected by ${methodUsed}</div>
+
+                    html += `<div style="background:#fef2f2; padding:12px; border-radius:6px; color:#b91c1c; border:1px solid #fecaca;">
+                        <div style="font-weight:bold; font-size:1.1em; margin-bottom:5px;">🚨 Outlier: ${outliers.join(", ")}</div>
+                        <div style="font-size:0.9em;">Detected by ${methodUsed}</div>
+                        ${tipText}
                     </div>`;
                 }
             } else {
@@ -249,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 3. Helper & Other Calculators (유지)
+    // 3. Other Calculators (유지)
     // ====================================================
     function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM'];if(t==='mass')U=['kg','g','mg','ug'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
 
