@@ -52,7 +52,8 @@
 <main style="text-align:center;">
         <section class="calculator active" style="display:block;">
             <h2>Select a Tool</h2>
-            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 30px;">
+            
+            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); margin-top: 30px;">
                 
                 <a href="molarity-calculator/" style="text-decoration: none; color: inherit;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
@@ -82,22 +83,21 @@
                     </div>
                 </a>
 
-               <a href="t-test-calculator/" class="tool-card">
-                  <div class="icon">📉</div>
-                 <h3>T-Test Calculator</h3>
-                <p>Auto-detects Equal/Unequal Variance and calculates P-value.</p>
-             </a>
+                <a href="t-test-calculator/" style="text-decoration: none; color: inherit;">
+                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                        <h3>📉 T-Test Calculator</h3>
+                        <p>Auto-detects Equal/Unequal Variance and calculates P-value.</p>
+                    </div>
+                </a>
 
-            <a href="chi-square-calculator/" class="tool-card">
-               <div class="icon">🎲</div>
-               <h3>Chi-Square Test</h3>
-               <p>Analyze 2x2 contingency tables for categorical data.</p>
-            </a>
+                <a href="chi-square-calculator/" style="text-decoration: none; color: inherit;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                        <h3>🎲 Chi-Square Test</h3>
+                        <p>Analyze 2x2 contingency tables for categorical data.</p>
+                    </div>
+                </a>
 
-            </div>
-        </section>
-        
-                </div> <div class="about-section" style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee;">
+            </div> <div class="about-section" style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee;">
                 <h3 style="color: #333; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
                     🧪 From a Fellow Lab Rat
                 </h3>
@@ -121,14 +121,16 @@
                     Hope these tools save you time and headaches in the lab!
                 </p>
             </div>
-            </section>
 
+        </section>
     </main>
+
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br>
-    © 2026 Scientist's Toolkit
-</footer>
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
     <script src="assets/main.js"></script>
 </body>
 </html>
