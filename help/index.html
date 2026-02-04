@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Guide & References | Scientist's Toolkit</title>
-    <meta name="description" content="Learn how to use Molarity, Outlier (IQR), and HED calculators. References FDA guidance.">
+    <meta name="description" content="Learn how to use Molarity, Outlier (IQR), HED, T-Test, and Chi-Square calculators. References FDA guidance.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/">
     <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
@@ -17,7 +17,7 @@
 <body>
     <header><h1>Scientist's Toolkit</h1></header>
     
-<nav>
+    <nav>
         <a href="../" class="nav-btn">Home</a>
         <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
         <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-<div class="help-block">
+            <div class="help-block">
                 <h3>📊 Outlier Detection: Auto-Selection Algorithm</h3>
                 <p>
                     This tool automatically runs a <strong>Shapiro-Wilk Normality Test</strong> first, then selects the appropriate statistical method based on the P-value.
@@ -70,10 +70,6 @@
                         <strong>Thresholds:</strong><br>
                         Lower < Q1 - 1.5×IQR &nbsp;&nbsp;|&nbsp;&nbsp; Upper > Q3 + 1.5×IQR
                     </div>
-                    <ul style="margin: 8px 0 0 20px; color: #78350f; font-size: 0.9rem;">
-                        <li><strong>Multiple Outliers:</strong> IQR can detect multiple outliers at once.</li>
-                        <li><strong>Warning:</strong> If multiple outliers are flagged, remove the <em>most extreme</em> value first and re-check, as removing data affects the quartiles.</li>
-                    </ul>
                 </div>
             </div>
 
@@ -106,35 +102,60 @@
                 </div>
             </div>
 
-<div class="faq-item">
+            <div class="help-block">
                 <h3>📉 T-Test Calculator (Robust)</h3>
                 <p>
-                    Performs an <strong>Independent Samples T-Test</strong> comparing two groups.
+                    Performs an <strong>Independent Samples T-Test</strong> to compare the means of two groups. 
+                    Designed to be publication-ready.
                 </p>
-                <ul style="margin-top:10px; padding-left:20px; color:#555;">
-                    <li><strong>Default Method:</strong> Uses <em>Welch's t-test</em> by default. This is safer for research data as it does not assume equal variances between groups (unlike the standard Student's t-test).</li>
-                    <li><strong>Reporting:</strong> Provides all necessary metrics for publication: Mean ± SD, Standard Error (SE), t-statistic, degrees of freedom (df), <strong>95% Confidence Interval (CI)</strong>, and <strong>Cohen's d</strong> (Effect Size).</li>
-                </ul>
+                
+                <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0ea5e9; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #0369a1;">Why Welch's T-Test? (Default)</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: #0c4a6e;">
+                        Unlike the standard Student's t-test, <strong>Welch's t-test does not assume equal variances</strong> between groups. 
+                        This makes it the safer, more robust choice for real-world biological data where variance often differs.
+                    </p>
+                </div>
+
+                <div class="formula-box" style="text-align: left;">
+                    <strong>📊 Key Reporting Metrics Included:</strong>
+                    <ul style="margin: 5px 0 0 20px; color: #333;">
+                        <li><strong>P-value & t-statistic:</strong> For significance testing.</li>
+                        <li><strong>95% Confidence Interval (CI):</strong> The range of the true difference.</li>
+                        <li><strong>Cohen's d:</strong> Effect size (magnitude of the difference).</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="faq-item">
+            <div class="help-block">
                 <h3>🎲 Chi-Square Test (2x2)</h3>
                 <p>
-                    Analyzes the association between two categorical variables using a 2x2 contingency table.
+                    Analyzes the association between two categorical variables using a 2x2 contingency table (e.g., Treatment vs. Control outcomes).
                 </p>
-                <ul style="margin-top:10px; padding-left:20px; color:#555;">
-                    <li><strong>Validation:</strong> Automatically checks expected counts and warns if they are below 5 (which may require Fisher's Exact Test).</li>
-                    <li><strong>Effect Size:</strong> Calculates <strong>Cramér's V</strong> to measure the strength of association, not just statistical significance (P-value).</li>
-                </ul>
+                
+                <div style="background-color: #fff1f2; padding: 15px; border-left: 4px solid #e11d48; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #9f1239;">⚠️ Low Count Validation</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: #881337;">
+                        The tool automatically checks if any "Expected Count" is less than 5. 
+                        If this warning appears, the standard Chi-square test may be inaccurate, and Fisher's Exact Test is recommended instead.
+                    </p>
+                </div>
+
+                <div class="formula-box">
+                    <strong>Effect Size (Cramér's V):</strong><br>
+                    0.1 (Small) &nbsp;|&nbsp; 0.3 (Medium) &nbsp;|&nbsp; 0.5 (Large)<br>
+                    <span style="font-size:0.9em; color:#666;">*Helps determine if a significant result is meaningful.</span>
+                </div>
             </div>
 
         </section>
     </main>
+
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br>
-    © 2026 Scientist's Toolkit
-</footer>
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br>
+        © 2026 Scientist's Toolkit
+    </footer>
     <script src="../assets/main.js"></script>
 </body>
 </html>
