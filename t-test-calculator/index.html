@@ -28,7 +28,7 @@
 </head>
 <body>
     <header><h1>Scientist's Toolkit</h1></header>
-<nav>
+    <nav>
         <a href="../" class="nav-btn">Home</a>
         <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
         <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
@@ -102,11 +102,33 @@
                 </div>
                 <p style="font-size:0.8rem; color:#888; margin-top:10px;">* Used Welch's t-test (Satterthwaite approximation).</p>
             </div>
+
+            <div class="about-section" style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: left;">
+                <h3 style="color: #333; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                    🧪 From a Fellow Lab Rat
+                </h3>
+                <p style="color: #555; line-height: 1.7; margin-bottom: 20px;">
+                    Hi! I built this toolkit to make daily lab calculations easier.
+                </p>
+                <ul style="color: #555; line-height: 1.7; padding-left: 20px;">
+                    <li style="margin-bottom: 10px;">
+                        <strong>📉 Robust T-Test:</strong> 
+                        Defaults to Welch's t-test to prevent errors from unequal variances, which are common in biological data.
+                    </li>
+                </ul>
+            </div>
+
         </section>
     </main>
 
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
     <script>
-        // 기본 통계 함수 (직접 구현하여 신뢰성 확보)
+        // 기본 통계 함수
         const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
         const getVariance = (arr, mean) => {
             return arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
@@ -130,32 +152,26 @@
             const sd1 = Math.sqrt(v1), sd2 = Math.sqrt(v2);
             const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
 
-            // 3. Welch's t-test 수동 계산 (가장 안전한 방법)
+            // 3. Welch's t-test
             const diff = m1 - m2;
             const se_diff = Math.sqrt((v1 / n1) + (v2 / n2));
             const t_stat = diff / se_diff;
 
-            // Welch-Satterthwaite df 공식
             const num = Math.pow((v1/n1) + (v2/n2), 2);
             const den = (Math.pow(v1/n1, 2) / (n1 - 1)) + (Math.pow(v2/n2, 2) / (n2 - 1));
             const df = num / den;
 
-            // P-value (Two-tailed) using jStat CDF
             const p_val = 2 * (1 - jStat.studentt.cdf(Math.abs(t_stat), df));
 
-            // 4. 추가 통계량 (CI, Effect Size)
-            // 95% CI Calculation
-            // Critical t-value for 95% CI (two-tailed alpha = 0.05)
+            // 4. CI & Cohen's d
             const t_crit = Math.abs(jStat.studentt.inv(0.025, df));
             const ci_lower = diff - (t_crit * se_diff);
             const ci_upper = diff + (t_crit * se_diff);
 
-            // Cohen's d (using Pooled SD for standard reporting, though Welch implies unequal SD)
-            // 논문 리포팅용으로는 보통 Pooled SD를 사용한 d값을 많이 씁니다.
             const s_pooled = Math.sqrt(((n1 - 1)*v1 + (n2 - 1)*v2) / (n1 + n2 - 2));
             const cohens_d = Math.abs(diff) / s_pooled;
 
-            // 5. 결과 출력 (UI Update)
+            // 5. 결과 출력
             document.getElementById('n-a').innerText = n1;
             document.getElementById('n-b').innerText = n2;
             document.getElementById('mean-sd-a').innerText = `${m1.toFixed(2)} ± ${sd1.toFixed(2)}`;
@@ -179,8 +195,8 @@
             document.getElementById('result-area').style.display = 'block';
         }
     </script>
-<script>
-        // 1. Firebase 설정 (Board와 동일)
+
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
             authDomain: "scientisttoolkit.firebaseapp.com",
@@ -190,11 +206,17 @@
             appId: "1:611412737478:web:e7389b1b03c002f56546c7",
             measurementId: "G-5K0XVX0TFM"
         };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
-        // 2. 방문자 수 증가 함수
         function updateVisitorCount() {
+            if (typeof firebase === 'undefined') return;
+
+            const db = firebase.firestore();
+            const countSpan = document.getElementById('visitor-count');
+            
             const today = new Date();
             const offset = today.getTimezoneOffset() * 60000;
             const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
@@ -204,10 +226,15 @@
                 docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
                 .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
             }
+
+            docRef.onSnapshot((doc) => {
+                if (doc.exists && countSpan) {
+                    const count = doc.data().count;
+                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+                }
+            });
         }
-        updateVisitorCount();
+        document.addEventListener('DOMContentLoaded', updateVisitorCount);
     </script>
-    </body>
-</html>
 </body>
 </html>

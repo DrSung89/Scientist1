@@ -109,6 +109,11 @@
             </div>
         </section>
     </main>
+<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br>
+        © 2026 Scientist's Toolkit
+    </footer>
 
     <script>
         function calcChi() {
@@ -142,7 +147,7 @@
             const calcSq = (obs, exp) => Math.pow(obs - exp, 2) / exp;
             const chiSq = calcSq(a, ea) + calcSq(b, eb) + calcSq(c, ec) + calcSq(d, ed);
 
-            // Cramér's V for 2x2 = sqrt(chiSq / (n * (min(r,c)-1))) -> sqrt(chiSq / total)
+            // Cramér's V
             const cramersV = Math.sqrt(chiSq / total);
 
             // P-value (df=1)
@@ -160,8 +165,9 @@
             document.getElementById('result-area').style.display = 'block';
         }
     </script>
-<script>
-        // 1. Firebase 설정 (Board와 동일)
+
+    <script>
+        // 1. Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
             authDomain: "scientisttoolkit.firebaseapp.com",
@@ -171,24 +177,41 @@
             appId: "1:611412737478:web:e7389b1b03c002f56546c7",
             measurementId: "G-5K0XVX0TFM"
         };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
 
-        // 2. 방문자 수 증가 함수
+        // 2. Firebase 초기화
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // 3. 카운팅 실행 및 표시함수
         function updateVisitorCount() {
+            if (typeof firebase === 'undefined') return;
+
+            const db = firebase.firestore();
+            const countSpan = document.getElementById('visitor-count'); // 여기가 푸터랑 연결되는 부분입니다!
+
             const today = new Date();
             const offset = today.getTimezoneOffset() * 60000;
             const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
             const docRef = db.collection('visitors').doc(dateStr);
 
+            // 카운트 증가
             if (!sessionStorage.getItem(`visited_${dateStr}`)) {
                 docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
                 .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
             }
+
+            // 화면에 표시 (Snapshot)
+            docRef.onSnapshot((doc) => {
+                if (doc.exists && countSpan) {
+                    const count = doc.data().count;
+                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+                }
+            });
         }
-        updateVisitorCount();
+        
+        // 페이지 로드 후 실행
+        document.addEventListener('DOMContentLoaded', updateVisitorCount);
     </script>
-    </body>
-</html>
 </body>
 </html>
