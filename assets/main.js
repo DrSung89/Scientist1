@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
-    // 0. Firebase (방문자 수) - 에러 나도 무시하도록 처리
+    // 0. Firebase (방문자 수) - 에러 무시 처리
     // =========================================================
     try {
         const firebaseConfig = {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ====================================================
-    // [핵심] 통계 계산 로직 직접 구현 (jStat 제거)
+    // [핵심] 통계 로직 직접 구현 (정밀도 향상)
     // ====================================================
     const stat = {
         mean: d => d.reduce((a,b)=>a+b,0)/d.length,
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (n < 3) return 0;
             const m = meanVal || stat.mean(d);
             const s = sdVal || stat.sd(d, m);
+            // SD가 0이면 여기서 Infinity 발생하므로 미리 막아야 함 (아래 로직에서 처리)
             let sum = 0;
             d.forEach(v => sum += Math.pow((v-m)/s, 3));
             return (n / ((n-1)*(n-2))) * sum;
@@ -66,13 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Shapiro-Wilk P-value 계산 (Royston 근사식 내장)
+    // [정밀 계산] Shapiro-Wilk (Royston Algorithm AS 181 기반)
     function calculateShapiroWilkInternal(data) {
         const n = data.length;
-        if (n < 3) return { p: 0 };
+        if (n < 3) return { p: 0, w: 0 };
+        
         const mean = stat.mean(data);
         const ss = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
-        if (ss === 0) return { p: 1 }; 
+        if (ss === 0) return { p: 1, w: 1 }; // 분산 0이면 정규분포로 간주
 
         const m = new Array(n);
         for (let i = 0; i < n; i++) {
@@ -106,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const sigma = Math.exp(0.0030302 * Math.pow(Math.log(n), 2) - 0.082676 * Math.log(n) - 0.4803);
         const z = (Math.log(1 - w) - mu) / sigma;
         
-        // Normal CDF
         function normalCDF(x) {
             var t = 1 / (1 + 0.2316419 * Math.abs(x));
             var d = 0.3989423 * Math.exp(-x * x / 2);
@@ -120,12 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ====================================================
-    // 2. Outlier Checker Logic (디자인 복구 + 상세 정보)
+    // 2. Outlier Checker Logic (SD=0 방어코드 추가됨)
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
         
-        // Grubb's Critical Values
         const grubbsTable = {
             3: 1.153, 4: 1.463, 5: 1.672, 6: 1.822, 7: 1.938, 8: 2.032, 9: 2.110, 10: 2.176,
             12: 2.285, 15: 2.409, 20: 2.557, 30: 2.745, 50: 2.956, 100: 3.207
@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const raw = document.getElementById('outlier-data').value;
             const data = raw.split(/[\s,]+/).filter(s=>s.trim()!=='' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
             const resDiv = document.getElementById('outlier-result');
+            
+            resDiv.style.whiteSpace = 'normal'; 
             resDiv.style.display = 'block';
 
             if (data.length < 3) {
@@ -150,6 +152,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const n = data.length;
             const mean = stat.mean(data);
             const sd = stat.sd(data, mean);
+
+            // [★방어 코드 추가됨★] SD가 0이거나 무한대인 경우 처리
+            if (!isFinite(sd) || sd === 0) {
+                resDiv.innerHTML = `
+                    <div style="background:#fee2e2; border:1px solid #ef4444; color:#b91c1c; padding:15px; border-radius:6px; font-weight:bold;">
+                        🚨 Standard deviation is zero.
+                        <div style="font-size:0.9rem; font-weight:normal; margin-top:5px; color:#991b1b;">
+                            All data points are identical. Outlier detection cannot be performed.
+                        </div>
+                    </div>`;
+                return;
+            }
+
             const skew = stat.skewness(data, mean, sd);
 
             // [정규성 판단]
@@ -159,18 +174,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let methodInfo = "";
 
             if (n <= 5) {
-                // N <= 5: Skewness로 추정
                 const isApproxNormal = Math.abs(skew) < 0.8;
                 isNormal = isApproxNormal;
                 pValueDisplay = "N/A <span style='font-size:0.8em; color:#888'>(N≤5)</span>"; 
                 if (isNormal) normMsg = `<span style="color:#059669;">Assumed Normal (Low Skew)</span>`;
                 else normMsg = `<span style="color:#d97706;">Assumed Non-Normal (High Skew)</span>`;
             } else {
-                // N >= 6: S-W 계산 (내장 함수)
                 const sw = calculateShapiroWilkInternal(data);
                 const pVal = sw.p;
                 isNormal = pVal >= 0.05;
-                pValueDisplay = pVal.toFixed(4);
+                pValueDisplay = pVal.toFixed(3);
                 methodInfo = "(Shapiro-Wilk)";
                 if(isNormal) normMsg = `<span style="color:#059669;">Passed (Normal)</span>`;
                 else normMsg = `<span style="color:#d97706;">Failed (Non-Normal)</span>`;
@@ -200,13 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 thresholdInfo = `Range: ${lower.toFixed(2)} ~ ${upper.toFixed(2)}`;
             }
 
-            // [결과 화면 HTML - 줄간격 축소 및 상세 정보 복구]
-            let resultHTML = `
-                <div style="margin-bottom: 10px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
-                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 5px;">
-                        Desc. Stats
-                    </div>
-                    <div style="display: flex; gap: 15px; font-size: 0.9rem; color: #374151;">
+            // [결과 화면 HTML]
+            let resultHTML = `<div style="margin-bottom: 15px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
+                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 8px;">Desc. Stats</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; font-size: 0.9rem; color: #374151;">
                         <span>Mean: <strong>${mean.toFixed(2)}</strong></span>
                         <span>SD: <strong>${sd.toFixed(2)}</strong></span>
                         <span>N: <strong>${n}</strong></span>
@@ -215,52 +225,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 5px;">
-                        Normality Test ${methodInfo}
-                    </div>
-                    <div style="background-color: #f9fafb; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e5e7eb;">
-                        <div style="display: flex; justify-content: space-between;">
+                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 5px;">Normality Test ${methodInfo}</div>
+                    <div style="background-color: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e5e7eb;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span>P-value: <strong>${pValueDisplay}</strong></span>
                             <span>Result: <strong>${normMsg}</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <div style="background:#fffbeb; padding:10px 12px; border-radius:6px; margin-bottom:15px; border:1px solid #fcd34d; font-size: 0.9rem;">
+                <div style="background:#fffbeb; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #fcd34d; font-size: 0.9rem;">
                     <strong>🔸 Applied Method: ${methodUsed}</strong>
                     <span style="color:#666; font-size: 0.85rem; margin-left: 5px;">(${thresholdInfo})</span>
-                </div>
-            `;
+                </div>`;
 
             if (outliers.length > 0) {
                 if (n <= 5) {
-                    // Small N Warning
-                    resultHTML += `
-                        <div style="background:#fff7ed; border:1px solid #f97316; color:#9a3412; padding:15px; border-radius:6px;">
-                            <div style="font-weight:bold; font-size:1em; margin-bottom:5px;">
-                                ⚠️ Potential Outlier: ${outliers.join(", ")}
-                            </div>
-                            <div style="font-size: 0.9em; line-height: 1.4;">
-                                Sample size (N=${n}) is too small to delete data.<br>
-                                <strong>Recommendation:</strong> Increase 'n' rather than excluding this value.
-                            </div>
+                    resultHTML += `<div style="background:#fff7ed; border:1px solid #f97316; color:#9a3412; padding:15px; border-radius:6px;">
+                            <div style="font-weight:bold; font-size:1em; margin-bottom:5px;">⚠️ Potential Outlier: ${outliers.join(", ")}</div>
+                            <div style="font-size: 0.9em; line-height: 1.4;">Sample size (N=${n}) is too small to delete data.<br><strong>Recommendation:</strong> Increase 'n' rather than excluding this value.</div>
                         </div>`;
                 } else {
-                    // Confirmed Outlier
-                    resultHTML += `
-                        <div style="background:#fef2f2; border:1px solid #ef4444; color:#991b1b; padding:15px; border-radius:6px; font-weight:bold;">
+                    resultHTML += `<div style="background:#fef2f2; border:1px solid #ef4444; color:#991b1b; padding:15px; border-radius:6px; font-weight:bold;">
                             🚨 Outliers Confirmed:<br>
                             <span style="font-size:1.4em;">${outliers.join(", ")}</span>
-                            <div style="font-size:0.8em; margin-top:5px; font-weight:normal; color:#b91c1c;">
-                                Statistical outlier detected by ${methodUsed}.
-                            </div>
+                            <div style="font-size:0.8em; margin-top:5px; font-weight:normal; color:#b91c1c;">Statistical outlier detected by ${methodUsed}.</div>
                         </div>`;
                 }
             } else {
-                resultHTML += `
-                    <div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:12px; border-radius:6px; font-weight:bold; text-align:center;">
-                        ✅ No Outliers Detected
-                    </div>`;
+                resultHTML += `<div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:12px; border-radius:6px; font-weight:bold; text-align:center;">✅ No Outliers Detected</div>`;
             }
             resDiv.innerHTML = resultHTML;
         });
