@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
-    // 0. Firebase 설정 & 초기화
+    // 0. Firebase (방문자 수) - 에러 나도 무시하도록 처리
     // =========================================================
     try {
         const firebaseConfig = {
@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        // 방문자 카운터
         if (typeof firebase !== 'undefined' && firebase.firestore) {
             const db = firebase.firestore();
             const countSpan = document.getElementById('visitor-count');
@@ -25,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const offset = today.getTimezoneOffset() * 60000;
                 const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
                 const docRef = db.collection('visitors').doc(dateStr);
-                
                 if (!sessionStorage.getItem(`visited_${dateStr}`)) {
                     docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
                     .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
@@ -35,14 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-    } catch (e) { console.log("Firebase init skipped"); }
+    } catch (e) { console.log("Firebase skipped"); }
 
 
     // ====================================================
-    // [통계 라이브러리 내장] jStat 의존성 제거 및 보완
+    // [핵심] 통계 계산 로직 직접 구현 (jStat 제거)
     // ====================================================
-    
-    // 1. 기본 통계 함수
     const stat = {
         mean: d => d.reduce((a,b)=>a+b,0)/d.length,
         sd: (d, meanVal) => {
@@ -70,23 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 2. Shapiro-Wilk 계산 함수 (직접 구현)
-    function normalCDF(x) {
-        var t = 1 / (1 + 0.2316419 * Math.abs(x));
-        var d = 0.3989423 * Math.exp(-x * x / 2);
-        var prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
-        if (x > 0) prob = 1 - prob;
-        return prob;
-    }
-
-    function calculateShapiroWilk(data) {
+    // Shapiro-Wilk P-value 계산 (Royston 근사식 내장)
+    function calculateShapiroWilkInternal(data) {
         const n = data.length;
         if (n < 3) return { p: 0 };
         const mean = stat.mean(data);
         const ss = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
-        if (ss === 0) return { p: 1 }; // 모든 숫자가 같음
+        if (ss === 0) return { p: 1 }; 
 
-        // 상수 계산 (Approximation)
         const m = new Array(n);
         for (let i = 0; i < n; i++) {
             const index = i + 1;
@@ -118,14 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const mu = 0.0038915 * Math.pow(Math.log(n), 3) - 0.083751 * Math.pow(Math.log(n), 2) - 0.31082 * Math.log(n) - 1.5861;
         const sigma = Math.exp(0.0030302 * Math.pow(Math.log(n), 2) - 0.082676 * Math.log(n) - 0.4803);
         const z = (Math.log(1 - w) - mu) / sigma;
+        
+        // Normal CDF
+        function normalCDF(x) {
+            var t = 1 / (1 + 0.2316419 * Math.abs(x));
+            var d = 0.3989423 * Math.exp(-x * x / 2);
+            var prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+            if (x > 0) prob = 1 - prob;
+            return prob;
+        }
         let p = 1 - normalCDF(z);
-        if (p > 1) p = 1; if (p < 0) p = 0;
         return { p: p };
     }
 
 
     // ====================================================
-    // 2. Outlier Checker (Advanced: Skewness + Internal S-W)
+    // 2. Outlier Checker Logic (디자인 복구 + 상세 정보)
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -139,14 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const keys = Object.keys(grubbsTable).map(Number).sort((a,b)=>a-b);
             for (let k of keys) { if(n <= k) return grubbsTable[k]; }
             return 3.5;
-        };
-
-        // Grubb's T-inv helper (approx for missing library)
-        const getTCrit = (alpha, df) => {
-            // jStat이 있으면 사용, 없으면 대략적인 값 (2.0~2.2) 사용하지만
-            // 여기선 jStat이 로드되었을 확률이 높으므로 jStat 시도
-            if(typeof jStat !== 'undefined' && jStat.studentt) return jStat.studentt.inv(1 - alpha, df);
-            return 2.228; // fallback (df=10, 0.05) - 정확도 위해 jStat 권장
         };
 
         outlierButton.addEventListener('click', () => {
@@ -165,127 +152,123 @@ document.addEventListener('DOMContentLoaded', () => {
             const sd = stat.sd(data, mean);
             const skew = stat.skewness(data, mean, sd);
 
-            // ==========================================
-            // ★ 개선된 정규성 판단 로직 (Skewness + Internal S-W) ★
-            // ==========================================
+            // [정규성 판단]
             let isNormal = false;
             let pValueDisplay = "-";
             let normMsg = "";
+            let methodInfo = "";
 
             if (n <= 5) {
-                // Small N: Skewness Heuristic
-                const isApproxNormal = Math.abs(skew) < 0.8; // Skewness가 작으면 정규분포로 '간주'
+                // N <= 5: Skewness로 추정
+                const isApproxNormal = Math.abs(skew) < 0.8;
                 isNormal = isApproxNormal;
-                pValueDisplay = "N/A"; 
-                
-                if (isNormal) normMsg = `<span style="color:#059669;">(Small N, Low Skew=${skew.toFixed(2)})</span>`;
-                else normMsg = `<span style="color:#d97706;">(Small N, High Skew=${skew.toFixed(2)})</span>`;
-                
+                pValueDisplay = "N/A <span style='font-size:0.8em; color:#888'>(N≤5)</span>"; 
+                if (isNormal) normMsg = `<span style="color:#059669;">Assumed Normal (Low Skew)</span>`;
+                else normMsg = `<span style="color:#d97706;">Assumed Non-Normal (High Skew)</span>`;
             } else {
-                // Standard N: Shapiro-Wilk (내장 함수 사용)
-                const sw = calculateShapiroWilk(data);
+                // N >= 6: S-W 계산 (내장 함수)
+                const sw = calculateShapiroWilkInternal(data);
                 const pVal = sw.p;
-                
                 isNormal = pVal >= 0.05;
                 pValueDisplay = pVal.toFixed(4);
-                normMsg = isNormal ? "(Normal)" : "(Non-Normal)";
+                methodInfo = "(Shapiro-Wilk)";
+                if(isNormal) normMsg = `<span style="color:#059669;">Passed (Normal)</span>`;
+                else normMsg = `<span style="color:#d97706;">Failed (Non-Normal)</span>`;
             }
 
-            // 이상치 탐지
+            // [이상치 탐지]
             let methodUsed = "";
             let outliers = [];
             let thresholdInfo = "";
 
             if (isNormal) {
-                // Grubb's Test
                 methodUsed = "Grubb's Test";
-                const alpha = 0.05;
-                
-                // jStat 라이브러리 활용하여 Critical G 계산 (없으면 fallback)
-                let t_crit;
-                if(typeof jStat !== 'undefined') t_crit = jStat.studentt.inv(1 - alpha / (2 * n), n - 2);
-                else t_crit = 2.306; // fallback
-
-                const g_crit = ((n - 1) * Math.sqrt(Math.pow(t_crit, 2))) / (Math.sqrt(n) * Math.sqrt(n - 2 + Math.pow(t_crit, 2)));
-                
+                const g_crit = getGCrit(n);
                 const g_max = (data[n-1] - mean) / sd;
                 const g_min = (mean - data[0]) / sd;
-
                 if (g_max > g_crit) outliers.push(data[n-1]);
                 if (g_min > g_crit) outliers.push(data[0]);
-                
                 thresholdInfo = `Critical G: ${g_crit.toFixed(3)}`;
             } else {
-                // IQR Method
                 methodUsed = "IQR (1.5×)";
                 const q1 = stat.percentile(data, 0.25);
                 const q3 = stat.percentile(data, 0.75);
                 const iqr = q3 - q1;
                 const lower = q1 - 1.5 * iqr;
                 const upper = q3 + 1.5 * iqr;
-
                 outliers = data.filter(x => x < lower || x > upper);
-                thresholdInfo = `Limit: ${lower.toFixed(2)} ~ ${upper.toFixed(2)}`;
+                thresholdInfo = `Range: ${lower.toFixed(2)} ~ ${upper.toFixed(2)}`;
             }
 
-            // 결과 HTML
+            // [결과 화면 HTML - 줄간격 축소 및 상세 정보 복구]
             let resultHTML = `
-                <div style="font-size: 0.9rem; color: #374151; margin-bottom:15px;">
-                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 1px dashed #ccc; padding-bottom: 8px; gap: 10px;">
-                        <div style="white-space: nowrap;">
-                            Mean: <strong>${mean.toFixed(2)}</strong> | SD: <strong>${sd.toFixed(2)}</strong> | N: <strong>${n}</strong>
-                        </div>
-                        <div style="white-space: nowrap;">
-                            S-W P-value: <strong>${pValueDisplay}</strong> ${normMsg}
+                <div style="margin-bottom: 10px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
+                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 5px;">
+                        Desc. Stats
+                    </div>
+                    <div style="display: flex; gap: 15px; font-size: 0.9rem; color: #374151;">
+                        <span>Mean: <strong>${mean.toFixed(2)}</strong></span>
+                        <span>SD: <strong>${sd.toFixed(2)}</strong></span>
+                        <span>N: <strong>${n}</strong></span>
+                        <span>Skew: <strong>${skew.toFixed(2)}</strong></span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 0.95rem; color: #111; font-weight: 600; margin-bottom: 5px;">
+                        Normality Test ${methodInfo}
+                    </div>
+                    <div style="background-color: #f9fafb; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e5e7eb;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>P-value: <strong>${pValueDisplay}</strong></span>
+                            <span>Result: <strong>${normMsg}</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <div style="background:#fffbeb; padding:10px; border-radius:4px; margin-bottom:15px; border:1px solid #fcd34d; font-size: 0.9rem;">
-                    ⚠️ <strong>Method: ${methodUsed}</strong> <br>
-                    <span style="color:#666; font-size: 0.85rem;">(${thresholdInfo})</span>
+                <div style="background:#fffbeb; padding:10px 12px; border-radius:6px; margin-bottom:15px; border:1px solid #fcd34d; font-size: 0.9rem;">
+                    <strong>🔸 Applied Method: ${methodUsed}</strong>
+                    <span style="color:#666; font-size: 0.85rem; margin-left: 5px;">(${thresholdInfo})</span>
                 </div>
             `;
 
             if (outliers.length > 0) {
                 if (n <= 5) {
+                    // Small N Warning
                     resultHTML += `
                         <div style="background:#fff7ed; border:1px solid #f97316; color:#9a3412; padding:15px; border-radius:6px;">
-                            <div style="font-weight:bold; font-size:1.1em; margin-bottom:8px;">
+                            <div style="font-weight:bold; font-size:1em; margin-bottom:5px;">
                                 ⚠️ Potential Outlier: ${outliers.join(", ")}
                             </div>
-                            <div style="font-weight:bold; margin-bottom:4px;">
-                                Sample size is too small (N=${n}).
+                            <div style="font-size: 0.9em; line-height: 1.4;">
+                                Sample size (N=${n}) is too small to delete data.<br>
+                                <strong>Recommendation:</strong> Increase 'n' rather than excluding this value.
                             </div>
-                            <div style="font-size: 0.95em; line-height: 1.5;">
-                                It is recommended to <strong>increase the number of replicates (n)</strong> rather than removing this value.
-                            </div>
-                        </div>
-                    `;
+                        </div>`;
                 } else {
+                    // Confirmed Outlier
                     resultHTML += `
                         <div style="background:#fef2f2; border:1px solid #ef4444; color:#991b1b; padding:15px; border-radius:6px; font-weight:bold;">
                             🚨 Outliers Confirmed:<br>
-                            <span style="font-size:1.5em;">${outliers.join(", ")}</span>
-                            <div style="font-size:0.8em; margin-top:5px; font-weight:normal;">
-                                Statistical outlier detected based on ${methodUsed}.
+                            <span style="font-size:1.4em;">${outliers.join(", ")}</span>
+                            <div style="font-size:0.8em; margin-top:5px; font-weight:normal; color:#b91c1c;">
+                                Statistical outlier detected by ${methodUsed}.
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }
             } else {
                 resultHTML += `
-                    <div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:15px; border-radius:6px; font-weight:bold; text-align:center;">
+                    <div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:12px; border-radius:6px; font-weight:bold; text-align:center;">
                         ✅ No Outliers Detected
-                    </div>
-                `;
+                    </div>`;
             }
             resDiv.innerHTML = resultHTML;
         });
     }
 
+
     // ====================================================
-    // Helper: 스마트 단위 변환기 (Molarity 등에서 사용)
+    // Helper: 스마트 단위 변환기
     // ====================================================
     function smartFormat(value, unit, type) {
         if (isNaN(value) || value === 0) return `0.000 ${unit}`;
