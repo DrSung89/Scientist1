@@ -103,22 +103,7 @@
                 <p style="font-size:0.8rem; color:#888; margin-top:10px;">* Used Welch's t-test (Satterthwaite approximation).</p>
             </div>
 
-            <div class="about-section" style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: left;">
-                <h3 style="color: #333; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
-                    🧪 From a Fellow Lab Rat
-                </h3>
-                <p style="color: #555; line-height: 1.7; margin-bottom: 20px;">
-                    Hi! I built this toolkit to make daily lab calculations easier.
-                </p>
-                <ul style="color: #555; line-height: 1.7; padding-left: 20px;">
-                    <li style="margin-bottom: 10px;">
-                        <strong>📉 Robust T-Test:</strong> 
-                        Defaults to Welch's t-test to prevent errors from unequal variances, which are common in biological data.
-                    </li>
-                </ul>
-            </div>
-
-        </section>
+            </section>
     </main>
 
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
@@ -128,14 +113,12 @@
     </footer>
 
     <script>
-        // 기본 통계 함수
         const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
         const getVariance = (arr, mean) => {
             return arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
         };
 
         function runAnalysis() {
-            // 1. 데이터 파싱
             const parse = (id) => document.getElementById(id).value.split(/[\s,]+/).filter(v => v !== '' && !isNaN(v)).map(Number);
             const A = parse('group-a');
             const B = parse('group-b');
@@ -145,14 +128,12 @@
                 return;
             }
 
-            // 2. 기술 통계 계산
             const n1 = A.length, n2 = B.length;
             const m1 = getMean(A), m2 = getMean(B);
             const v1 = getVariance(A, m1), v2 = getVariance(B, m2);
             const sd1 = Math.sqrt(v1), sd2 = Math.sqrt(v2);
             const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
 
-            // 3. Welch's t-test
             const diff = m1 - m2;
             const se_diff = Math.sqrt((v1 / n1) + (v2 / n2));
             const t_stat = diff / se_diff;
@@ -163,7 +144,6 @@
 
             const p_val = 2 * (1 - jStat.studentt.cdf(Math.abs(t_stat), df));
 
-            // 4. CI & Cohen's d
             const t_crit = Math.abs(jStat.studentt.inv(0.025, df));
             const ci_lower = diff - (t_crit * se_diff);
             const ci_upper = diff + (t_crit * se_diff);
@@ -171,7 +151,6 @@
             const s_pooled = Math.sqrt(((n1 - 1)*v1 + (n2 - 1)*v2) / (n1 + n2 - 2));
             const cohens_d = Math.abs(diff) / s_pooled;
 
-            // 5. 결과 출력
             document.getElementById('n-a').innerText = n1;
             document.getElementById('n-b').innerText = n2;
             document.getElementById('mean-sd-a').innerText = `${m1.toFixed(2)} ± ${sd1.toFixed(2)}`;
