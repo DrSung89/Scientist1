@@ -48,5 +48,16 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-
-</urlset>
+<url>
+    <loc>https://scientisttoolkit.xyz/t-test-calculator/</loc>
+    <lastmod>2026-02-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/chi-square-calculator/</loc>
+    <lastmod>2026-02-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  </urlset>
