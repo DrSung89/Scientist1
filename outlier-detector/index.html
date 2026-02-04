@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Outlier Checker (IQR & P-value) | Scientist's Toolkit</title>
     <meta name="description" content="Advanced outlier detection using IQR method and Normality test (P-value).">
+    
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/">
     <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
 
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/outlier-detector/">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
 </head>
 <body>
     <header><h1>Scientist's Toolkit</h1></header>
-     <nav>
+    <nav>
         <a href="../" class="nav-btn">Home</a>
         <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
         <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
@@ -32,16 +36,159 @@
         <section id="outlier-checker" class="calculator active" style="display:block;">
             <h2>Outlier Checker & Normality</h2>
             <p class="warning-text">⚠️ Separate data with commas, spaces, or new lines.</p>
+            
             <textarea id="outlier-data" rows="8" placeholder="e.g.: 1.2, 1.5, 1.8..."></textarea>
-            <button id="check-outliers">Check Data</button>
-            <div id="outlier-result" class="result"></div>
+            
+            <button id="check-outliers" class="action-btn">Check Data</button>
+            
+            <div id="outlier-result" class="result" style="display:none;"></div>
         </section>
     </main>
+
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br>
-    © 2026 Scientist's Toolkit
-</footer>
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
     <script src="../assets/main.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const oldBtn = document.getElementById('check-outliers');
+            // main.js와의 중복 실행 방지를 위해 버튼을 복제하여 기존 이벤트 제거
+            const newBtn = oldBtn.cloneNode(true);
+            oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+            newBtn.addEventListener('click', function() {
+                const rawData = document.getElementById('outlier-data').value;
+                const data = rawData.split(/[\s,]+/)
+                                  .filter(item => item.trim() !== '' && !isNaN(item))
+                                  .map(Number)
+                                  .sort((a, b) => a - b);
+
+                const resultDiv = document.getElementById('outlier-result');
+
+                if (data.length < 3) {
+                    alert("Please enter at least 3 numbers.");
+                    return;
+                }
+
+                const n = data.length;
+                const mean = jStat.mean(data);
+                const sd = jStat.stdev(data, true);
+
+                // 1. 정규성 검정 (N <= 5일 때 스킵)
+                let pValue = NaN;
+                let isNormal = false;
+                let normMsg = "";
+                let pValueDisplay = "-";
+
+                if (n <= 5) {
+                    // [변경점] N이 5 이하일 때
+                    normMsg = `<span style="color:orange;">(N ≤ 5, Too small)</span>`;
+                    isNormal = false; // 강제로 IQR 모드
+                    pValueDisplay = "N/A";
+                } else {
+                    // N이 6 이상일 때
+                    pValue = jStat.shapirowilk(data)[1];
+                    isNormal = pValue > 0.05;
+                    normMsg = isNormal ? "(Normal)" : "(Non-Normal)";
+                    pValueDisplay = pValue.toFixed(4);
+                }
+
+                // 2. 이상치 탐지
+                let methodUsed = "";
+                let outliers = [];
+                let thresholdInfo = "";
+
+                if (isNormal) {
+                    // Grubb's Test
+                    methodUsed = "Grubb's Test";
+                    const alpha = 0.05;
+                    const t_crit = jStat.studentt.inv(1 - alpha / (2 * n), n - 2);
+                    const g_crit = ((n - 1) * Math.sqrt(Math.pow(t_crit, 2))) / (Math.sqrt(n) * Math.sqrt(n - 2 + Math.pow(t_crit, 2)));
+                    
+                    const g_max = (data[n-1] - mean) / sd;
+                    const g_min = (mean - data[0]) / sd;
+
+                    if (g_max > g_crit) outliers.push(data[n-1]);
+                    if (g_min > g_crit) outliers.push(data[0]);
+                    
+                    thresholdInfo = `Critical G: ${g_crit.toFixed(3)}`;
+                } else {
+                    // IQR Method
+                    methodUsed = "IQR (1.5×)";
+                    const q1 = jStat.percentile(data, 0.25);
+                    const q3 = jStat.percentile(data, 0.75);
+                    const iqr = q3 - q1;
+                    const lower = q1 - 1.5 * iqr;
+                    const upper = q3 + 1.5 * iqr;
+
+                    outliers = data.filter(x => x < lower || x > upper);
+                    thresholdInfo = `Limit: ${lower.toFixed(2)} ~ ${upper.toFixed(2)}`;
+                }
+
+                // 3. 결과 HTML 생성
+                let resultHTML = `
+                    <div style="font-size: 0.9rem; color: #374151; margin-bottom:10px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
+                            <div>
+                                Mean: <strong>${mean.toFixed(2)}</strong> | SD: <strong>${sd.toFixed(2)}</strong> | N: <strong>${n}</strong>
+                            </div>
+                            <div style="text-align: right;">
+                                S-W P-value: <strong>${pValueDisplay}</strong> ${normMsg}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background:#fffbeb; padding:8px; border-radius:4px; margin-bottom:10px; border:1px solid #fcd34d; font-size: 0.85rem;">
+                        ⚠️ <strong>Method: ${methodUsed}</strong> <span style="color:#666;">(${thresholdInfo})</span>
+                    </div>
+                `;
+
+                if (outliers.length > 0) {
+                    // ★ 여기가 핵심 변경 포인트 ★
+                    if (n <= 5) {
+                        // N <= 5 인 경우: 주황색 경고 + 영문 가이드
+                        resultHTML += `
+                            <div style="background:#fff7ed; border:1px solid #f97316; color:#9a3412; padding:15px; border-radius:6px;">
+                                <div style="font-weight:bold; font-size:1.1em; margin-bottom:8px;">
+                                    ⚠️ Potential Outlier: ${outliers.join(", ")}
+                                </div>
+                                <div style="font-weight:bold; margin-bottom:4px;">
+                                    Sample size is too small (N=${n}).
+                                </div>
+                                <div style="font-size: 0.95em;">
+                                    It is recommended to <strong>increase the number of replicates (n)</strong> rather than removing this value.
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // N > 5 인 경우: 빨간색 확정 + 제거 권고
+                        resultHTML += `
+                            <div style="background:#fef2f2; border:1px solid #ef4444; color:#991b1b; padding:15px; border-radius:6px; font-weight:bold;">
+                                🚨 Outliers Confirmed:<br>
+                                <span style="font-size:1.5em;">${outliers.join(", ")}</span>
+                                <div style="font-size:0.8em; margin-top:5px; font-weight:normal;">
+                                    Statistical outlier detected based on ${methodUsed}.
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // 이상치 없음
+                    resultHTML += `
+                        <div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:15px; border-radius:6px; font-weight:bold; text-align:center;">
+                            ✅ No Outliers Detected
+                        </div>
+                    `;
+                }
+
+                resultDiv.innerHTML = resultHTML;
+                resultDiv.style.display = 'block';
+            });
+        });
+    </script>
 </body>
 </html>
