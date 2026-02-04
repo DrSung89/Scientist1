@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-// =========================================================
+    // =========================================================
     // 0. Firebase 설정 & 초기화 (방문자 카운트용)
     // =========================================================
     const firebaseConfig = {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         measurementId: "G-5K0XVX0TFM"
     };
 
-    // Firebase가 아직 초기화되지 않았을 때만 초기화 (board.js와의 충돌 방지)
+    // Firebase가 아직 초기화되지 않았을 때만 초기화
     if (typeof firebase !== 'undefined' && !firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -22,47 +22,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. 일일 방문자 수 카운터 로직
     // =========================================================
     function updateVisitorCount() {
-        if (typeof firebase === 'undefined') return; // SDK가 없으면 중단
+        if (typeof firebase === 'undefined') return;
 
         const db = firebase.firestore();
         const countSpan = document.getElementById('visitor-count');
         
-        // 오늘 날짜를 ID로 사용 (예: "2024-05-21")
-        // 한국 시간 기준 날짜 생성
         const today = new Date();
         const offset = today.getTimezoneOffset() * 60000;
         const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
-
         const docRef = db.collection('visitors').doc(dateStr);
 
-        // 1. 세션 스토리지 체크 (새로고침 시 카운트 증가 방지)
-        // 브라우저를 껐다 켜기 전까지는 'visited' 기록이 남아있음
         const hasVisited = sessionStorage.getItem(`visited_${dateStr}`);
 
         if (!hasVisited) {
-            // 처음 온 사람이면 -> 카운트 +1 증가 (Write)
             docRef.set({
                 count: firebase.firestore.FieldValue.increment(1)
             }, { merge: true })
             .then(() => {
-                sessionStorage.setItem(`visited_${dateStr}`, 'true'); // 방문 기록
+                sessionStorage.setItem(`visited_${dateStr}`, 'true');
             })
             .catch(err => console.error("Error updating count:", err));
         }
 
-        // 2. 현재 카운트 가져와서 표시 (Read)
-        // 실시간(onSnapshot)으로 하면 숫자가 올라가는게 보여서 더 멋짐
         docRef.onSnapshot((doc) => {
-            if (doc.exists) {
+            if (doc.exists && countSpan) {
                 const count = doc.data().count;
-                if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-            } else {
-                if(countSpan) countSpan.innerHTML = `Today's Visitors: <strong>1</strong>`; // 첫 방문자
+                countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+            } else if (countSpan) {
+                countSpan.innerHTML = `Today's Visitors: <strong>1</strong>`;
             }
         });
     }
 
-    // 카운터 실행
     updateVisitorCount();
 
     // ====================================================
@@ -105,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 1. Molarity Calculator Logic
+    // 2. Molarity Calculator Logic
     // ====================================================
     const molButton = document.getElementById('calculate-molarity');
     if (molButton) {
@@ -148,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 2. Outlier Checker Logic (IQR + Grubb's + Shapiro-Wilk)
+    // 3. Outlier Checker Logic (Updated for Robustness)
     // ====================================================
     
     // Grubb's Test Critical Values (Alpha = 0.05)
@@ -162,12 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getGrubbsCriticalValue(n) {
         if (grubbsCriticalValues[n]) return grubbsCriticalValues[n];
-        // 근사치 (N이 테이블에 없을 때 가장 가까운 작은 값 사용)
         const keys = Object.keys(grubbsCriticalValues).map(Number).sort((a,b)=>a-b);
         for (let i = keys.length - 1; i >= 0; i--) {
             if (n >= keys[i]) return grubbsCriticalValues[keys[i]];
         }
-        return 3.5; // N > 100 fallback
+        return 3.5; 
     }
 
     function normalCDF(x) {
@@ -180,11 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calculateShapiroWilk(data) {
         const n = data.length;
+        // NaN 방지: 데이터가 3개 미만이면 계산 불가
         if (n < 3) return { w: 0, p: 0, valid: false };
 
         const mean = data.reduce((a, b) => a + b, 0) / n;
         const ss = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
         
+        // 분산이 0인 경우 (모든 숫자가 같음) 예외 처리
+        if (ss === 0) return { w: 1, p: 1, valid: true };
+
         const m = new Array(n);
         for (let i = 0; i < n; i++) {
             const index = i + 1;
@@ -240,7 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
             resDiv.style.padding = '10px'; 
             
             if (data.length < 3) {
-                resDiv.innerHTML = "<span style='color:red; font-size: 0.9rem;'>Error: Need at least 3 numbers for statistics.</span>";
+                resDiv.innerHTML = "<span style='color:red; font-size: 0.9rem;'>Error: Need at least 3 numbers.</span>";
+                resDiv.style.display = 'block';
                 return;
             }
 
@@ -249,12 +244,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
             const stdev = Math.sqrt(variance);
 
-            // 1. Normality Check
-            const swResult = calculateShapiroWilk(data);
-            const pValue = swResult.p;
-            const isNormal = pValue >= 0.05;
-            const pValueColor = isNormal ? "green" : "#d97706";
-            const pValueText = isNormal ? "Probable Normal" : "Non-Normal";
+            // 1. Normality Check & NaN Handling
+            let pValue = NaN;
+            let isNormal = false;
+            let pValueText = "";
+            let pValueColor = "";
+
+            if (n < 6) {
+                // 표본 6개 미만이면 P-value 계산 생략 (NaN 방지)
+                pValueText = "N < 6 (Too small)";
+                pValueColor = "#d97706";
+                isNormal = false; // 강제 IQR 모드
+            } else {
+                const swResult = calculateShapiroWilk(data);
+                pValue = swResult.p;
+                isNormal = pValue >= 0.05;
+                pValueText = pValue.toFixed(4);
+                pValueColor = isNormal ? "green" : "#d97706";
+            }
+
+            const normalityStatus = isNormal ? "(Normal)" : "(Non-Normal)";
 
             let resultHTML = `<div style="font-size: 0.9rem; line-height: 1.4; color: #374151;">
                     <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb;">
@@ -268,22 +277,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="flex: 1.2; text-align: right;">
                             <div style="font-weight: 700; color:#111; margin-bottom: 2px; font-size: 0.85rem;">Normality (S-W)</div>
                             <div style="font-size: 0.8rem; color: #4b5563;">
-                                P-value: <strong style="color:${pValueColor};">${pValue.toFixed(3)}</strong> <span style="font-size:0.75rem; color:#666;">(${pValueText})</span>
+                                P-value: <strong style="color:${pValueColor};">${pValueText}</strong> <span style="font-size:0.75rem; color:#666;">${normalityStatus}</span>
                             </div>
                         </div>
                     </div>`;
 
-            // 2. Logic Branching: Grubb's (Normal) vs IQR (Non-normal)
-            
+            // 2. Logic Branching: Grubb's vs IQR
             if (isNormal) {
-                // ==============================
-                // A. Grubb's Test Logic (For Normal Data)
-                // ==============================
+                // Grubb's Test
                 resultHTML += `<div style="margin-bottom: 5px; font-size: 0.85rem; color:#065f46; background:#ecfdf5; padding:4px 8px; border-radius:4px;">
-                    <strong>✅ Method: Grubb's Test</strong> (Suitable for Normal Dist.)
+                    <strong>✅ Method: Grubb's Test</strong> (Normal Data)
                 </div>`;
 
-                // Calculate G Statistic
                 let maxDev = 0;
                 let outlierVal = null;
                 data.forEach(val => {
@@ -297,26 +302,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gCrit = getGrubbsCriticalValue(n);
 
                 if (gStat > gCrit) {
-                    // Outlier Found
                     resultHTML += `<div style="padding: 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; margin-top: 10px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
                             <strong style="color:#b91c1c; font-size: 0.95rem;">🚨 Outlier Confirmed:</strong>
                             <strong style="font-size: 1rem; color: #b91c1c;">${outlierVal}</strong>
                         </div>
                         <div style="font-size: 0.8rem; color: #b91c1c;">
-                             Grubb's G (${gStat.toFixed(2)}) > Critical Value (${gCrit}).<br>
-                             This data point is a significant outlier.<br>
-                             <strong>Advice:</strong> Remove this value and re-test.
+                             Grubb's G (${gStat.toFixed(2)}) > Critical (${gCrit}).<br>
+                             This is a significant outlier.
                         </div></div></div>`;
                 } else {
-                    // No Outliers
                     resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found (Grubb's Test).</div></div>`;
                 }
 
             } else {
-                // ==============================
-                // B. IQR Method Logic (For Non-Normal Data)
-                // ==============================
+                // IQR Method
                 const q1 = data[Math.floor((n - 1) / 4)];
                 const q3 = data[Math.floor((n - 1) * 3 / 4)];
                 const iqr = q3 - q1;
@@ -325,42 +325,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const outliers = data.filter(x => x < lowerFence || x > upperFence);
 
                 resultHTML += `<div style="margin-bottom: 5px; font-size: 0.85rem; color:#92400e; background:#fffbeb; padding:4px 8px; border-radius:4px;">
-                    <strong>⚠️ Method: IQR (1.5×)</strong> (Suitable for Non-Normal/Skewed)
+                    <strong>⚠️ Method: IQR (1.5×)</strong> (Non-Normal/Small Data)
                 </div>
                 <div style="margin-bottom: 8px; font-size: 0.85rem;">
                      Limit: <span style="font-family: monospace; background: #f3f4f6;">${lowerFence.toFixed(2)} ~ ${upperFence.toFixed(2)}</span>
                 </div>`;
 
                 if (outliers.length > 0) {
-                    let adviceText = "IQR method is appropriate.";
-                    let warningStyle = "";
-                    
-                    // [New!] 이상치가 2개 이상일 때 안내 문구 추가
-                    if (outliers.length > 1) {
-                        adviceText = `<strong style="text-decoration:underline;">Stepwise Removal Required:</strong><br>
-                        Removing multiple outliers at once can distort the distribution.<br>
-                        Please <strong>remove the most extreme value first</strong>, then re-check.`;
-                        warningStyle = "border-left: 4px solid #b91c1c; padding-left:8px;";
-                    }
-
                     resultHTML += `<div style="padding: 10px; background-color: #fee2e2; border-radius: 4px; border: 1px solid #ef4444; margin-top: 10px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
                             <strong style="color:#b91c1c; font-size: 0.95rem;">🚨 Outliers Confirmed:</strong>
                             <strong style="font-size: 1rem; color: #b91c1c;">${outliers.join(', ')}</strong>
                         </div>
-                        <div style="font-size: 0.8rem; color: #b91c1c; ${warningStyle}">
-                             ${adviceText}
+                        <div style="font-size: 0.8rem; color: #b91c1c;">
+                             Values outside the limit.
                         </div></div></div>`;
                 } else {
                     resultHTML += `<div style="padding: 8px; background-color: #dcfce7; border-radius: 4px; border: 1px solid #22c55e; color: #166534; font-weight: bold; font-size: 0.9rem; text-align: center; margin-top: 10px;">✅ No outliers found (IQR).</div></div>`;
                 }
             }
             resDiv.innerHTML = resultHTML;
+            resDiv.style.display = 'block';
         });
     }
 
     // ====================================================
-    // 3. HED Calculator Logic
+    // 4. HED Calculator Logic
     // ====================================================
     const hedButton = document.getElementById('calculate-hed');
     if (hedButton) {
@@ -390,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 4. Dilution Calculator Logic
+    // 5. Dilution Calculator Logic
     // ====================================================
     const dilutionButton = document.getElementById('calculate-dilution');
     if (dilutionButton) {
@@ -433,16 +423,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isNaN_m1) {
                 const calcM1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (v1Val * v1Unit);
-                // M1은 계산된 Base값(Molar)을 그대로 넘겨서 스마트 포맷팅
                 resultHTML = `Required Stock Conc (M₁): ${smartFormat(calcM1_Base, 'M', 'conc')}`;
             } 
             else if (isNaN_v1) {
                 const calcV1_Base = (m2Val * m2Unit * v2Val * v2Unit) / (m1Val * m1Unit); 
                 const smartV1 = smartFormat(calcV1_Base, 'L', 'vol');
-
                 const solventBase = (v2Val * v2Unit) - calcV1_Base;
                 const solventInV2Unit = solventBase / v2Unit;
-
                 let solventText = `<br><span style="font-size:0.9em; color:#555;">(Add ${smartV1} of Stock + <strong>${solventInV2Unit.toFixed(3)} ${v2Text}</strong> of Solvent)</span>`;
                 resultHTML = `Required Stock Vol (V₁): ${smartV1}${solventText}`;
             } 
@@ -458,7 +445,5 @@ document.addEventListener('DOMContentLoaded', () => {
             resDiv.innerHTML = `<div style="font-size: 1rem; color: #1f2937;">${resultHTML}</div>`;
         });
     }
-
-
 
 });
