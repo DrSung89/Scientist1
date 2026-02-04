@@ -53,10 +53,9 @@
 
     <script src="../assets/main.js"></script>
 
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const oldBtn = document.getElementById('check-outliers');
-            // main.js와의 중복 실행 방지를 위해 버튼을 복제하여 기존 이벤트 제거
             const newBtn = oldBtn.cloneNode(true);
             oldBtn.parentNode.replaceChild(newBtn, oldBtn);
 
@@ -78,32 +77,27 @@
                 const mean = jStat.mean(data);
                 const sd = jStat.stdev(data, true);
 
-                // 1. 정규성 검정 (N <= 5일 때 스킵)
                 let pValue = NaN;
                 let isNormal = false;
                 let normMsg = "";
                 let pValueDisplay = "-";
 
                 if (n <= 5) {
-                    // [변경점] N이 5 이하일 때
                     normMsg = `<span style="color:orange;">(N ≤ 5, Too small)</span>`;
-                    isNormal = false; // 강제로 IQR 모드
+                    isNormal = false;
                     pValueDisplay = "N/A";
                 } else {
-                    // N이 6 이상일 때
                     pValue = jStat.shapirowilk(data)[1];
                     isNormal = pValue > 0.05;
                     normMsg = isNormal ? "(Normal)" : "(Non-Normal)";
                     pValueDisplay = pValue.toFixed(4);
                 }
 
-                // 2. 이상치 탐지
                 let methodUsed = "";
                 let outliers = [];
                 let thresholdInfo = "";
 
                 if (isNormal) {
-                    // Grubb's Test
                     methodUsed = "Grubb's Test";
                     const alpha = 0.05;
                     const t_crit = jStat.studentt.inv(1 - alpha / (2 * n), n - 2);
@@ -117,7 +111,6 @@
                     
                     thresholdInfo = `Critical G: ${g_crit.toFixed(3)}`;
                 } else {
-                    // IQR Method
                     methodUsed = "IQR (1.5×)";
                     const q1 = jStat.percentile(data, 0.25);
                     const q3 = jStat.percentile(data, 0.75);
@@ -129,28 +122,29 @@
                     thresholdInfo = `Limit: ${lower.toFixed(2)} ~ ${upper.toFixed(2)}`;
                 }
 
-                // 3. 결과 HTML 생성
+                // ▼▼▼ [디자인 수정됨] 줄바꿈 문제 해결 ▼▼▼
+                // flex-wrap: wrap -> 공간 없으면 다음 줄로
+                // gap: 10px -> 요소 사이 간격 확보
                 let resultHTML = `
-                    <div style="font-size: 0.9rem; color: #374151; margin-bottom:10px;">
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
-                            <div>
+                    <div style="font-size: 0.9rem; color: #374151; margin-bottom:15px;">
+                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 1px dashed #ccc; padding-bottom: 8px; gap: 10px;">
+                            <div style="white-space: nowrap;">
                                 Mean: <strong>${mean.toFixed(2)}</strong> | SD: <strong>${sd.toFixed(2)}</strong> | N: <strong>${n}</strong>
                             </div>
-                            <div style="text-align: right;">
+                            <div style="white-space: nowrap;">
                                 S-W P-value: <strong>${pValueDisplay}</strong> ${normMsg}
                             </div>
                         </div>
                     </div>
 
-                    <div style="background:#fffbeb; padding:8px; border-radius:4px; margin-bottom:10px; border:1px solid #fcd34d; font-size: 0.85rem;">
-                        ⚠️ <strong>Method: ${methodUsed}</strong> <span style="color:#666;">(${thresholdInfo})</span>
+                    <div style="background:#fffbeb; padding:10px; border-radius:4px; margin-bottom:15px; border:1px solid #fcd34d; font-size: 0.9rem;">
+                        ⚠️ <strong>Method: ${methodUsed}</strong> <br>
+                        <span style="color:#666; font-size: 0.85rem;">(${thresholdInfo})</span>
                     </div>
                 `;
 
                 if (outliers.length > 0) {
-                    // ★ 여기가 핵심 변경 포인트 ★
                     if (n <= 5) {
-                        // N <= 5 인 경우: 주황색 경고 + 영문 가이드
                         resultHTML += `
                             <div style="background:#fff7ed; border:1px solid #f97316; color:#9a3412; padding:15px; border-radius:6px;">
                                 <div style="font-weight:bold; font-size:1.1em; margin-bottom:8px;">
@@ -159,13 +153,12 @@
                                 <div style="font-weight:bold; margin-bottom:4px;">
                                     Sample size is too small (N=${n}).
                                 </div>
-                                <div style="font-size: 0.95em;">
+                                <div style="font-size: 0.95em; line-height: 1.5;">
                                     It is recommended to <strong>increase the number of replicates (n)</strong> rather than removing this value.
                                 </div>
                             </div>
                         `;
                     } else {
-                        // N > 5 인 경우: 빨간색 확정 + 제거 권고
                         resultHTML += `
                             <div style="background:#fef2f2; border:1px solid #ef4444; color:#991b1b; padding:15px; border-radius:6px; font-weight:bold;">
                                 🚨 Outliers Confirmed:<br>
@@ -177,7 +170,6 @@
                         `;
                     }
                 } else {
-                    // 이상치 없음
                     resultHTML += `
                         <div style="background:#ecfdf5; border:1px solid #10b981; color:#065f46; padding:15px; border-radius:6px; font-weight:bold; text-align:center;">
                             ✅ No Outliers Detected
