@@ -20,7 +20,8 @@
 
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/chi-square-calculator/">
-    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
@@ -108,12 +109,64 @@
                 </p>
             </div>
         </section>
+
+<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
+    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+    
+    <h2>🎲 Chi-Square Test for Independence</h2>
+    <p>
+        The Chi-Square (χ²) test of independence is used to determine if there is a significant relationship between two categorical variables. 
+        Unlike the T-test which handles numerical data (means), the Chi-square test handles frequencies (counts).
+    </p>
+
+    <h3>When to use this tool?</h3>
+    <p>Use this calculator when you have count data usually organized in a 2x2 contingency table. Common examples in research include:</p>
+    <ul>
+        <li><strong>Genetics:</strong> Comparing observed genotype frequencies against expected Mendelian ratios.</li>
+        <li><strong>Clinical Studies:</strong> Comparing "Cured vs. Not Cured" counts in Treatment vs. Control groups.</li>
+    </ul>
+
+    <h3>The Formula</h3>
+    <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #fd7e14; margin: 15px 0;">
+        <strong>$$ \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i} $$</strong>
+        <br>
+        <ul>
+            <li><strong>O</strong> = Observed frequency (the data you enter)</li>
+            <li><strong>E</strong> = Expected frequency (calculated based on row/column totals)</li>
+        </ul>
+    </div>
+
+    <h3>Example: Treatment Efficacy</h3>
+    <p>Imagine you treated 100 cells with a drug and 100 with a placebo.</p>
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin: 10px 0; border-color: #eee;">
+        <tr style="background: #f1f1f1;">
+            <th>Group</th>
+            <th>Dead Cells</th>
+            <th>Alive Cells</th>
+        </tr>
+        <tr>
+            <td>Treated</td>
+            <td>80</td>
+            <td>20</td>
+        </tr>
+        <tr>
+            <td>Control</td>
+            <td>40</td>
+            <td>60</td>
+        </tr>
+    </table>
+    <p>Enter these values (80, 20, 40, 60) into the calculator to determine if the treatment significantly affected cell survival.</p>
+</section>
+
     </main>
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br>
-        © 2026 Scientist's Toolkit
-    </footer>
+    <span id="visitor-count">Today's Visitors: Loading...</span>
+    <br><br>
+    <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+    <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+    <br><br>
+    © 2026 Scientist's Toolkit
+</footer>
 
     <script>
         function calcChi() {
