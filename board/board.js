@@ -263,7 +263,7 @@ if (saveBtn) {
             date: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(() => {
-            alert("Protocol Shared Successfully!");
+            alert("Post Uploaded!");
             // 입력창 초기화
             document.getElementById('writer-name').value = "";
             document.getElementById('post-title').value = "";

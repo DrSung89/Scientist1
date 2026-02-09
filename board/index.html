@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Method Board | Scientist's Toolkit</title>
-    <link rel="stylesheet" href="../assets/style.css">
+    <title>Community Board | Scientist's Toolkit</title> <link rel="stylesheet" href="../assets/style.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 
     <style>
-        /* 게시물 한 줄 */
         .post-item {
             border-bottom: 1px solid #eee;
             background: #fff;
@@ -19,8 +17,6 @@
             border-radius: 5px;
             overflow: hidden;
         }
-
-        /* 클릭하는 헤더 부분 (제목 + 작성자) */
         .post-header {
             display: flex;
             justify-content: space-between;
@@ -30,42 +26,32 @@
             transition: background 0.2s;
         }
         .post-header:hover {
-            background-color: #f8f9fa; /* 마우스 올렸을 때 살짝 회색 */
+            background-color: #f8f9fa;
         }
-
-        /* 제목 스타일 */
         .post-title {
             font-weight: 600;
             color: #333;
             font-size: 1rem;
         }
-
-        /* 작성자 및 날짜 스타일 */
         .post-meta {
             font-size: 0.85rem;
             color: #888;
             text-align: right;
             min-width: 120px;
         }
-
-        /* 숨겨진 본문 내용 */
         .post-content {
-            display: none; /* 기본적으로 숨김 */
+            display: none; /* 숨김 기본 */
             padding: 20px;
             background-color: #fcfcfc;
             border-top: 1px dashed #eee;
             color: #555;
             line-height: 1.6;
             font-size: 0.95rem;
-            white-space: pre-wrap; /* 줄바꿈 유지 */
+            white-space: pre-wrap;
         }
-        
-        /* 열렸을 때 적용되는 클래스 */
         .post-content.show {
-            display: block;
+            display: block; /* 클릭 시 보임 */
         }
-
-        /* 삭제 버튼 스타일 */
         .delete-btn {
             background: #ff4d4d;
             color: white;
@@ -116,31 +102,31 @@
     </nav>
     <main>
         <section class="calculator active" style="display:block;">
-            <h2>🧬 Method & Protocol Share</h2>
-            <p>Share your experimental protocols, tips, or troubleshooting guides.</p>
+            <h2>📢 Researcher's Community</h2>
+            <p>Share ideas, report bugs, ask questions, or share protocols.</p>
 
             <div class="board-container">
                 <div class="write-box">
-                    <h3>✍️ Share a Protocol</h3>
+                    <h3>✍️ Write a Post</h3>
                     <div class="form-row">
-                        <input type="text" id="writer-name" placeholder="Researcher Name (e.g. Kim)" maxlength="20">
+                        <input type="text" id="writer-name" placeholder="Nickname (e.g. LabRat01)" maxlength="20">
                     </div>
                     <div class="form-row">
-                        <input type="text" id="post-title" placeholder="Protocol Title (e.g. Western Blot Buffer Recipe)" maxlength="100">
+                        <input type="text" id="post-title" placeholder="Title (e.g. Question, Protocol Name, or Bug Report)" maxlength="100">
                     </div>
                     <div class="form-row">
                         <input type="password" id="post-password" placeholder="Password (Required for deletion)" maxlength="20">
                     </div>
                     <div class="form-row">
-                        <textarea id="post-content" rows="6" placeholder="Details (Reagents, Steps, Tips...)"></textarea>
+                        <textarea id="post-content" rows="6" placeholder="Content..."></textarea>
                     </div>
-                    <button id="save-btn" class="action-btn">Share Method</button>
+                    <button id="save-btn" class="action-btn">Post</button>
                 </div>
 
                 <div class="list-box">
-                    <h3>Recent Protocols</h3>
+                    <h3>Recent Posts</h3>
                     <div id="post-list">
-                        <div class="loading-msg">Loading protocols...</div>
+                        <div class="loading-msg">Loading posts...</div>
                     </div>
                     
                     <div class="pagination-area" style="text-align: center; margin-top: 20px;">
