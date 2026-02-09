@@ -3,44 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Board | Scientist's Toolkit</title>
+    <title>Method Board | Scientist's Toolkit</title>
     <link rel="stylesheet" href="../assets/style.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+
+    <style>
+        /* 게시물 한 줄 */
+        .post-item {
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        /* 클릭하는 헤더 부분 (제목 + 작성자) */
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .post-header:hover {
+            background-color: #f8f9fa; /* 마우스 올렸을 때 살짝 회색 */
+        }
+
+        /* 제목 스타일 */
+        .post-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        /* 작성자 및 날짜 스타일 */
+        .post-meta {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: right;
+            min-width: 120px;
+        }
+
+        /* 숨겨진 본문 내용 */
+        .post-content {
+            display: none; /* 기본적으로 숨김 */
+            padding: 20px;
+            background-color: #fcfcfc;
+            border-top: 1px dashed #eee;
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap; /* 줄바꿈 유지 */
+        }
+        
+        /* 열렸을 때 적용되는 클래스 */
+        .post-content.show {
+            display: block;
+        }
+
+        /* 삭제 버튼 스타일 */
+        .delete-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
-    <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
     
-    <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-        Loading inspiration... 🧪
-    </p>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
-            const quotes = [
-                "Cheering for your dedication and hard work today. 🧪", 
-                "Behind every data point, there is a researcher’s effort. 📊",
-                "Science is a journey of resilience. Keep going. 🚀",
-                "Your failed experiment is just a stepping stone to discovery. 💡",
-                "Rest is also part of the experiment. Don't burn out. ☕",
-                "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                "Believe in your hypothesis, but trust your data. 📉"
-            ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
-        });
-    </script>
-</header>
-    
-<nav>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quotes = [
+                    "Cheering for your dedication and hard work today. 🧪", 
+                    "Behind every data point, there is a researcher’s effort. 📊",
+                    "Science is a journey of resilience. Keep going. 🚀",
+                    "Your failed experiment is just a stepping stone to discovery. 💡",
+                    "Rest is also part of the experiment. Don't burn out. ☕",
+                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                    "Believe in your hypothesis, but trust your data. 📉"
+                ];
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                document.getElementById("quote-display").innerText = quotes[randomIndex];
+            });
+        </script>
+    </header>
+        
+    <nav>
         <a href="../" class="nav-btn">Home</a>
         <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
         <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
@@ -53,31 +116,31 @@
     </nav>
     <main>
         <section class="calculator active" style="display:block;">
-            <h2>📢 Researcher's Community</h2>
-            <p>Share ideas, report bugs, or request new tools.</p>
+            <h2>🧬 Method & Protocol Share</h2>
+            <p>Share your experimental protocols, tips, or troubleshooting guides.</p>
 
             <div class="board-container">
                 <div class="write-box">
-                    <h3>✍️ Write a Post</h3>
+                    <h3>✍️ Share a Protocol</h3>
                     <div class="form-row">
-                        <input type="text" id="writer-name" placeholder="Nickname (e.g. LabRat01)" maxlength="20">
+                        <input type="text" id="writer-name" placeholder="Researcher Name (e.g. Kim)" maxlength="20">
                     </div>
                     <div class="form-row">
-                        <input type="text" id="post-title" placeholder="Title" maxlength="100">
+                        <input type="text" id="post-title" placeholder="Protocol Title (e.g. Western Blot Buffer Recipe)" maxlength="100">
                     </div>
                     <div class="form-row">
                         <input type="password" id="post-password" placeholder="Password (Required for deletion)" maxlength="20">
                     </div>
                     <div class="form-row">
-                        <textarea id="post-content" rows="4" placeholder="Content..."></textarea>
+                        <textarea id="post-content" rows="6" placeholder="Details (Reagents, Steps, Tips...)"></textarea>
                     </div>
-                    <button id="save-btn" class="action-btn">Post</button>
+                    <button id="save-btn" class="action-btn">Share Method</button>
                 </div>
 
                 <div class="list-box">
-                    <h3>Recent Posts</h3>
+                    <h3>Recent Protocols</h3>
                     <div id="post-list">
-                        <div class="loading-msg">Loading posts...</div>
+                        <div class="loading-msg">Loading protocols...</div>
                     </div>
                     
                     <div class="pagination-area" style="text-align: center; margin-top: 20px;">
@@ -85,19 +148,19 @@
                         <span id="page-num" style="margin: 0 15px; font-weight:bold; color:#555;">Page 1</span>
                         <button id="next-btn" class="action-btn" style="background:#6c757d; display:none;">Next &gt;</button>
                     </div>
-                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br><br>
-    <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-    <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-    <br><br>
-    © 2026 Scientist's Toolkit
-</footer>
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br><br>
+        <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+        <br><br>
+        © 2026 Scientist's Toolkit
+    </footer>
     <script src="board.js"></script>
 </body>
 </html>
