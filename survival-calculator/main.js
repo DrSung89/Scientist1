@@ -1,28 +1,28 @@
 // ==========================================
-// ★ 다운로드 함수 (전역 window 객체에 등록하여 무조건 실행되게 함)
+// ★ 다운로드 함수 (전역 window 객체에 등록)
 // ==========================================
 window.downloadSurvivalChart = function() {
     const canvas = document.getElementById('survivalChart');
     if(!canvas) {
-        alert("Chart element not found.");
+        alert("Chart not found.");
         return;
     }
 
     try {
-        // 1. 흰색 배경의 임시 캔버스 생성 (투명 배경 방지)
+        // 흰색 배경을 가진 임시 캔버스 생성 (투명 배경 방지)
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         
-        // 2. 흰색으로 전체 칠하기
+        // 흰색 채우기
         tempCtx.fillStyle = '#ffffff';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         
-        // 3. 원본 차트 복사하기
+        // 원본 차트 복사
         tempCtx.drawImage(canvas, 0, 0);
         
-        // 4. 다운로드 링크 생성 및 클릭
+        // 다운로드 실행
         const link = document.createElement('a');
         link.download = 'survival-curve.png';
         link.href = tempCanvas.toDataURL('image/png', 1.0);
@@ -32,15 +32,15 @@ window.downloadSurvivalChart = function() {
         document.body.removeChild(link);
         
     } catch (e) {
-        console.error("Download Error:", e);
-        alert("Download failed. Please check the console (F12) for details.");
+        console.error(e);
+        alert("Download failed. Please try right-clicking the chart to save.");
     }
 };
 
 document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // 1. SAS Time Unit Converter (간격 강제 삭제)
+    // 1. SAS Time Unit Converter (간격 최소화 강제 적용)
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const val = parseFloat(timeInput.value);
         const unit = timeUnit.value;
 
-        // ★ [강제 스타일] 기존 CSS를 무시하고 패딩을 10px로 고정
-        convertResult.setAttribute("style", "padding: 10px 15px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 10px; display: block;");
+        // ★ [강제 스타일] 패딩 10px로 고정, min-height 해제
+        convertResult.style.cssText = "padding: 10px 15px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 10px; display: block;";
 
         if (isNaN(val)) {
             convertResult.innerHTML = "<div style='color:#888; font-size:0.9rem; margin:0;'>Please enter a value.</div>";
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (unit === "months") days = val * 30.4375;
         else if (unit === "years") days = val * 365.25;
 
-        // ★ [내부 HTML] margin: 0으로 줄 간격 최소화
+        // ★ [내부 HTML] gap 5px로 고정
         convertResult.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0;">
                 <p style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Days:</strong> ${days.toFixed(2)}</p>
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const defaultName = g === 1 && num === 2 ? "Control" : (g === 2 && num === 2 ? "Treatment" : `Group ${g}`);
             
             html += `
-            <div class="group-container" id="group-box-${g}" style="margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
+            <div class="group-container" id="group-box-${g}" style="margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
                 <div class="group-header" style="display:flex; justify-content:space-between; margin-bottom:5px; align-items:center;">
                     <div>
                         <label style="font-size:0.9rem;"><strong>Group:</strong></label>
@@ -264,8 +264,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
-        // ★ [강제 스타일] 결과창 컨테이너 Padding 15px로 고정 (공백 최소화)
-        resultDiv.setAttribute("style", "display: block; margin-top: 20px; padding: 15px !important; border: 1px solid #eee; background: #fff; border-radius: 8px;");
+        // ★ [강제 스타일] padding 10px로 고정 (공백 최소화)
+        resultDiv.style.cssText = "display: block; margin-top: 20px; padding: 10px !important; border: 1px solid #eee; background: #fff; border-radius: 8px;";
 
         // Median Table
         let medianHtml = `
@@ -285,9 +285,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         medianHtml += `</table>`;
 
-        // ★ [강제 스타일] 내부 레이아웃 Gap 15px로 고정
+        // ★ [내부 레이아웃] gap 10px로 고정
         resultDiv.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
                 
                 <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
                 

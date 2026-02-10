@@ -18,26 +18,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* SAS 결과 간격 줄이기 */
-        .sas-result-item {
-            margin-bottom: 4px;
-            font-size: 0.95rem;
-            color: #333;
-        }
-        /* 그룹 컨테이너 스타일 */
-        .group-container {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            margin-bottom: 20px;
-        }
-        .group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+        .sas-result-item { margin-bottom: 4px; font-size: 0.95rem; color: #333; }
+        .group-container { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; }
+        .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -115,23 +98,8 @@
 
             <button id="calc-os-btn" class="action-btn" style="margin-top: 20px; width: 100%;">Draw KM Plot</button>
 
-<div id="os-result" class="result" style="display:none; margin-top: 20px; padding: 15px;">
-                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.1rem;">📊 Analysis Result</h3>
-                
-                <div id="median-table-area" style="margin-bottom: 15px;"></div>
-
-                <div style="position: relative; height: 400px; width: 100%;">
-                    <canvas id="survivalChart"></canvas>
+            <div id="os-result" class="result" style="display:none; margin-top: 20px; padding: 15px;">
                 </div>
-                
-                <div style="text-align: right; margin-top: 10px;">
-                    <button id="download-btn" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
-                        📥 Download PNG
-                    </button>
-                </div>
-
-                <div id="detail-tables-area" style="margin-top: 20px;"></div>
-            </div>
         </section>
         
         <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
@@ -152,7 +120,7 @@
         © 2026 Scientist's Toolkit
     </footer>
 
-    <script src="main.js?v=20260210"></script>
+    <script src="main.js?v=9999"></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
