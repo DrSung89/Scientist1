@@ -86,7 +86,7 @@ window.deletePost = function(docId) {
     const inputPw = prompt("Enter password to delete:");
     if (inputPw === null) return;
 
-    const ADMIN_KEY = "admin1234"; // 관리자 키
+    const ADMIN_KEY = "rhksflwkqlqjs12!@"; // 관리자 키
 
     db.collection("posts").doc(docId).get().then((doc) => {
         if (doc.exists) {
