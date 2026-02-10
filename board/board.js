@@ -190,10 +190,9 @@ function loadPosts(direction = 'init') {
                const contentDiv = document.createElement("div");
                contentDiv.className = "post-content";
                contentDiv.innerHTML = `
-               <div>${escapeHtml(data.content)}</div>
-    
-              <div style="text-align:right; margin-top:5px;">
-                   <button class="delete-btn" onclick="deletePost('${doc.id}')">Delete Post</button>
+                <div style="margin-top: 10px; margin-bottom: 5px;">${escapeHtml(data.content)}</div>
+                 <div style="text-align:right; margin-top: 0;">
+                  <button class="delete-btn" onclick="deletePost('${doc.id}')" style="padding: 3px 8px; font-size: 0.75rem;">Delete Post</button>
                  </div>
                 `;
 
