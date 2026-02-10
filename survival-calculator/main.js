@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // 1. SAS Time Unit Converter (공백 최소화)
+    // 1. SAS Time Unit Converter (공백 완벽 제거)
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const unit = timeUnit.value;
 
         if (isNaN(val)) {
-            // 값이 없을 때는 아예 비워두거나 안내 문구를 최소화
+            // 값이 없을 때 안내 문구
             convertResult.innerHTML = "<div style='color:#888; font-size:0.9rem;'>Please enter a value.</div>";
             return;
         }
@@ -30,9 +30,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const resMonths = days / 30.4375;
         const resYears = days / 365.25;
 
-        // ★ [수정 1] 위아래 패딩(padding)을 0으로 설정하고, 줄 간격(gap)도 3px로 줄임
+        // ★ [핵심 수정] 컨테이너 스타일 강제 초기화 (위아래 공백 삭제)
+        convertResult.style.padding = "10px 15px"; // 위아래 10px, 좌우 15px로 축소
+        convertResult.style.minHeight = "auto";    // 최소 높이 설정 해제
+
+        // 내부 HTML 생성 (줄 간격 최소화)
         convertResult.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 3px; padding: 0;">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
                 <div style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Days:</strong> ${resDays.toFixed(2)}</div>
                 <div style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Weeks:</strong> ${resWeeks.toFixed(2)}</div>
                 <div style="margin: 0; line-height: 1.2; font-size: 0.95rem; color: #0056b3;"><strong>Months (SAS):</strong> ${resMonths.toFixed(2)}</div>
@@ -102,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // ★ [수정 2] Status 선택지(Dropdown)를 이전 버전(Event/Censored)으로 복구
     function generateTableRows(n, groupId) {
         let html = `
             <table style="width: 100%; border-spacing: 0 5px;">
@@ -229,7 +232,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
+        // ★ [핵심 수정 1] 상단 여백 제거 (Container Padding Reset)
         resultDiv.style.display = "block";
+        resultDiv.style.paddingTop = "15px"; // 상단 패딩을 줄임
         
         // Median Table
         let medianHtml = `
@@ -249,9 +254,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         medianHtml += `</table>`;
 
-        // 결과 레이아웃 (Flexbox, Gap 20px)
+        // ★ [핵심 수정 2] 레이아웃 재구성 및 다운로드 버튼 로직 개선
         resultDiv.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
                 
                 <h3 style="margin: 0; font-size: 1.1rem; color: #333;">📊 Analysis Result</h3>
                 
@@ -262,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
                 
                 <div style="text-align: right; margin: 0;">
-                    <button id="download-btn" style="
+                    <button id="download-chart-btn" type="button" style="
                         background-color: #2c3e50; 
                         color: white; 
                         border: none; 
@@ -283,26 +288,19 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
 
-        drawChart(datasets);
-
-        const newDownloadBtn = document.getElementById("download-btn");
-        if(newDownloadBtn) {
-            newDownloadBtn.addEventListener("click", function() {
-                const canvas = document.getElementById('survivalChart');
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
-                tempCtx.fillStyle = '#ffffff';
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                tempCtx.drawImage(canvas, 0, 0);
-                
-                const link = document.createElement('a');
-                link.download = 'survival-curve.png';
-                link.href = tempCanvas.toDataURL('image/png', 1.0);
-                link.click();
-            });
-        }
+        // 차트 그리기
+        setTimeout(() => {
+            drawChart(datasets);
+            
+            // ★ [핵심 수정 3] 다운로드 버튼 이벤트 리스너 확실하게 연결
+            // drawChart가 실행된 직후에 리스너를 붙여서 canvas가 존재하는 상태를 보장
+            const newDownloadBtn = document.getElementById("download-chart-btn");
+            if(newDownloadBtn) {
+                newDownloadBtn.onclick = function() {
+                    downloadChartImage();
+                };
+            }
+        }, 50); // 아주 짧은 지연시간을 두어 렌더링 안정성 확보
     }
 
     function drawChart(datasets) {
@@ -368,5 +366,39 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         });
+    }
+
+    // 다운로드 실행 함수 (독립 분리)
+    function downloadChartImage() {
+        const canvas = document.getElementById('survivalChart');
+        if(!canvas) {
+            alert("Chart not found.");
+            return;
+        }
+
+        // 흰색 배경을 가진 새 캔버스 생성 (투명 배경 방지)
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        
+        // 흰색 채우기
+        tempCtx.fillStyle = '#ffffff';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // 원본 차트 그리기
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // 다운로드 트리거
+        try {
+            const link = document.createElement('a');
+            link.download = 'survival-curve.png';
+            link.href = tempCanvas.toDataURL('image/png', 1.0);
+            document.body.appendChild(link); // 파이어폭스 호환성
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            alert("Download failed. Please try right-clicking the chart to save.");
+        }
     }
 });
