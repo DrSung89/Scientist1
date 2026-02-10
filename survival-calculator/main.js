@@ -1,7 +1,46 @@
+// ==========================================
+// ★ 다운로드 함수 (전역 window 객체에 등록하여 무조건 실행되게 함)
+// ==========================================
+window.downloadSurvivalChart = function() {
+    const canvas = document.getElementById('survivalChart');
+    if(!canvas) {
+        alert("Chart element not found.");
+        return;
+    }
+
+    try {
+        // 1. 흰색 배경의 임시 캔버스 생성 (투명 배경 방지)
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        
+        // 2. 흰색으로 전체 칠하기
+        tempCtx.fillStyle = '#ffffff';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // 3. 원본 차트 복사하기
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // 4. 다운로드 링크 생성 및 클릭
+        const link = document.createElement('a');
+        link.download = 'survival-curve.png';
+        link.href = tempCanvas.toDataURL('image/png', 1.0);
+        
+        document.body.appendChild(link); // 파이어폭스 호환성
+        link.click();
+        document.body.removeChild(link);
+        
+    } catch (e) {
+        console.error("Download Error:", e);
+        alert("Download failed. Please check the console (F12) for details.");
+    }
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // 1. SAS Time Unit Converter (여백 극소화)
+    // 1. SAS Time Unit Converter (간격 강제 삭제)
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -13,11 +52,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const val = parseFloat(timeInput.value);
         const unit = timeUnit.value;
 
-        // ★ 결과창 박스 자체의 패딩을 5px로 줄임 (!important 강제 적용)
-        convertResult.setAttribute("style", "padding: 5px 10px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 5px;");
+        // ★ [강제 스타일] 기존 CSS를 무시하고 패딩을 10px로 고정
+        convertResult.setAttribute("style", "padding: 10px 15px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 10px; display: block;");
 
         if (isNaN(val)) {
-            convertResult.innerHTML = "<div style='color:#888; font-size:0.85rem; margin:0;'>Please enter a value.</div>";
+            convertResult.innerHTML = "<div style='color:#888; font-size:0.9rem; margin:0;'>Please enter a value.</div>";
             return;
         }
 
@@ -27,13 +66,13 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (unit === "months") days = val * 30.4375;
         else if (unit === "years") days = val * 365.25;
 
-        // ★ 내부 텍스트 줄 간격(gap)을 2px로 줄이고 글자 크기를 조금 더 줄임
+        // ★ [내부 HTML] margin: 0으로 줄 간격 최소화
         convertResult.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0;">
-                <p style="margin: 0; line-height: 1.2; font-size: 0.9rem;"><strong>Days:</strong> ${days.toFixed(2)}</p>
-                <p style="margin: 0; line-height: 1.2; font-size: 0.9rem;"><strong>Weeks:</strong> ${(days / 7).toFixed(2)}</p>
-                <p style="margin: 0; line-height: 1.2; font-size: 0.9rem; color: #0056b3;"><strong>Months (SAS):</strong> ${(days / 30.4375).toFixed(2)}</p>
-                <p style="margin: 0; line-height: 1.2; font-size: 0.9rem;"><strong>Years:</strong> ${(days / 365.25).toFixed(2)}</p>
+            <div style="display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0;">
+                <p style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Days:</strong> ${days.toFixed(2)}</p>
+                <p style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Weeks:</strong> ${(days / 7).toFixed(2)}</p>
+                <p style="margin: 0; line-height: 1.2; font-size: 0.95rem; color: #0056b3;"><strong>Months (SAS):</strong> ${(days / 30.4375).toFixed(2)}</p>
+                <p style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Years:</strong> ${(days / 365.25).toFixed(2)}</p>
             </div>
         `;
     }
@@ -64,15 +103,15 @@ document.addEventListener("DOMContentLoaded", function() {
             const defaultName = g === 1 && num === 2 ? "Control" : (g === 2 && num === 2 ? "Treatment" : `Group ${g}`);
             
             html += `
-            <div class="group-container" id="group-box-${g}" style="margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 5px; border: 1px solid #eee;">
+            <div class="group-container" id="group-box-${g}" style="margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
                 <div class="group-header" style="display:flex; justify-content:space-between; margin-bottom:5px; align-items:center;">
                     <div>
-                        <label style="font-size:0.85rem;"><strong>Group:</strong></label>
-                        <input type="text" class="group-name-input" value="${defaultName}" style="padding:2px 5px; width:90px; font-size:0.85rem;">
+                        <label style="font-size:0.9rem;"><strong>Group:</strong></label>
+                        <input type="text" class="group-name-input" value="${defaultName}" style="padding:2px 5px; width:100px; font-size:0.9rem;">
                     </div>
                     <div>
-                        <label style="font-size:0.85rem;">N:</label>
-                        <select class="group-n-select" data-group="${g}" style="padding:2px; font-size:0.85rem;">
+                        <label style="font-size:0.9rem;">N:</label>
+                        <select class="group-n-select" data-group="${g}" style="padding:2px; font-size:0.9rem;">
                             <option value="5">5</option>
                             <option value="10" selected>10</option>
                             <option value="15">15</option>
@@ -104,9 +143,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <table style="width: 100%; border-spacing: 0 2px;">
                 <thead>
                     <tr style="text-align: left; font-size: 0.8rem; color: #666;">
-                        <th style="padding-bottom:2px;">No.</th>
-                        <th style="padding-bottom:2px;">Time</th>
-                        <th style="padding-bottom:2px;">Status</th>
+                        <th style="padding-bottom:5px;">No.</th>
+                        <th style="padding-bottom:5px;">Time</th>
+                        <th style="padding-bottom:5px;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,10 +155,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 <tr>
                     <td style="width: 15%; font-size:0.8rem;">#${i}</td>
                     <td style="width: 40%;">
-                        <input type="number" class="time-val group-${groupId}-time" placeholder="Time" style="width: 90%; padding: 3px; font-size:0.9rem;">
+                        <input type="number" class="time-val group-${groupId}-time" placeholder="Time" style="width: 90%; padding: 4px; font-size:0.9rem;">
                     </td>
                     <td style="width: 45%;">
-                        <select class="status-val group-${groupId}-status" style="width: 95%; padding: 3px; font-size:0.9rem;">
+                        <select class="status-val group-${groupId}-status" style="width: 95%; padding: 4px; font-size:0.9rem;">
                             <option value="1">1 (Event/Death)</option>
                             <option value="0">0 (Censored)</option>
                         </select>
@@ -225,32 +264,32 @@ document.addEventListener("DOMContentLoaded", function() {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
-        // ★ [핵심 1] 결과창 전체 여백 확 줄임 (padding 10px)
-        resultDiv.setAttribute("style", "display: block; margin-top: 15px; padding: 10px; border: 1px solid #eee; background: #fff; border-radius: 8px;");
+        // ★ [강제 스타일] 결과창 컨테이너 Padding 15px로 고정 (공백 최소화)
+        resultDiv.setAttribute("style", "display: block; margin-top: 20px; padding: 15px !important; border: 1px solid #eee; background: #fff; border-radius: 8px;");
 
         // Median Table
         let medianHtml = `
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                 <tr style="background:#f1f1f1; border-bottom:1px solid #ccc;">
-                    <th style="padding:4px 8px; text-align:left;">Group</th>
-                    <th style="padding:4px 8px; text-align:left;">Median Survival</th>
+                    <th style="padding:6px 10px; text-align:left;">Group</th>
+                    <th style="padding:6px 10px; text-align:left;">Median Survival</th>
                 </tr>
         `;
         medianResults.forEach(res => {
             medianHtml += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:4px 8px; font-weight:bold; color:${res.color};">${res.name}</td>
-                    <td style="padding:4px 8px;">${res.median}</td>
+                    <td style="padding:6px 10px; font-weight:bold; color:${res.color};">${res.name}</td>
+                    <td style="padding:6px 10px;">${res.median}</td>
                 </tr>
             `;
         });
         medianHtml += `</table>`;
 
-        // ★ [핵심 2] gap을 10px로 줄이고, 버튼에 고유 ID(btn-download-final) 부여
+        // ★ [강제 스타일] 내부 레이아웃 Gap 15px로 고정
         resultDiv.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
                 
-                <h3 style="margin: 0; font-size: 1rem; color: #333; border-bottom: none; padding-bottom: 0;">📊 Analysis Result</h3>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
                 
                 <div style="margin: 0;">${medianHtml}</div>
 
@@ -259,11 +298,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
                 
                 <div style="text-align: right; margin: 0;">
-                    <button id="btn-download-final" type="button" style="
+                    <button type="button" onclick="window.downloadSurvivalChart()" style="
                         background-color: #2c3e50; 
                         color: white; 
                         border: none; 
-                        padding: 5px 10px; 
+                        padding: 6px 12px; 
                         border-radius: 4px; 
                         cursor: pointer; 
                         font-size: 0.8rem; 
@@ -278,22 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
 
-        // 차트 그리기
         drawChart(datasets);
-
-        // ★ [핵심 3] 다운로드 버튼 이벤트 리스너 직접 연결 (가장 확실한 방법)
-        setTimeout(() => {
-            const dlBtn = document.getElementById("btn-download-final");
-            if (dlBtn) {
-                // 기존 리스너 제거 후 새로 추가 (중복 방지)
-                const newBtn = dlBtn.cloneNode(true);
-                dlBtn.parentNode.replaceChild(newBtn, dlBtn);
-                
-                newBtn.addEventListener("click", function() {
-                    downloadChartImage();
-                });
-            }
-        }, 100);
     }
 
     function drawChart(datasets) {
@@ -346,39 +370,5 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         });
-    }
-
-    // 다운로드 실행 함수
-    function downloadChartImage() {
-        const canvas = document.getElementById('survivalChart');
-        if(!canvas) {
-            alert("Chart not found.");
-            return;
-        }
-
-        try {
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-            
-            // 흰색 배경 채우기
-            tempCtx.fillStyle = '#ffffff';
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            
-            // 이미지 그리기
-            tempCtx.drawImage(canvas, 0, 0);
-            
-            // 다운로드
-            const link = document.createElement('a');
-            link.download = 'survival-curve.png';
-            link.href = tempCanvas.toDataURL('image/png', 1.0);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error(e);
-            alert("Download failed.");
-        }
     }
 });
