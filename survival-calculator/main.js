@@ -1,18 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // 1. SAS Time Unit Converter (간격 수정됨)
+    // 1. SAS Time Unit Converter
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
     const convertResult = document.getElementById("convert-result");
 
     function convertTime() {
+        if (!timeInput || !timeUnit || !convertResult) return;
+
         const val = parseFloat(timeInput.value);
         const unit = timeUnit.value;
 
         if (isNaN(val)) {
-            convertResult.innerHTML = "<div style='color:#888;'>Please enter a value.</div>";
+            convertResult.innerHTML = "<div style='color:#888; padding:5px;'>Please enter a value.</div>";
             return;
         }
 
@@ -27,12 +29,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const resMonths = days / 30.4375;
         const resYears = days / 365.25;
 
-        // 간격을 좁힌 디자인 적용 (div class="sas-result-item")
         convertResult.innerHTML = `
-            <div class="sas-result-item"><strong>Days:</strong> ${resDays.toFixed(2)}</div>
-            <div class="sas-result-item"><strong>Weeks:</strong> ${resWeeks.toFixed(2)}</div>
-            <div class="sas-result-item"><strong>Months (SAS):</strong> ${resMonths.toFixed(2)}</div>
-            <div class="sas-result-item"><strong>Years:</strong> ${resYears.toFixed(2)}</div>
+            <div style="display: flex; flex-direction: column; gap: 4px; padding: 5px 0;">
+                <div style="margin: 0; line-height: 1.4;"><strong>Days:</strong> ${resDays.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.4;"><strong>Weeks:</strong> ${resWeeks.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.4; color: #0056b3;"><strong>Months (SAS):</strong> ${resMonths.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.4;"><strong>Years:</strong> ${resYears.toFixed(2)}</div>
+            </div>
         `;
     }
 
@@ -46,27 +49,25 @@ document.addEventListener("DOMContentLoaded", function() {
     const numGroupsSelect = document.getElementById("num-groups");
     const groupsWrapper = document.getElementById("groups-wrapper");
     const calcBtn = document.getElementById("calc-os-btn");
-    const downloadBtn = document.getElementById("download-btn");
+    
+    // 차트 객체를 전역 변수로 관리
     let chartInstance = null;
 
     // 초기 그룹 입력창 생성
     if(numGroupsSelect) {
         createGroupInputs(parseInt(numGroupsSelect.value));
-
         numGroupsSelect.addEventListener("change", function() {
             createGroupInputs(parseInt(this.value));
         });
     }
 
-    // 그룹별 입력 테이블 생성 함수
     function createGroupInputs(num) {
         let html = "";
         for (let g = 1; g <= num; g++) {
-            // 그룹 이름을 기본적으로 Group 1, Group 2... 로 설정
             const defaultName = g === 1 && num === 2 ? "Control" : (g === 2 && num === 2 ? "Treatment" : `Group ${g}`);
             
             html += `
-            <div class="group-container" id="group-box-${g}">
+            <div class="group-container" id="group-box-${g}" style="margin-bottom: 15px;">
                 <div class="group-header">
                     <div>
                         <label><strong>Group Name:</strong></label>
@@ -92,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if(groupsWrapper) groupsWrapper.innerHTML = html;
 
-        // 각 그룹의 N 변경 시 이벤트 리스너 다시 연결
         document.querySelectorAll(".group-n-select").forEach(select => {
             select.addEventListener("change", function() {
                 const g = this.dataset.group;
@@ -141,13 +141,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const allDatasets = [];
             const medianResults = [];
             const groupNames = document.querySelectorAll(".group-name-input");
-            const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; // Blue, Red, Green, Orange
+            const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; 
 
-            // 결과창 초기화
-            document.getElementById("median-table-area").innerHTML = "";
-            document.getElementById("detail-tables-area").innerHTML = "";
-
-            // 그룹별 루프
             for (let g = 1; g <= numGroups; g++) {
                 const timeInputs = document.querySelectorAll(`.group-${g}-time`);
                 const statusInputs = document.querySelectorAll(`.group-${g}-status`);
@@ -164,24 +159,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 if (data.length === 0) continue;
 
-                // KM 계산
                 const kmResult = calculateSingleKM(data);
                 
-                // 차트 데이터셋 추가
                 allDatasets.push({
                     label: groupName,
                     data: kmResult.points,
                     borderColor: colors[(g-1) % 4],
                     backgroundColor: colors[(g-1) % 4],
                     borderWidth: 2,
-                    fill: false,       // ★ 요청사항: 채우기 끔
-                    stepped: true,     // ★ 계단식 그래프
+                    fill: false,       
+                    stepped: true,     
                     tension: 0,
-                    pointRadius: 2,
-                    pointHoverRadius: 5
+                    pointRadius: 3,
+                    pointHoverRadius: 6
                 });
 
-                // Median 결과 저장
                 medianResults.push({ name: groupName, median: kmResult.median, color: colors[(g-1) % 4] });
             }
 
@@ -190,16 +182,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
+            // 결과를 그리는 함수 호출
             displayResults(medianResults, allDatasets);
         });
     }
 
-    // 개별 그룹 KM 계산 알고리즘
     function calculateSingleKM(data) {
         data.sort((a, b) => a.time - b.time);
         let n = data.length;
         let survivalProb = 1.0;
-        let points = [{x: 0, y: 1.0}]; // 시작점 (0, 100%)
+        let points = [{x: 0, y: 1.0}]; 
         
         let grouped = {};
         data.forEach(d => {
@@ -222,8 +214,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 survivalProb = survivalProb * (1 - (d / currentN));
             }
 
-            // 계단식 표현을 위해:
-            // 1. 이벤트 직전 시간까지는 이전 확률 유지 (Stepped: true 옵션이 이걸 자동화해주지만, 데이터 포인트는 정확해야 함)
             points.push({ x: t, y: survivalProb });
 
             if (!medianFound && survivalProb <= 0.5) {
@@ -233,38 +223,80 @@ document.addEventListener("DOMContentLoaded", function() {
             currentN -= info.total;
         });
         
-        // 마지막 시점까지 선 연장 (선택사항, 보통 마지막 데이터 포인트에서 끝냄)
         return { median: medianTime, points: points };
     }
 
-    function displayResults(medianResults, datasets) {
-        document.getElementById("os-result").style.display = "block";
-        
-        // Median Table 생성 (★ 여기 수정됨: 간격 대폭 축소)
-        let medianHtml = `
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 0.9rem;">
-                <tr style="background:#f1f1f1; border-bottom:1px solid #ccc;">
-                    <th style="padding:4px 8px; text-align:left;">Group</th>
-                    <th style="padding:4px 8px; text-align:left;">Median Survival</th>
-                </tr>
+    // ★ [핵심 수정] 결과창을 JS에서 통째로 다시 그려서 간격을 강제로 제어
+function displayResults(medianResults, datasets) {
+    const resultDiv = document.getElementById("os-result");
+    if(!resultDiv) return;
+
+    resultDiv.style.display = "block";
+    
+    // 1. Median Table HTML 생성 (간격 최소화)
+    let medianHtml = `
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.9rem;">
+            <tr style="background:#f1f1f1; border-bottom:1px solid #ccc;">
+                <th style="padding:4px 8px; text-align:left;">Group</th>
+                <th style="padding:4px 8px; text-align:left;">Median Survival</th>
+            </tr>
+    `;
+    medianResults.forEach(res => {
+        medianHtml += `
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:4px 8px; font-weight:bold; color:${res.color};">${res.name}</td>
+                <td style="padding:4px 8px;">${res.median}</td>
+            </tr>
         `;
-        medianResults.forEach(res => {
-            medianHtml += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:4px 8px; font-weight:bold; color:${res.color};">${res.name}</td>
-                    <td style="padding:4px 8px;">${res.median}</td>
-                </tr>
-            `;
+    });
+    medianHtml += `</table>`;
+
+    // 2. 결과창 내부 HTML을 완전히 덮어쓰기 (공백 제어 및 버튼 스타일 개선)
+    // 다운로드 버튼 스타일 변경: 파란색 계열, 간결한 디자인, 적절한 패딩
+    resultDiv.innerHTML = `
+        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #333;">📊 Analysis Result</h3>
+        
+        <div id="median-table-area">${medianHtml}</div>
+
+        <div style="position: relative; height: 350px; width: 100%;">
+            <canvas id="survivalChart"></canvas>
+        </div>
+        
+        <div style="text-align: right; margin-top: 10px;">
+            <button id="download-btn" style="background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px;">
+                📥 Download PNG
+            </button>
+        </div>
+    `;
+
+    // 3. 차트 그리기
+    drawChart(datasets);
+
+    // 4. 다운로드 버튼 이벤트 다시 연결
+    const newDownloadBtn = document.getElementById("download-btn");
+    if(newDownloadBtn) {
+        newDownloadBtn.addEventListener("click", function() {
+            const canvas = document.getElementById('survivalChart');
+            // 흰색 배경을 포함하여 다운로드 (투명 배경 방지)
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.fillStyle = '#ffffff';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            const link = document.createElement('a');
+            link.download = 'survival-curve.png';
+            link.href = tempCanvas.toDataURL('image/png', 1.0);
+            link.click();
         });
-        medianHtml += `</table>`;
-        document.getElementById("median-table-area").innerHTML = medianHtml;
-
-        drawChart(datasets);
     }
-
+}
     function drawChart(datasets) {
         const ctx = document.getElementById('survivalChart').getContext('2d');
-        const xLabel = document.getElementById('xaxis-label').value || "Time";
+        const xLabelInput = document.getElementById('xaxis-label');
+        const xLabel = xLabelInput ? (xLabelInput.value || "Time") : "Time";
 
         if (chartInstance) {
             chartInstance.destroy();
@@ -273,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function() {
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                datasets: datasets // 다중 데이터셋
+                datasets: datasets 
             },
             options: {
                 responsive: true,
@@ -296,7 +328,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     },
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15
+                        }
                     }
                 },
                 scales: {
@@ -313,16 +349,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
             }
-        });
-    }
-
-    // ★ 그래프 다운로드 기능
-    if(downloadBtn) {
-        downloadBtn.addEventListener("click", function() {
-            const link = document.createElement('a');
-            link.download = 'survival-curve.png';
-            link.href = document.getElementById('survivalChart').toDataURL('image/png', 1.0);
-            link.click();
         });
     }
 });
