@@ -355,7 +355,6 @@ if(calcBtn) {
 
 function runLogRank(g1, g2) {
         // 1. Combine all unique time points from both groups where events occurred
-        // (Log-rank only cares about times where at least one event happened)
         let allTimes = new Set([
             ...g1.filter(d => d.status === 1).map(d => d.time), 
             ...g2.filter(d => d.status === 1).map(d => d.time)
@@ -367,51 +366,56 @@ function runLogRank(g1, g2) {
         let V = 0;  // Variance
 
         times.forEach(t => {
-            // Number at risk in each group just before time t (include events at t)
+            // Risk sets
             let r1 = g1.filter(d => d.time >= t).length;
             let r2 = g2.filter(d => d.time >= t).length;
-            let r = r1 + r2; // Total at risk
+            let r = r1 + r2;
 
-            // Number of events at time t in each group
+            // Events
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
             let d2 = g2.filter(d => d.time === t && d.status === 1).length;
-            let d = d1 + d2; // Total events
+            let d = d1 + d2;
 
-            // Only calculate if there are people at risk and at least one event occurred
             if (r > 0 && d > 0) {
-                // Expected events for Group 1
                 let e1 = r1 * (d / r);
-                
                 O1 += d1;
                 E1 += e1;
-
-                // Variance calculation (hypergeometric variance)
-                // If r == 1, avoid division by zero
+                
                 if (r > 1) {
-                    let varTerm = (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
-                    V += varTerm;
+                    V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
                 }
             }
         });
 
-        // Calculate Chi-Square statistic: (O - E)^2 / V
-        // Using Z-score method: Z = (O1 - E1) / sqrt(V) -> ChiSq = Z^2
+        // Calculate Chi-Square
+        // Z = (O - E) / sqrt(V)
+        // ChiSq = Z^2
+        if (V === 0) return { chisq: 0, p: 1.0 }; // 분산이 0이면 계산 불가
+
         let Z = (O1 - E1) / Math.sqrt(V);
         let chisq = Z * Z;
         
-        // Handle edge cases (e.g., V=0 implies no variance/identical data or insufficient data)
-        if (isNaN(chisq) || !isFinite(chisq)) return { chisq: 0, p: 1.0 };
-        
-        // Calculate P-value (1 degree of freedom for 2 groups)
-        // Ensure jStat is loaded. If not, return valid placeholder.
-        let p = 1.0;
-        if (typeof jStat !== 'undefined') {
-            p = 1 - jStat.chisquare.cdf(chisq, 1);
-        } else {
-            console.error("jStat library not loaded.");
-        }
+        // ★ [수정됨] 라이브러리 없이 직접 P-value 계산 함수 호출
+        let p = getChi2Pval(chisq);
         
         return { chisq, p };
+    }
+
+    // ★ [추가됨] 외부 라이브러리 없이 Chi-Square(df=1) P-value 계산하는 함수
+    function getChi2Pval(x) {
+        if (x <= 0 || isNaN(x)) return 1;
+        // Chi-Square(df=1)은 정규분포 Z값의 제곱과 같음 -> P = 2 * (1 - NormalCDF(sqrt(x)))
+        // 근사식을 사용하여 계산
+        return 2 * (1 - normalCDF(Math.sqrt(x)));
+    }
+
+    function normalCDF(x) {
+        // Hasting's approximation for Standard Normal CDF
+        var t = 1 / (1 + 0.2316419 * Math.abs(x));
+        var d = 0.3989423 * Math.exp(-x * x / 2);
+        var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+        if (x > 0) return 1 - p;
+        return p;
     }
 
     // --- Firebase Visitor Count ---
