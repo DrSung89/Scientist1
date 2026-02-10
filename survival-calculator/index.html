@@ -5,38 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survival Analysis (Kaplan-Meier) | Scientist's Toolkit</title>
     
-    <meta name="description" content="Calculate Median Survival Time and Survival Probability using Kaplan-Meier method. Includes SAS time unit converter.">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Survival Analysis (Kaplan-Meier) | Scientist's Toolkit">
-    <meta property="og:description" content="Calculate Median Survival Time and Survival Probability. Includes SAS time unit converter (30.4375 days).">
+    <meta name="description" content="Calculate Median Survival Time and Survival Probability (Kaplan-Meier). Compare multiple groups and export charts.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
-    <meta property="og:url" content="https://scientisttoolkit.xyz/survival-calculator/">
     
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Survival Analysis | Scientist's Toolkit">
-    <meta name="twitter:description" content="Easy-to-use Kaplan-Meier calculator and SAS time converter for researchers.">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/survival-calculator/">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* SAS 결과 간격 줄이기 */
+        .sas-result-item {
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+            color: #333;
+        }
+        /* 그룹 컨테이너 스타일 */
+        .group-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
         <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
-
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; min-height: 1.2em;">Loading...</p>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 const quotes = [
@@ -44,12 +51,9 @@
                     "Behind every data point, there is a researcher’s effort. 📊",
                     "Science is a journey of resilience. Keep going. 🚀",
                     "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
                     "Believe in your hypothesis, but trust your data. 📉"
                 ];
-                const randomIndex = Math.floor(Math.random() * quotes.length);
-                document.getElementById("quote-display").innerText = quotes[randomIndex];
+                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
             });
         </script>
     </header>
@@ -70,112 +74,88 @@
     <main>
         <section class="calculator" style="display:block; margin-bottom: 30px;">
             <h2>⏱️ SAS Time Unit Converter</h2>
-            <p>Converts time based on SAS standard (1 Month = 30.4375 days).</p>
+            <p>1 Month = 30.4375 days</p>
             
             <div class="input-group">
                 <label>Input Value</label>
-                <input type="number" id="time-input" placeholder="e.g. 100">
+                <input type="number" id="time-input" placeholder="e.g. 52">
                 <select id="time-unit">
                     <option value="days">Days</option>
-                    <option value="weeks">Weeks</option>
+                    <option value="weeks" selected>Weeks</option>
                     <option value="months">Months (SAS)</option>
                     <option value="years">Years</option>
                 </select>
             </div>
 
-            <div class="result" id="convert-result" style="text-align: left; font-size: 0.95rem; line-height: 1.8;">
-                </div>
+            <div class="result" id="convert-result" style="text-align: left; padding: 15px;">
+                <div style="color:#888; font-style:italic;">Result will appear here...</div>
+            </div>
         </section>
 
         <section class="calculator" style="display:block;">
             <h2>📉 Overall Survival (Kaplan-Meier)</h2>
-            <p>Calculate Median Survival Time and Survival Probability.</p>
+            <p>Compare up to 4 groups. Generate Median Survival Time & Plot.</p>
 
-            <div class="input-group">
-                <label>Number of Subjects (N)</label>
-                <select id="sample-size">
-                    <option value="5">5</option>
-                    <option value="10" selected>10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="50">50</option>
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Number of Groups</label>
+                <select id="num-groups">
+                    <option value="1">1 Group</option>
+                    <option value="2" selected>2 Groups (e.g. Control vs Treatment)</option>
+                    <option value="3">3 Groups</option>
+                    <option value="4">4 Groups</option>
                 </select>
             </div>
+
+            <div class="input-group">
+                <label>X-Axis Label (for Graph)</label>
+                <input type="text" id="xaxis-label" value="Time (Days)" placeholder="e.g. Time (Months)">
+            </div>
             
-            <div id="data-entry-area" style="margin-top: 20px;">
-                </div>
+            <div id="groups-wrapper"></div>
 
-            <button id="calc-os-btn" class="action-btn" style="margin-top: 20px; width: 100%;">Calculate OS</button>
+            <button id="calc-os-btn" class="action-btn" style="margin-top: 20px; width: 100%;">Draw KM Plot</button>
 
-            <div id="os-result" class="result" style="display:none; margin-top: 20px;">
-                <h3>📊 Result</h3>
-                <p><strong>Median Survival Time:</strong> <span id="median-survival" style="color: #d63384; font-weight: bold;">-</span></p>
+<div id="os-result" class="result" style="display:none; margin-top: 20px; padding: 15px;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.1rem;">📊 Analysis Result</h3>
                 
-                <div style="overflow-x: auto; margin-top: 15px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                        <thead>
-                            <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
-                                <th style="padding: 8px;">Time</th>
-                                <th style="padding: 8px;">Status</th>
-                                <th style="padding: 8px;">Survival Prob.</th>
-                            </tr>
-                        </thead>
-                        <tbody id="km-table-body"></tbody>
-                    </table>
-                </div>
+                <div id="median-table-area" style="margin-bottom: 15px;"></div>
 
-                <div style="margin-top: 30px;">
+                <div style="position: relative; height: 400px; width: 100%;">
                     <canvas id="survivalChart"></canvas>
                 </div>
+                
+                <div style="text-align: right; margin-top: 10px;">
+                    <button id="download-btn" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
+                        📥 Download PNG
+                    </button>
+                </div>
+
+                <div id="detail-tables-area" style="margin-top: 20px;"></div>
             </div>
         </section>
-
+        
         <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
             <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2>📉 What is Kaplan-Meier Survival Analysis?</h2>
-            <p>
-                The Kaplan-Meier estimator is a non-parametric statistic used to estimate the survival function from lifetime data. 
-                In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment.
-            </p>
-
-            <h3>Why "30.4375 days"?</h3>
-            <p>
-                When converting days to months in clinical trials, the SAS statistical software standard is widely used. 
-                Since a year has 365.25 days (accounting for leap years), the average length of a month is:
-            </p>
-            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0;">
-                <strong>$$ 1 \text{ Month} = \frac{365.25}{12} = 30.4375 \text{ Days} $$</strong>
-            </div>
-
-            <h3>How to use this tool</h3>
+            <h2>📉 Tips for Kaplan-Meier</h2>
             <ul>
-                <li><strong>Censoring (0):</strong> The subject left the study or the study ended before the event occurred. The exact survival time is unknown, but it is at least the recorded time.</li>
-                <li><strong>Event (1):</strong> The event of interest (e.g., death, relapse) occurred at the recorded time.</li>
+                <li><strong>Censoring (0):</strong> Subject alive at the end of study or lost to follow-up.</li>
+                <li><strong>Event (1):</strong> Subject died or event occurred.</li>
+                <li><strong>Median Survival:</strong> Time at which survival probability drops to 50%. If the curve never drops below 50%, it is "Not Reached".</li>
             </ul>
-
-            <h3>Median Survival Time</h3>
-            <p>
-                This is the time at which the survival probability drops to 0.5 (50%). It is a key metric for comparing the efficacy of treatments.
-            </p>
         </section>
     </main>
 
     <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
+        <span id="visitor-count">Today's Visitors: Loading...</span><br><br>
         <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a><br><br>
         © 2026 Scientist's Toolkit
     </footer>
 
     <script src="main.js"></script>
-
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Firebase 설정
             const firebaseConfig = {
                 apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
                 authDomain: "scientisttoolkit.firebaseapp.com",
@@ -185,34 +165,17 @@
                 appId: "1:611412737478:web:e7389b1b03c002f56546c7",
                 measurementId: "G-5K0XVX0TFM"
             };
-
-            // Firebase 중복 초기화 방지
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const countSpan = document.getElementById('visitor-count');
-            
-            // 날짜 기반 문서 ID 생성 (YYYY-MM-DD, 한국 시간 보정)
-            const today = new Date();
-            const offset = today.getTimezoneOffset() * 60000;
-            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
             const docRef = db.collection('visitors').doc(dateStr);
-
-            // 카운트 증가 (세션 스토리지 활용하여 중복 방지)
             if (!sessionStorage.getItem(`visited_${dateStr}`)) {
                 docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'))
-                .catch(err => console.error("Error updating visitor count:", err));
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
             }
-
-            // 실시간 카운트 표시
             docRef.onSnapshot((doc) => {
-                if (doc.exists && countSpan) {
-                    const count = doc.data().count;
-                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-                }
+                if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
             });
         });
     </script>
