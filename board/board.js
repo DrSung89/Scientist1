@@ -187,13 +187,14 @@ function loadPosts(direction = 'init') {
                 `;
 
                 // 3. 본문 생성 (숨겨진 부분)
-                const contentDiv = document.createElement("div");
-                contentDiv.className = "post-content";
-                contentDiv.innerHTML = `
-                    <div>${escapeHtml(data.content)}</div>
-                    <div style="text-align:right; margin-top:15px;">
-                        <button class="delete-btn" onclick="deletePost('${doc.id}')">Delete Post</button>
-                    </div>
+               const contentDiv = document.createElement("div");
+               contentDiv.className = "post-content";
+               contentDiv.innerHTML = `
+               <div>${escapeHtml(data.content)}</div>
+    
+              <div style="text-align:right; margin-top:5px;">
+                   <button class="delete-btn" onclick="deletePost('${doc.id}')">Delete Post</button>
+                 </div>
                 `;
 
                 // 4. 클릭 이벤트 (열고 닫기)
