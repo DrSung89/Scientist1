@@ -353,42 +353,64 @@ if(calcBtn) {
         return html;
     }
 
-    function runLogRank(g1, g2) {
-        // 두 그룹의 모든 시간 포인트를 합침
-        let allTimes = new Set([...g1.map(d=>d.time), ...g2.map(d=>d.time)]);
-        let times = Array.from(allTimes).sort((a,b)=>a-b);
+function runLogRank(g1, g2) {
+        // 1. Combine all unique time points from both groups where events occurred
+        // (Log-rank only cares about times where at least one event happened)
+        let allTimes = new Set([
+            ...g1.filter(d => d.status === 1).map(d => d.time), 
+            ...g2.filter(d => d.status === 1).map(d => d.time)
+        ]);
+        let times = Array.from(allTimes).sort((a, b) => a - b);
         
-        let O1 = 0, E1 = 0, V = 0;
+        let O1 = 0; // Observed events in Group 1
+        let E1 = 0; // Expected events in Group 1
+        let V = 0;  // Variance
 
         times.forEach(t => {
-            // t 시점 직전의 Risk Set 크기
+            // Number at risk in each group just before time t (include events at t)
             let r1 = g1.filter(d => d.time >= t).length;
             let r2 = g2.filter(d => d.time >= t).length;
-            let r = r1 + r2;
+            let r = r1 + r2; // Total at risk
 
-            // t 시점의 Event 수
+            // Number of events at time t in each group
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
             let d2 = g2.filter(d => d.time === t && d.status === 1).length;
-            let d = d1 + d2;
+            let d = d1 + d2; // Total events
 
+            // Only calculate if there are people at risk and at least one event occurred
             if (r > 0 && d > 0) {
+                // Expected events for Group 1
                 let e1 = r1 * (d / r);
+                
                 O1 += d1;
                 E1 += e1;
+
+                // Variance calculation (hypergeometric variance)
+                // If r == 1, avoid division by zero
                 if (r > 1) {
-                    V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
+                    let varTerm = (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
+                    V += varTerm;
                 }
             }
         });
 
-        // 카이제곱 통계량 및 P-value 계산
+        // Calculate Chi-Square statistic: (O - E)^2 / V
+        // Using Z-score method: Z = (O1 - E1) / sqrt(V) -> ChiSq = Z^2
         let Z = (O1 - E1) / Math.sqrt(V);
         let chisq = Z * Z;
         
-        // jStat이 없으면 에러 방지
-        if (typeof jStat === 'undefined') return { chisq: 0, p: 1 };
+        // Handle edge cases (e.g., V=0 implies no variance/identical data or insufficient data)
+        if (isNaN(chisq) || !isFinite(chisq)) return { chisq: 0, p: 1.0 };
         
-        let p = 1 - jStat.chisquare.cdf(chisq, 1);
+        // Calculate P-value (1 degree of freedom for 2 groups)
+        // Ensure jStat is loaded. If not, return valid placeholder.
+        let p = 1.0;
+        if (typeof jStat !== 'undefined') {
+            p = 1 - jStat.chisquare.cdf(chisq, 1);
+        } else {
+            console.error("jStat library not loaded.");
+        }
+        
         return { chisq, p };
     }
 
