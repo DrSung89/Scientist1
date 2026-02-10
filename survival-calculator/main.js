@@ -156,41 +156,67 @@ document.addEventListener("DOMContentLoaded", function() {
         return html;
     }
 
-    if(calcBtn) {
+if(calcBtn) {
         calcBtn.addEventListener("click", function() {
             const numGroups = parseInt(numGroupsSelect.value);
             const allDatasets = [];
             const medianResults = [];
             const groupNames = document.querySelectorAll(".group-name-input");
             const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; 
+            
+            // ★ 통계용 데이터 저장 배열 추가
+            let groupData = []; 
 
             for (let g = 1; g <= numGroups; g++) {
                 const timeInputs = document.querySelectorAll(`.group-${g}-time`);
                 const statusInputs = document.querySelectorAll(`.group-${g}-status`);
                 const groupName = groupNames[g-1].value;
                 let data = [];
+
                 for (let i = 0; i < timeInputs.length; i++) {
                     const t = parseFloat(timeInputs[i].value);
                     const s = parseInt(statusInputs[i].value);
-                    if (!isNaN(t)) data.push({ time: t, status: s });
+                    if (!isNaN(t)) {
+                        data.push({ time: t, status: s });
+                    }
                 }
+
                 if (data.length === 0) continue;
 
+                // ★ 통계 분석을 위해 원본 데이터 저장
+                groupData.push({ name: groupName, data: data });
+
                 const kmResult = calculateSingleKM(data);
+                
                 allDatasets.push({
                     label: groupName,
                     data: kmResult.points,
                     borderColor: colors[(g-1) % 4],
                     backgroundColor: colors[(g-1) % 4],
                     borderWidth: 2,
-                    fill: false, stepped: true, tension: 0,
-                    pointRadius: 2, pointHoverRadius: 5
+                    fill: false,       
+                    stepped: true,     
+                    tension: 0,
+                    pointRadius: 2,
+                    pointHoverRadius: 5
                 });
+
                 medianResults.push({ name: groupName, median: kmResult.median, color: colors[(g-1) % 4] });
             }
 
-            if (allDatasets.length === 0) { alert("Please enter data."); return; }
-            displayResults(medianResults, allDatasets);
+            if (allDatasets.length === 0) {
+                alert("Please enter data for at least one group.");
+                return;
+            }
+
+            // ★ 통계 분석 실행 (그룹이 2개 이상일 때만)
+            let statsHtml = "";
+            if (groupData.length >= 2) {
+                statsHtml = calculateLogRankStats(groupData);
+            }
+
+            // 결과 함수에 통계 HTML도 같이 전달
+            displayResults(medianResults, allDatasets, statsHtml);
         });
     }
 
@@ -219,40 +245,61 @@ document.addEventListener("DOMContentLoaded", function() {
         return { median: medianTime, points: points };
     }
 
-    function displayResults(medianResults, datasets) {
+// statsHtml 인자 추가됨
+    function displayResults(medianResults, datasets, statsHtml) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
-        
-        resultDiv.style.display = "block";
-        // ★ [강제 스타일] 패딩 15px 고정 (공백 제거)
+
         resultDiv.style.cssText = "display: block; margin-top: 20px; padding: 15px !important; border: 1px solid #eee; background: #fff; border-radius: 8px;";
 
-        let medianHtml = `<table class="km-table"><tr><th>Group</th><th>Median Survival</th></tr>`;
+        let medianHtml = `
+            <table class="km-table">
+                <tr><th>Group</th><th>Median Survival</th></tr>
+        `;
         medianResults.forEach(res => {
-            medianHtml += `<tr><td style="color:${res.color}; font-weight:bold;">${res.name}</td><td>${res.median}</td></tr>`;
+            medianHtml += `
+                <tr>
+                    <td style="padding:6px 10px; font-weight:bold; color:${res.color};">${res.name}</td>
+                    <td style="padding:6px 10px;">${res.median}</td>
+                </tr>
+            `;
         });
         medianHtml += `</table>`;
 
-        // ★ 내부 레이아웃 (Gap 10px)
+        // ★ statsHtml(통계 표)을 중간에 삽입
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.1rem; color: #333;">📊 Analysis Result</h3>
+                
+                <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
+                
                 <div style="margin: 0;">${medianHtml}</div>
+                
+                <div style="margin: 0;">${statsHtml || ""}</div>
+
                 <div style="position: relative; height: 300px; width: 100%; margin: 0;">
                     <canvas id="survivalChart"></canvas>
                 </div>
+                
                 <div style="text-align: right; margin: 0;">
                     <button type="button" onclick="window.downloadChart()" style="
-                        background-color: #2c3e50; color: white; border: none; 
-                        padding: 6px 12px; border-radius: 4px; cursor: pointer; 
-                        font-size: 0.8rem; font-weight: 500; 
-                        display: inline-flex; align-items: center; gap: 5px;">
+                        background-color: #2c3e50; 
+                        color: white; 
+                        border: none; 
+                        padding: 6px 12px; 
+                        border-radius: 4px; 
+                        cursor: pointer; 
+                        font-size: 0.8rem; 
+                        font-weight: 500; 
+                        display: inline-flex; 
+                        align-items: center; 
+                        gap: 5px;
+                    ">
                         <span>📥</span> Download Graph
                     </button>
                 </div>
             </div>
         `;
-        
+
         drawChart(datasets);
     }
 
@@ -280,6 +327,69 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         });
+    }
+// ==========================================
+    // ★ 새로 추가된 통계 함수 (Log-Rank Test)
+    // ==========================================
+    function calculateLogRankStats(groups) {
+        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Log-Rank Test (Statistics)</h4>`;
+        html += `<table class="stat-table"><tr><th>Comparison</th><th>Chi-Square</th><th>P-value</th></tr>`;
+        
+        const group1 = groups[0]; // 첫 번째 그룹을 Control로 가정
+        
+        for(let i=1; i<groups.length; i++) {
+            const group2 = groups[i];
+            const res = runLogRank(group1.data, group2.data);
+            const pClass = res.p < 0.05 ? "stat-sig" : "stat-ns";
+            const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
+            
+            html += `<tr>
+                <td>${group1.name} vs ${group2.name}</td>
+                <td>${res.chisq.toFixed(2)}</td>
+                <td class="${pClass}">${pVal}</td>
+            </tr>`;
+        }
+        html += `</table>`;
+        return html;
+    }
+
+    function runLogRank(g1, g2) {
+        // 두 그룹의 모든 시간 포인트를 합침
+        let allTimes = new Set([...g1.map(d=>d.time), ...g2.map(d=>d.time)]);
+        let times = Array.from(allTimes).sort((a,b)=>a-b);
+        
+        let O1 = 0, E1 = 0, V = 0;
+
+        times.forEach(t => {
+            // t 시점 직전의 Risk Set 크기
+            let r1 = g1.filter(d => d.time >= t).length;
+            let r2 = g2.filter(d => d.time >= t).length;
+            let r = r1 + r2;
+
+            // t 시점의 Event 수
+            let d1 = g1.filter(d => d.time === t && d.status === 1).length;
+            let d2 = g2.filter(d => d.time === t && d.status === 1).length;
+            let d = d1 + d2;
+
+            if (r > 0 && d > 0) {
+                let e1 = r1 * (d / r);
+                O1 += d1;
+                E1 += e1;
+                if (r > 1) {
+                    V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
+                }
+            }
+        });
+
+        // 카이제곱 통계량 및 P-value 계산
+        let Z = (O1 - E1) / Math.sqrt(V);
+        let chisq = Z * Z;
+        
+        // jStat이 없으면 에러 방지
+        if (typeof jStat === 'undefined') return { chisq: 0, p: 1 };
+        
+        let p = 1 - jStat.chisquare.cdf(chisq, 1);
+        return { chisq, p };
     }
 
     // --- Firebase Visitor Count ---
