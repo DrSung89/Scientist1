@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     // ==========================================
-    // 1. SAS Time Unit Converter
+    // 1. SAS Time Unit Converter (공백 최소화)
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const unit = timeUnit.value;
 
         if (isNaN(val)) {
-            convertResult.innerHTML = "<div style='color:#888; padding:5px;'>Please enter a value.</div>";
+            // 값이 없을 때는 아예 비워두거나 안내 문구를 최소화
+            convertResult.innerHTML = "<div style='color:#888; font-size:0.9rem;'>Please enter a value.</div>";
             return;
         }
 
@@ -29,12 +30,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const resMonths = days / 30.4375;
         const resYears = days / 365.25;
 
+        // ★ [수정 1] 위아래 패딩(padding)을 0으로 설정하고, 줄 간격(gap)도 3px로 줄임
         convertResult.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 4px; padding: 5px 0;">
-                <div style="margin: 0; line-height: 1.4;"><strong>Days:</strong> ${resDays.toFixed(2)}</div>
-                <div style="margin: 0; line-height: 1.4;"><strong>Weeks:</strong> ${resWeeks.toFixed(2)}</div>
-                <div style="margin: 0; line-height: 1.4; color: #0056b3;"><strong>Months (SAS):</strong> ${resMonths.toFixed(2)}</div>
-                <div style="margin: 0; line-height: 1.4;"><strong>Years:</strong> ${resYears.toFixed(2)}</div>
+            <div style="display: flex; flex-direction: column; gap: 3px; padding: 0;">
+                <div style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Days:</strong> ${resDays.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Weeks:</strong> ${resWeeks.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.2; font-size: 0.95rem; color: #0056b3;"><strong>Months (SAS):</strong> ${resMonths.toFixed(2)}</div>
+                <div style="margin: 0; line-height: 1.2; font-size: 0.95rem;"><strong>Years:</strong> ${resYears.toFixed(2)}</div>
             </div>
         `;
     }
@@ -100,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // ★ [수정 2] Status 선택지(Dropdown)를 이전 버전(Event/Censored)으로 복구
     function generateTableRows(n, groupId) {
         let html = `
             <table style="width: 100%; border-spacing: 0 5px;">
@@ -121,8 +124,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     </td>
                     <td style="width: 45%;">
                         <select class="status-val group-${groupId}-status" style="width: 95%; padding: 5px;">
-                            <option value="1">1 (Dead)</option>
-                            <option value="0">0 (Live)</option>
+                            <option value="1">1 (Event/Death)</option>
+                            <option value="0">0 (Censored)</option>
                         </select>
                     </td>
                 </tr>
@@ -222,14 +225,13 @@ document.addEventListener("DOMContentLoaded", function() {
         return { median: medianTime, points: points };
     }
 
-    // ★ [디자인 핵심 수정] 공백 제거 및 버튼 슬림화
     function displayResults(medianResults, datasets) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
         resultDiv.style.display = "block";
         
-        // 1. Median Table
+        // Median Table
         let medianHtml = `
             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                 <tr style="background:#f1f1f1; border-bottom:1px solid #ccc;">
@@ -247,8 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         medianHtml += `</table>`;
 
-        // 2. 전체 레이아웃을 Flexbox로 재구성 (Gap 15px로 고정)
-        // 버튼 디자인: 작고 깔끔하게 (padding 축소, font-size 축소)
+        // 결과 레이아웃 (Flexbox, Gap 20px)
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 
@@ -288,7 +289,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if(newDownloadBtn) {
             newDownloadBtn.addEventListener("click", function() {
                 const canvas = document.getElementById('survivalChart');
-                // 흰색 배경 처리
                 const tempCanvas = document.createElement('canvas');
                 const tempCtx = tempCanvas.getContext('2d');
                 tempCanvas.width = canvas.width;
@@ -327,14 +327,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     intersect: false,
                 },
                 layout: {
-                    padding: 0 // 차트 내부 여백 제거
+                    padding: 0 
                 },
                 plugins: {
                     title: {
                         display: true,
                         text: 'Kaplan-Meier Survival Curve',
                         font: { size: 14 },
-                        padding: { top: 0, bottom: 10 } // 제목 여백 축소
+                        padding: { top: 0, bottom: 10 }
                     },
                     tooltip: {
                         callbacks: {
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     },
                     legend: {
-                        position: 'top', // 범례를 위로 올려서 공간 절약
+                        position: 'top', 
                         align: 'end',
                         labels: {
                             boxWidth: 10,
