@@ -258,7 +258,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function drawChart(datasets) {
         const ctx = document.getElementById('survivalChart').getContext('2d');
-        const xLabel = document.getElementById('xaxis-label').value || "Time";
+        const xInput = document.getElementById('xaxis-label');
+        const xLabel = xInput ? xInput.value : "Time";
         if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
