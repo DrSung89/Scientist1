@@ -4,46 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Guide & References | Scientist's Toolkit</title>
-    <meta name="description" content="Learn how to use Molarity, Outlier (IQR), HED, T-Test, and Chi-Square calculators. References FDA guidance.">
+    <meta name="description" content="Learn how to use Molarity, Dilution, Outlier, HED, T-Test, Chi-Square, and Survival calculators. Complete with FDA guidance and statistical references.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/">
     <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/help/">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
-    <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-    
-    <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-        Loading inspiration... 🧪
-    </p>
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
-            const quotes = [
-                "Cheering for your dedication and hard work today. 🧪", 
-                "Behind every data point, there is a researcher’s effort. 📊",
-                "Science is a journey of resilience. Keep going. 🚀",
-                "Your failed experiment is just a stepping stone to discovery. 💡",
-                "Rest is also part of the experiment. Don't burn out. ☕",
-                "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                "Believe in your hypothesis, but trust your data. 📉"
-            ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
-        });
-    </script>
-</header>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quotes = [
+                    "Cheering for your dedication and hard work today. 🧪", 
+                    "Behind every data point, there is a researcher’s effort. 📊",
+                    "Science is a journey of resilience. Keep going. 🚀",
+                    "Your failed experiment is just a stepping stone to discovery. 💡",
+                    "Rest is also part of the experiment. Don't burn out. ☕",
+                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                    "Believe in your hypothesis, but trust your data. 📉"
+                ];
+                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            });
+        </script>
+    </header>
     
     <nav>
         <a href="../" class="nav-btn">Home</a>
@@ -61,16 +54,38 @@
     <main>
         <section id="help-section" class="calculator active" style="display:block;">
             <h2>User Guide & Detailed Information</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                Learn the logic and formulas behind our calculators to ensure your data is always robust and publication-ready.
+            </p>
 
             <div class="help-block">
                 <h3>🧪 Molarity Calculation</h3>
                 <p>
-                    Molarity is the most common measure of concentration in biology and chemistry. 
-                    It is defined as the number of moles of solute per liter of solution.
+                    Molarity is the most common measure of concentration in biology and chemistry, defined as the number of moles of solute per liter of solution.
                 </p>
-                <div class="formula-box">
-                    Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)
+                <div class="formula-box" style="background-color: #f8fafc; border-left: 4px solid #3b82f6;">
+                    <strong>Mass (g) = Concentration (mol/L) × Volume (L) × MW (g/mol)</strong>
                 </div>
+                <p style="font-size: 0.9rem; color: #555; margin-top: 10px;">
+                    <em>Tip:</em> Always ensure your Molecular Weight (MW) accounts for any hydration (e.g., ·2H₂O) specified on the chemical bottle.
+                </p>
+            </div>
+
+            <div class="help-block">
+                <h3>💧 Dilution Calculation (C1V1 = C2V2)</h3>
+                <p>
+                    Used for diluting a highly concentrated stock solution into a working solution. 
+                </p>
+                <div class="formula-box" style="background-color: #f0fdf4; border-left: 4px solid #22c55e;">
+                    <strong>C₁ × V₁ = C₂ × V₂</strong><br><br>
+                    <span style="font-size: 0.9rem;">
+                    <strong>C₁:</strong> Stock Concentration | <strong>V₁:</strong> Volume of Stock to add<br>
+                    <strong>C₂:</strong> Final Concentration | <strong>V₂:</strong> Final Total Volume
+                    </span>
+                </div>
+                <p style="font-size: 0.9rem; color: #555; margin-top: 10px;">
+                    <em>Tip:</em> For extremely high dilution factors (e.g., 1:10000), consider performing a <strong>Serial Dilution</strong> (e.g., 1:100 twice) to minimize pipetting errors.
+                </p>
             </div>
 
             <div class="help-block">
@@ -82,22 +97,18 @@
                 <div style="background-color: #ecfdf5; padding: 15px; border-left: 4px solid #059669; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #065f46;">1. If Data is Normal (P ≥ 0.05) → Grubb's Test</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #064e3b;">
-                        Grubb's test is the gold standard for detecting <strong>exactly one outlier</strong> in a normal distribution.
+                        Grubb's test is the gold standard for detecting exactly one outlier in a normal distribution. It calculates a G score representing the distance from the mean.
                     </p>
-                    <ul style="margin: 8px 0 0 20px; color: #064e3b; font-size: 0.9rem;">
-                        <li><strong>How it works:</strong> It calculates a G score (distance from the mean relative to SD).</li>
-                        <li><strong>Stepwise Removal:</strong> Grubb's test detects only one outlier at a time. If an outlier is found, remove it and re-run the test to check for a second one.</li>
-                    </ul>
                 </div>
 
-                <div style="background-color: #fffbeb; padding: 15px; border-left: 4px solid #d97706; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
+                <div style="background-color: #fffbeb; padding: 15px; border-left: 4px solid #d97706; border-radius: 0 4px 4px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #92400e;">2. If Data is Non-Normal (P < 0.05) → IQR Method</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #78350f;">
-                        When data is skewed or the sample size is too small to prove normality, the Interquartile Range (IQR) method is more robust.
+                    <p style="margin: 0; font-size: 0.95rem; color: #78350f; margin-bottom: 10px;">
+                        When data is skewed or sample size is too small, the Interquartile Range (IQR) method is more robust.
                     </p>
-                    <div class="formula-box" style="margin-top: 10px; background: rgba(255,255,255,0.6);">
-                        <strong>Thresholds:</strong><br>
-                        Lower < Q1 - 1.5×IQR &nbsp;&nbsp;|&nbsp;&nbsp; Upper > Q3 + 1.5×IQR
+                    <div style="background: rgba(255,255,255,0.6); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.9rem;">
+                        Lower Limit: < Q1 - 1.5 × IQR<br>
+                        Upper Limit: > Q3 + 1.5 × IQR
                     </div>
                 </div>
             </div>
@@ -105,89 +116,112 @@
             <div class="help-block">
                 <h3>🐁 Human Equivalent Dose (HED)</h3>
                 <p>
-                    This calculator converts doses between species based on <strong>Body Surface Area (BSA)</strong> normalization.
+                    Converts doses between species based on <strong>Body Surface Area (BSA)</strong> normalization, crucial for translational medicine.
                 </p>
-                <p>
-                    <strong>Planning Animal Studies from Human Doses:</strong><br>
-                    When calculating a starting dose for animal experiments based on a human approved dose (e.g., a flat dose in mg), 
-                    you must first convert it to <strong>mg/kg</strong>.
-                </p>
-                <p style="background-color: #fff7ed; padding: 10px; border-left: 4px solid #f97316;">
+                <div style="background-color: #fff7ed; padding: 15px; border-left: 4px solid #f97316; margin-bottom: 15px;">
                     <strong>⚠️ Important Note:</strong><br>
-                    For this conversion, use the <strong>FDA standard human body weight of 60 kg</strong>. 
-                    Do not use arbitrary weights unless specific data is available.
-                </p>
-                <div class="formula-box">
-                    <strong>Step 1 (Human Dose to mg/kg):</strong><br>
-                    Human Dose (mg/kg) = Total Human Dose (mg) / 60 kg
-                    <br><br>
-                    <strong>Step 2 (Conversion to Animal Dose):</strong><br>
-                    Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human Km / Animal Km)
+                    When converting a flat human dose (e.g., 500mg) to an animal dose, first divide by the <strong>FDA standard human weight of 60 kg</strong> to get mg/kg.
                 </div>
-
-                <div class="reference-box">
-                    <strong>Official Reference:</strong><br>
-                    <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
+                <div class="formula-box">
+                    <strong>Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human Km / Animal Km)</strong>
+                </div>
+                <div class="reference-box" style="margin-top: 15px; font-size: 0.85rem;">
+                    <strong>Reference:</strong> <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank">FDA Guidance for Industry (July 2005)</a>
                 </div>
             </div>
 
             <div class="help-block">
                 <h3>📉 T-Test Calculator (Robust)</h3>
                 <p>
-                    Performs an <strong>Independent Samples T-Test</strong> to compare the means of two groups. 
-                    Designed to be publication-ready.
+                    Performs an Independent Samples T-Test. By default, our calculator uses <strong>Welch's T-Test</strong>.
                 </p>
-                
-                <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0ea5e9; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #0369a1;">Why Welch's T-Test? (Default)</h4>
+                <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0ea5e9; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #0369a1;">Why Welch's T-Test?</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #0c4a6e;">
-                        Unlike the standard Student's t-test, <strong>Welch's t-test does not assume equal variances</strong> between groups. 
-                        This makes it the safer, more robust choice for real-world biological data where variance often differs.
+                        Unlike standard Student's t-tests, Welch's t-test does not assume equal variances between groups. This makes it the safer, more robust choice for real-world biological data.
                     </p>
                 </div>
-
-                <div class="formula-box" style="text-align: left;">
-                    <strong>📊 Key Reporting Metrics Included:</strong>
-                    <ul style="margin: 5px 0 0 20px; color: #333;">
-                        <li><strong>P-value & t-statistic:</strong> For significance testing.</li>
-                        <li><strong>95% Confidence Interval (CI):</strong> The range of the true difference.</li>
-                        <li><strong>Cohen's d:</strong> Effect size (magnitude of the difference).</li>
-                    </ul>
-                </div>
+                <ul style="margin-top: 10px; color: #444; font-size: 0.95rem;">
+                    <li><strong>P-value:</strong> Indicates statistical significance (typically < 0.05).</li>
+                    <li><strong>Cohen's d:</strong> Measures Effect Size. 0.2 (Small), 0.5 (Medium), 0.8 (Large).</li>
+                </ul>
             </div>
 
             <div class="help-block">
                 <h3>🎲 Chi-Square Test (2x2)</h3>
                 <p>
-                    Analyzes the association between two categorical variables using a 2x2 contingency table (e.g., Treatment vs. Control outcomes).
+                    Analyzes the association between two categorical variables using a 2x2 contingency table.
                 </p>
-                
-                <div style="background-color: #fff1f2; padding: 15px; border-left: 4px solid #e11d48; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
+                <div style="background-color: #fff1f2; padding: 15px; border-left: 4px solid #e11d48; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #9f1239;">⚠️ Low Count Validation</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #881337;">
-                        The tool automatically checks if any "Expected Count" is less than 5. 
-                        If this warning appears, the standard Chi-square test may be inaccurate, and Fisher's Exact Test is recommended instead.
+                        The tool automatically checks if any "Expected Count" is less than 5. If this warning appears, standard Chi-square is inaccurate, and <strong>Fisher's Exact Test</strong> should be used instead.
                     </p>
                 </div>
+            </div>
 
-                <div class="formula-box">
-                    <strong>Effect Size (Cramér's V):</strong><br>
-                    0.1 (Small) &nbsp;|&nbsp; 0.3 (Medium) &nbsp;|&nbsp; 0.5 (Large)<br>
-                    <span style="font-size:0.9em; color:#666;">*Helps determine if a significant result is meaningful.</span>
+            <div class="help-block">
+                <h3>⏳ Survival Analysis (Kaplan-Meier & Log-Rank)</h3>
+                <p>
+                    Generates survival curves and calculates statistics for time-to-event data (e.g., Overall Survival in oncology).
+                </p>
+                <ul style="color: #444; font-size: 0.95rem; margin-bottom: 15px;">
+                    <li><strong>Event (Code 1):</strong> The event occurred (e.g., death, progression). The curve will drop.</li>
+                    <li><strong>Censored (Code 0):</strong> The subject was lost to follow-up or the study ended. The curve does not drop.</li>
+                    <li><strong>Median Survival:</strong> The time point where survival probability reaches exactly 50%. If the curve never drops that low, it is marked as "Not Reached".</li>
+                </ul>
+                <div style="background-color: #f3f4f6; padding: 15px; border-left: 4px solid #6b7280; border-radius: 0 4px 4px 0;">
+                    <h4 style="margin: 0 0 8px 0; color: #374151;">📊 Log-Rank Test</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">
+                        For 2 or more groups, a Log-Rank Test is automatically performed to generate a P-value, determining if the survival curves are significantly different.
+                    </p>
                 </div>
             </div>
 
         </section>
     </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br><br>
-    <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-    <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-    <br><br>
-    © 2026 Scientist's Toolkit
-</footer>
-    <script src="../assets/main.js"></script>
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br><br>
+        <a href="../privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+        <br><br>
+        © 2026 Scientist's Toolkit
+    </footer>
+    
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
+                    const docRef = db.collection('visitors').doc(dateStr);
+                    
+                    if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                        docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                              .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+                    }
+                    
+                    docRef.onSnapshot((doc) => {
+                        if (doc.exists && countSpan) {
+                            countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
+                        }
+                    });
+                }
+            }, 500); 
+        });
+    </script>
 </body>
 </html>
