@@ -24,6 +24,63 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+<style>
+        /* 메인 페이지 전용 디자인 */
+        .hero-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border: 1px solid #eee;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .tool-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-color: #007bff;
+            color: #007bff;
+        }
+        .content-section {
+            max-width: 900px;
+            margin: 40px auto;
+            line-height: 1.8;
+            color: #444;
+            text-align: left;
+        }
+        .content-section h2 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+        .content-section h3 { color: #007bff; margin-top: 25px; }
+        .p-value-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        .p-value-table th { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .p-value-table td { border: 1px solid #ddd; padding: 10px; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -80,99 +137,106 @@
         </script>
     </div>
 
-<main style="text-align:center;">
-        <section class="calculator active" style="display:block;">
-            <h2>Select a Tool</h2>
-            
-            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); margin-top: 30px;">
-                
-                <a href="molarity-calculator/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>🧪 Molarity Calculator</h3>
-                        <p>Calculate Mass, Volume, or Concentration.</p>
-                    </div>
-                </a>
-
-                <a href="dilution-calculator/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>💧 Dilution Calculator</h3>
-                        <p>Calculate any variable (M₁V₁ = M₂V₂).</p>
-                    </div>
-                </a>
-
-                <a href="outlier-detector/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>📊 Outlier Checker</h3>
-                        <p>Detect outliers using IQR or Grubb's test</p>
-                    </div>
-                </a>
-
-                <a href="hed-calculator/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>🐁 HED Calculator</h3>
-                        <p>Convert animal doses to Human Equivalent Dose.</p>
-                    </div>
-                </a>
-
-          <a href="t-test-calculator/" style="text-decoration: none; color: inherit;">
-    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-        <h3>📉 T-Test Calculator</h3>
-        <p style="margin-bottom: 8px;">Calculates P-value using Welch's t-test.</p>
-        <p style="font-size: 0.85rem; color: #666; margin: 0;">Welch's t-test is reliable regardless of whether variances are equal or not.</p>
-    </div>
-             </a>
-
-                <a href="chi-square-calculator/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>🎲 Chi-Square Test</h3>
-                        <p>Analyze 2x2 contingency tables for categorical data.</p>
-                    </div>
-                </a>
-             <a href="survival-calculator/" style="text-decoration: none; color: inherit;">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: box-shadow 0.3s; box-sizing: border-box;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-                        <h3>📉 Survival Analysis</h3>
-                        <p>Kaplan-Meier plot & Median Survival Time.</p>
-                    </div>
-                </a>
-
-
-<div class="about-section" style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee;">
-                <h3 style="color: #333; margin-bottom: 20px; font-size: 1.4rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
-                    🧪 From a Fellow Lab Rat
-                </h3>
-                
-                <p style="color: #555; line-height: 1.7; margin-bottom: 20px;">
-                    Hi! I built this toolkit to make daily lab calculations easier and accessible on mobile for researchers like myself.
-                </p>
-
-                <ul style="color: #555; line-height: 1.7; padding-left: 20px; text-align: left;">
-                    <li style="margin-bottom: 10px;">
-                        <strong>🧪 Lab Essentials:</strong> Molarity & Dilution calculators for buffer preparation.
-                    </li>
-                    <li style="margin-bottom: 10px;">
-                        <strong>📊 Statistical Tools:</strong> T-Test, Chi-Square, and Outlier detection (IQR & Grubb's) to ensure data integrity.
-                    </li>
-                    <li style="margin-bottom: 10px;">
-                        <strong>🐁 Animal Studies:</strong> HED Calculator for dosage conversion and Kaplan-Meier Survival Analysis for longitudinal studies.
-                    </li>
-                </ul>
-                
-                <p style="color: #888; font-size: 0.9rem; margin-top: 20px; font-style: italic;">
-                    Hope these tools save you time and headaches in the lab!
-                </p>
+<main>
+        <section class="hero-section">
+            <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; color: #333;">Essential Tools for Publication</h2>
+            <div class="tool-grid">
+                <a href="molarity-calculator/" class="tool-card">🧪 Molarity</a>
+                <a href="dilution-calculator/" class="tool-card">💧 Dilution</a>
+                <a href="outlier-detector/" class="tool-card">📊 Outlier (IQR)</a>
+                <a href="hed-calculator/" class="tool-card">🐁 HED (Animal)</a>
+                <a href="t-test-calculator/" class="tool-card">📉 T-Test</a>
+                <a href="chi-square-calculator/" class="tool-card">🎲 Chi-Square</a>
+                <a href="survival-calculator/" class="tool-card">⏳ Survival (KM)</a>
             </div>
+        </section>
 
+        <section class="content-section">
+            <h2>Why Statistical Rigor Matters in Research</h2>
+            <p>
+                In biological research, especially in fields like <strong>Cancer Biology</strong> and pharmacology, reproducibility is the cornerstone of scientific advancement. "Statistical significance" is not just a requirement for publication; it is the mathematical validation that your experimental results are not due to random chance.
+            </p>
+            <p>
+                However, many researchers face a dilemma: relying on basic tools like Excel—which often lack advanced statistical capabilities—or struggling with complex software like R or SPSS. <strong>Scientist's Toolkit</strong> was developed by a Ph.D. researcher to provide a middle ground: <strong>robust, standard-compliant statistical tools</strong> in an accessible web format.
+            </p>
+
+            <h2>When to Use Which Calculator?</h2>
+            <p>Choosing the right statistical test is crucial for data integrity. Here is a guide on when to apply each tool provided on this platform:</p>
+
+            <h3>1. Experimental Preparation</h3>
+            <ul>
+                <li><strong>Molarity & Dilution:</strong> Use these before starting any experiment. Accurate reagent preparation prevents batch effects and variability.</li>
+                <li><strong>HED (Human Equivalent Dose):</strong> Essential for <em>in vivo</em> translational studies. Before moving from mice to humans (or vice versa), use BSA-based normalization, not just weight-based scaling.</li>
+            </ul>
+
+            <h3>2. Data Cleaning</h3>
+            <ul>
+                <li><strong>Outlier Detector:</strong> Biological data is noisy. Use the <strong>Grubb's Test</strong> (for normal distributions) or <strong>IQR Method</strong> (for skewed data) to scientifically identify and remove anomalies without bias (p-hacking).</li>
+            </ul>
+
+            <h3>3. Hypothesis Testing</h3>
+            <ul>
+                <li><strong>T-Test:</strong> Use when comparing the <strong>means of two groups</strong> (e.g., Control vs. Drug A). Our tool defaults to Welch's T-Test to account for unequal variances, which is safer for biological data.</li>
+                <li><strong>Chi-Square Test:</strong> Use for <strong>categorical data</strong> (e.g., "Dead/Alive", "Cured/Not Cured"). It checks if the observed distribution differs from expectations.</li>
+                <li><strong>Survival Analysis (Kaplan-Meier):</strong> The gold standard for time-to-event studies (e.g., measuring how long mice survive after tumor implantation). It handles "censored" data (subjects that leave the study early) properly.</li>
+            </ul>
+
+            <h2>Understanding P-Values and Asterisk Notation (*)</h2>
+            <p>
+                The P-value (Probability value) measures the evidence against the null hypothesis. A lower P-value means stronger evidence that your result is real. In scientific journals, statistical significance is often denoted by asterisks.
+            </p>
+
+            <table class="p-value-table">
+                <thead>
+                    <tr>
+                        <th>P-value Range</th>
+                        <th>Symbol</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>P > 0.05</strong></td>
+                        <td>ns</td>
+                        <td><strong>Not Significant.</strong> The result could easily happen by chance.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P ≤ 0.05</strong></td>
+                        <td>*</td>
+                        <td><strong>Significant.</strong> There is less than a 5% chance this result is random. Standard threshold for publication.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P ≤ 0.01</strong></td>
+                        <td>**</td>
+                        <td><strong>Very Significant.</strong> High confidence in the result.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P ≤ 0.001</strong></td>
+                        <td>***</td>
+                        <td><strong>Highly Significant.</strong> Extremely strong evidence against the null hypothesis.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P ≤ 0.0001</strong></td>
+                        <td>****</td>
+                        <td><strong>Extremely Significant.</strong> Often used in large-scale studies or highly distinct phenotypes.</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="background: #eef2f7; padding: 15px; border-radius: 5px;">
+                <strong>💡 Pro Tip:</strong> Never rely solely on P-values. Always consider the <strong>Effect Size</strong> (e.g., Cohen's d) and <strong>Confidence Intervals</strong>, which our T-Test calculator automatically provides.
+            </p>
         </section>
     </main>
+ 
 
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-    <span id="visitor-count">Today's Visitors: Loading...</span>
-    <br><br>
-    <a href="privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-    <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-    <br><br>
-    © 2026 Scientist's Toolkit
-</footer>
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <a href="about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
+        <a href="privacy.html" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+           © 2026 Scientist's Toolkit
+    </footer>
 
     <script src="assets/main.js"></script>
 </body>
