@@ -6,7 +6,7 @@
     <title>Privacy Policy | Scientist's Toolkit</title>
     <meta name="robots" content="noindex">
     
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="../assets/style.css">
     
     <style>
         .policy-container {
@@ -25,16 +25,27 @@
         p, ul { margin-bottom: 15px; }
         ul { padding-left: 20px; }
     </style>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
         <h1 style="margin-bottom: 5px; border:none;">Scientist's Toolkit</h1>
+        <p style="color: #6c757d;">Created by Researchers, for Researchers.</p>
     </header>
     
     <nav>
-        <a href="./" class="nav-btn">Home</a>
-        <a href="about/" class="nav-btn">About</a>
-        <a href="help/" class="nav-btn">Help & Info</a>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../survival-calculator/" class="nav-btn">Survival</a>
+        <a href="../board/" class="nav-btn">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
     </nav>
 
     <main>
@@ -71,15 +82,19 @@
         </div>
     </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
+        <br><br>
+        
         <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        
+        <span style="color:#333; font-weight:bold; margin-right: 15px;">Privacy Policy</span>
+        
         <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+        <br><br>
+        © 2026 Scientist's Toolkit
     </footer>
+    
     <script>
         window.addEventListener('load', function() {
             setTimeout(() => {
