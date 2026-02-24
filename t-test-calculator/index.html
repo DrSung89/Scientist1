@@ -142,28 +142,44 @@
             </div>
         </section>
 
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
+<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
             <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
             
-            <h2>📉 Student's vs Welch's T-Test</h2>
+            <h2 style="color:#2c3e50;">📉 Comprehensive Guide to T-Tests & Variance Analysis</h2>
             <p>
-                When comparing the means of two independent groups, researchers must choose between two types of t-tests based on the <strong>variance</strong> (spread) of their data. Our calculator automatically runs an <strong>F-test</strong> to guide your decision.
+                In biological and clinical research, comparing the means of two independent groups is a daily necessity. However, simply running a standard t-test without checking the underlying data assumptions can lead to critical statistical errors (Type I or Type II errors). Our tool functions not only as a t-test calculator but also as an automated <strong>Variance Calculator (F-Test)</strong> to ensure absolute statistical rigor.
             </p>
 
-            <h3>1. Student's T-Test (Standard)</h3>
+            <h3 style="color:#007bff; margin-top: 25px;">1. Assumption Check: F-Test for Equality of Variances</h3>
             <p>
-                The traditional method. It operates under the assumption of <strong>homoscedasticity</strong> (equal variances). You should only report this p-value if the F-test indicates no significant difference in variances (F-test P ≥ 0.05).
+                Before calculating the t-statistic, you must determine if the variance (spread) of your two groups is equal (homoscedasticity) or significantly different (heteroscedasticity). 
+            </p>
+            <div style="background: #f8f9fa; padding: 15px; border-left: 4px solid #f59e0b; margin-bottom: 15px; border-radius: 4px;">
+                <p style="margin: 0;"><strong>How our calculator works:</strong> It automatically computes the sample variances ($s^2$) for both groups and runs an F-test. 
+                If the <strong>F-test P-value is < 0.05</strong>, the variances are unequal. Based on this real-time variance calculation, the tool intelligently recommends which t-test to report.</p>
+            </div>
+
+            <h3 style="color:#007bff; margin-top: 25px;">2. Student's T-Test (Equal Variances Assumed)</h3>
+            <p>
+                The traditional Student's t-test is appropriate <em>only</em> when your groups share a similar standard deviation. It calculates a pooled variance. While common in textbooks, strict equal variance is rare in complex biological data (e.g., in vivo drug treatments where the treatment group exhibits higher variability than the control).
             </p>
 
-            <h3>2. Welch's T-Test (Robust)</h3>
+            <h3 style="color:#007bff; margin-top: 25px;">3. Welch's T-Test (Unequal Variances Assumed)</h3>
             <p>
-                The modern standard for biological data. It does not assume equal variances. If your groups have different standard deviations (F-test P < 0.05), Student's t-test can produce false positives. Welch's t-test dynamically adjusts the degrees of freedom (df) to correct this, making it highly robust.
+                Welch's t-test is the modern gold standard and the default recommendation for scientific publications. It does not assume equal variances. Instead of pooling variance, it utilizes the individual group variances and dynamically adjusts the degrees of freedom (df) using the Satterthwaite approximation.
+            </p>
+            <p>
+                <strong>Why it matters:</strong> Using Student's t-test on unequal variance data drastically inflates your false-positive rate. Welch's test maintains the correct alpha level (0.05) regardless of variance discrepancies, making your data publication-ready.
             </p>
 
-            <h3>Interpretation Guide</h3>
+            <h3 style="color:#007bff; margin-top: 25px;">📊 Beyond the P-Value: Effect Size (Cohen's d)</h3>
+            <p>
+                A p-value merely tells you if a difference exists, not how large or biologically meaningful that difference is. Our calculator automatically computes <strong>Cohen's d</strong>, the standardized effect size.
+            </p>
             <ul>
-                <li><strong>Cohen's d:</strong> Measures the standardized effect size. 0.2 is Small, 0.5 is Medium, and ≥0.8 is considered a Large effect.</li>
-                <li><strong>95% CI (Confidence Interval):</strong> If the 95% CI of the difference crosses zero (e.g., [-1.5, 2.3]), the result is not statistically significant.</li>
+                <li><strong>d ≈ 0.2:</strong> Small effect</li>
+                <li><strong>d ≈ 0.5:</strong> Medium effect</li>
+                <li><strong>d ≥ 0.8:</strong> Large effect (Highly noticeable difference)</li>
             </ul>
         </section>
     </main>
