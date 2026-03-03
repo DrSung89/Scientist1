@@ -17,12 +17,11 @@
     <meta name="twitter:title" content="Chi-Square Calculator | Scientist's Toolkit">
     <meta name="twitter:description" content="Analyze categorical data with Chi-square test and Cramér's V effect size.">
     <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-    <meta name="description" content="Analyze 2x2 contingency tables with our Chi-Square calculator. Includes Expected Counts validation, P-value, and Cramér's V effect size.">
-
+    
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/chi-square-calculator/">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
@@ -32,6 +31,10 @@
         .chi-table th, .chi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         .chi-table input { width: 90%; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius:4px;}
         .expected { font-size: 0.8em; color: #888; display: block; margin-top: 2px; }
+        /* FAQ 전용 스타일 */
+        .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+        .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+        .faq-item p { margin: 0; color: #555; }
     </style>
 </head>
 <body>
@@ -44,7 +47,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -54,12 +56,7 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
+            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
         });
     </script>
 </header>
@@ -112,11 +109,11 @@
             </table>
 
             <div style="text-align:center; margin-top:15px;">
-                <button onclick="calcChi()" class="action-btn">Calculate</button>
+                <button onclick="calcChi()" class="action-btn" style="width: 100%;">Calculate Statistics</button>
             </div>
 
             <div id="result-area" class="result-box" style="display:none; margin-top: 20px;">
-                <h3>📊 Result</h3>
+                <h3>📊 Statistical Report</h3>
                 <div style="padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
                     <div style="font-size: 1.2rem; margin-bottom: 10px;">
                         P-value = <strong id="p-val" style="font-size: 1.4rem;"></strong>
@@ -129,77 +126,81 @@
                         <div>Chi-square (χ²): <strong id="chi-stat" style="color:#333;"></strong></div>
                         <div>df: <strong style="color:#333;">1</strong></div>
                         <div style="grid-column: span 2;">
-                            Cramér's V (Effect Size): <strong id="cramers-v" style="color:#333;"></strong>
+                            Cramér's V (Effect Size): <strong id="cramers-v" style="color:#007bff;"></strong>
                         </div>
                     </div>
                 </div>
-                <p id="warning-msg" style="color:orange; font-size:0.8rem; display:none; margin-top:10px;">
-                    ⚠️ Warning: Some expected counts are < 5. Consider using Fisher's Exact Test.
+                <p id="warning-msg" style="color:#b91c1c; background: #fee2e2; padding: 10px; border-radius: 4px; font-size:0.85rem; display:none; margin-top:15px;">
+                    <strong>⚠️ Statistical Warning:</strong> One or more of your calculated "Expected Counts" is less than 5. The Chi-square approximation may be inaccurate. It is highly recommended to use <strong>Fisher's Exact Test</strong> for this dataset instead.
                 </p>
             </div>
         </section>
 
-<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
-    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-    
-    <h2>🎲 Chi-Square Test for Independence</h2>
-    <p>
-        The Chi-Square (χ²) test of independence is used to determine if there is a significant relationship between two categorical variables. 
-        Unlike the T-test which handles numerical data (means), the Chi-square test handles frequencies (counts).
-    </p>
+        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h2 style="color:#2c3e50;">🎲 The Complete Guide to the Chi-Square Test for Independence</h2>
+            <p>
+                In biological, clinical, and epidemiological research, you often need to analyze categorical (nominal) data rather than continuous numerical data. While a T-Test is perfect for comparing averages (e.g., tumor weights), the <strong>Pearson's Chi-Square Test (χ²)</strong> is the absolute gold standard for comparing frequencies or counts across different groups.
+            </p>
 
-    <h3>When to use this tool?</h3>
-    <p>Use this calculator when you have count data usually organized in a 2x2 contingency table. Common examples in research include:</p>
-    <ul>
-        <li><strong>Genetics:</strong> Comparing observed genotype frequencies against expected Mendelian ratios.</li>
-        <li><strong>Clinical Studies:</strong> Comparing "Cured vs. Not Cured" counts in Treatment vs. Control groups.</li>
-    </ul>
+            <h3 style="color:#007bff; margin-top: 25px;">1. The Core Principle: Observed vs. Expected</h3>
+            <p>
+                The Chi-Square test determines whether there is a significant association between two categorical variables (e.g., "Treatment Type" and "Cure Status"). The test mathematically calculates what the frequencies in each cell of your 2x2 table <em>would be</em> if the two variables were completely independent (the <strong>Expected Frequency</strong>). It then compares these to your actual experimental data (the <strong>Observed Frequency</strong>).
+            </p>
+            
+            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #fd7e14; margin: 15px 0;">
+                <div style="text-align: center; margin-bottom: 10px; font-size: 1.2rem;">
+                    $$ \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i} $$
+                </div>
+                <p style="margin: 0 0 5px 0; font-weight: bold;">Where:</p>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 3px;"><strong>O_i</strong> = Observed frequency in each cell</li>
+                    <li><strong>E_i</strong> = Expected frequency in each cell</li>
+                </ul>
+            </div>
+            <p>If the Observed counts deviate significantly from the Expected counts, the resulting large $\chi^2$ value will yield a small P-value (< 0.05), allowing you to reject the null hypothesis.</p>
 
-    <h3>The Formula</h3>
-<div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #fd7e14; margin: 15px 0;">
-    <div style="text-align: center; margin-bottom: 10px;">
-        $$ \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i} $$
-    </div>
-    
-    <p style="margin: 0 0 5px 0; font-weight: bold;">Where:</p>
-    
-    <ul style="margin: 0; padding-left: 20px;">
-        <li style="margin-bottom: 3px;"><strong>O</strong> = Observed frequency</li>
-        <li><strong>E</strong> = Expected frequency</li>
-    </ul>
-</div>
+            <h3 style="color:#007bff; margin-top: 25px;">2. Moving Beyond the P-Value: Cramér's V</h3>
+            <p>
+                Modern statistical reporting requires more than just a P-value. A P-value only tells you if a relationship exists, but <strong>Cramér's V</strong> (an effect size measurement for nominal data) tells you <em>how strong</em> that relationship is. 
+            </p>
+            <ul style="list-style-type: none; padding: 0;">
+                <li>🟢 <strong>0.1 to 0.3:</strong> Weak Association</li>
+                <li>🟡 <strong>0.3 to 0.5:</strong> Moderate Association</li>
+                <li>🔴 <strong>> 0.5:</strong> Strong Association</li>
+            </ul>
 
-    <h3>Example: Treatment Efficacy</h3>
-    <p>Imagine you treated 100 cells with a drug and 100 with a placebo.</p>
-    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin: 10px 0; border-color: #eee;">
-        <tr style="background: #f1f1f1;">
-            <th>Group</th>
-            <th>Dead Cells</th>
-            <th>Alive Cells</th>
-        </tr>
-        <tr>
-            <td>Treated</td>
-            <td>80</td>
-            <td>20</td>
-        </tr>
-        <tr>
-            <td>Control</td>
-            <td>40</td>
-            <td>60</td>
-        </tr>
-    </table>
-    <p>Enter these values (80, 20, 40, 60) into the calculator to determine if the treatment significantly affected cell survival.</p>
-</section>
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
 
-    </main>
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
+            
+            <div class="faq-item">
+                <h4>Why did I get a warning about "Expected counts < 5"?</h4>
+                <p>This is a fundamental limitation of the Pearson Chi-Square test. The mathematical distribution it relies on becomes highly inaccurate if any single cell's expected frequency drops below 5. This usually happens when your overall sample size is very small, or if one of the outcomes is extremely rare. In these cases, you must report the P-value from <strong>Fisher's Exact Test</strong> instead, which calculates exact probabilities rather than approximations.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I use percentages instead of raw counts?</h4>
+                <p><strong>Absolutely not.</strong> The Chi-Square test is highly sensitive to sample size. Entering "50" and "50" (representing 50%) will give you a completely different and invalid P-value compared to entering the true raw counts of "500" and "500". Always input raw integer frequencies.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>When should I use a Chi-Square test vs. an ANOVA?</h4>
+                <p>You use a Chi-Square test when your dependent outcome is categorical (e.g., Dead/Alive, Positive/Negative, Mutated/Wild-type). You use an ANOVA (or T-test) when your dependent outcome is continuous numerical data (e.g., Blood pressure, Cell count, Enzyme activity level).</p>
+            </div>
+
+        </section>
+        </main>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
+        <br><br>
         <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
         <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
         <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+        <br><br>
+        © 2026 Scientist's Toolkit
     </footer>
 
     <script>
@@ -207,7 +208,7 @@
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
 
-            if ([a,b,c,d].some(isNaN)) { alert("Fill all fields."); return; }
+            if ([a,b,c,d].some(isNaN)) { alert("Fill all fields with valid numbers."); return; }
 
             // Totals
             const row1 = a + b, row2 = c + d;
@@ -226,7 +227,7 @@
             document.getElementById('exp-c').innerText = `Exp: ${ec.toFixed(1)}`;
             document.getElementById('exp-d').innerText = `Exp: ${ed.toFixed(1)}`;
 
-            // Check Low Frequency Assumption
+            // Check Low Frequency Assumption (< 5)
             const lowFreq = [ea, eb, ec, ed].some(v => v < 5);
             document.getElementById('warning-msg').style.display = lowFreq ? 'block' : 'none';
 
@@ -237,14 +238,14 @@
             // Cramér's V
             const cramersV = Math.sqrt(chiSq / total);
 
-            // P-value (df=1)
+            // P-value (df=1 for 2x2 table)
             const pVal = 1 - jStat.chisquare.cdf(chiSq, 1);
 
-            // Output
+            // Output Formatting
             document.getElementById('p-val').innerText = pVal.toFixed(5);
             document.getElementById('sig-msg').innerHTML = pVal < 0.05 
-                ? "<span style='color:red'>Significant Association 🔴</span>" 
-                : "No Significant Association";
+                ? "<span style='color:#dc3545'>Significant Association Detected 🔴</span>" 
+                : "<span style='color:#28a745'>No Significant Association (Retain Null) 🟢</span>";
             
             document.getElementById('chi-stat').innerText = chiSq.toFixed(3);
             document.getElementById('cramers-v').innerText = cramersV.toFixed(3);
@@ -275,7 +276,7 @@
             if (typeof firebase === 'undefined') return;
 
             const db = firebase.firestore();
-            const countSpan = document.getElementById('visitor-count'); // 여기가 푸터랑 연결되는 부분입니다!
+            const countSpan = document.getElementById('visitor-count'); 
 
             const today = new Date();
             const offset = today.getTimezoneOffset() * 60000;

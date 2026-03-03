@@ -35,6 +35,11 @@
        .stat-table td { padding: 6px 10px; border-bottom: 1px solid #eee; }
        .stat-sig { color: #dc3545; font-weight: bold; } /* 유의함 (빨강) */
        .stat-ns { color: #28a745; } /* 유의하지 않음 (초록) */
+       
+       /* FAQ 전용 스타일 */
+       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+       .faq-item p { margin: 0; color: #555; }
     </style>
 </head>
 <body>
@@ -59,7 +64,7 @@
     <main>
         <section class="calculator" style="display:block; margin-bottom: 30px;">
             <h2>⏱️ SAS Time Unit Converter</h2>
-            <p>1 Month = 30.4375 days</p>
+            <p>1 Month = 30.4375 days (FDA & SAS Standard)</p>
             
             <div class="input-group">
                 <label>Input Value</label>
@@ -78,8 +83,8 @@
         </section>
 
         <section class="calculator" style="display:block;">
-            <h2>📉 Overall Survival (Kaplan-Meier)</h2>
-            <p>Compare up to 4 groups. Generate Median Survival Time & Plot.</p>
+            <h2>📉 Kaplan-Meier Survival Analysis</h2>
+            <p>Compare up to 4 groups. Generate Median Survival Time, Log-Rank P-value & Plot.</p>
 
             <div class="input-group" style="margin-bottom: 15px;">
                 <label>Number of Groups</label>
@@ -98,7 +103,7 @@
             
             <div id="groups-wrapper"></div>
 
-            <button id="calc-os-btn" class="action-btn" style="margin-top: 15px; width: 100%;">Draw KM Plot</button>
+            <button id="calc-os-btn" class="action-btn" style="margin-top: 15px; width: 100%;">Run Analysis & Draw Plot</button>
 
             <div id="os-result"></div>
         </section>
@@ -106,67 +111,82 @@
         <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
             <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
             
-            <h2 style="color:#2c3e50;">📘 Kaplan-Meier Analysis Guide</h2>
+            <h2 style="color:#2c3e50;">📘 Comprehensive Guide to Kaplan-Meier Survival Analysis</h2>
+            <p>
+                In clinical trials, oncology research, and longitudinal animal studies, researchers frequently measure <strong>"time-to-event"</strong> data. This could be the time until death (Overall Survival), the time until a tumor doubles in volume (Progression-Free Survival), or the time until a disease relapses. The <strong>Kaplan-Meier (KM) Estimator</strong> is the non-parametric statistical gold standard for analyzing this type of incomplete data.
+            </p>
             
             <div style="background: #fdfdfe; border-left: 4px solid #007bff; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: #007bff;">📝 Data Entry (0 vs 1)</h3>
-                <p style="margin-bottom: 10px;">Accurate status coding is crucial for survival analysis.</p>
+                <h3 style="margin-top: 0; color: #007bff;">📝 Crucial Step: Data Coding (0 vs 1)</h3>
+                <p style="margin-bottom: 10px;">The power of survival analysis lies in its ability to handle incomplete observation periods. Accurate status coding is strictly required.</p>
                 <ul style="list-style-type: none; padding-left: 0;">
                     <li style="margin-bottom: 10px;">
                         <strong>🔴 Event (Code 1):</strong> 
-                        The event of interest occurred (e.g., death, relapse, tumor progression) at the recorded time. The curve <em>will drop</em> at this point.
+                        The specific event of interest actually occurred (e.g., the subject died, or the tumor reached the experimental endpoint). The survival probability curve <em>will visually drop</em> at this exact time point.
                     </li>
                     <li>
                         <strong>⚪ Censored (Code 0):</strong> 
-                        The subject dropped out, was lost to follow-up, or the study ended before the event occurred. 
-                        The curve <em>does not drop</em>, but the number of subjects at risk decreases.
+                        The subject did NOT experience the event during the observation. This happens if the subject dropped out, was lost to follow-up, or the study simply ended while they were still alive. The curve <em>does not drop</em> here, but the denominator (number of subjects "at risk") decreases for all future calculations.
                     </li>
                 </ul>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <h3>📉 How to Interpret the Plot</h3>
-                <p>
-                    The Kaplan-Meier plot shows the probability of survival (or avoiding an event) over time.
-                </p>
-                <ul>
-                    <li><strong>The Y-Axis:</strong> Represents the survival probability (0.0 to 1.0, or 0% to 100%). It always starts at 1.0.</li>
-                    <li><strong>The Steps:</strong> Vertical drops indicate the occurrence of an event (1). The size of the drop depends on the number of subjects still at risk.</li>
-                    <li><strong>Flat Lines:</strong> Horizontal lines indicate periods where no events occurred.</li>
-                </ul>
+            <h3 style="color:#2c3e50;">📉 How to Interpret the Kaplan-Meier Plot</h3>
+            <p>
+                The generated visual plot illustrates the probability of surviving (or avoiding the specific event) as time progresses.
+            </p>
+            
+            <ul>
+                <li><strong>The Y-Axis:</strong> Represents the cumulative survival probability, ranging from 0.0 to 1.0 (or 0% to 100%). At Time = 0, the probability is always 1.0.</li>
+                <li><strong>The Vertical Steps:</strong> A drop in the line indicates that one or more events (Code 1) occurred. The magnitude of the drop is dynamically calculated based on how many subjects are currently remaining in the risk pool.</li>
+                <li><strong>The Horizontal Lines:</strong> Flat periods represent time passing without any events occurring.</li>
+            </ul>
+
+            <h3 style="color:#2c3e50;">⏱️ Clinical Significance of "Median Survival Time"</h3>
+            <p>
+                Instead of using a simple mathematical mean, survival studies rely on the <strong>Median Survival Time</strong>. This represents the precise time point at which the survival probability curve crosses the 0.5 (50%) threshold—meaning exactly half of the cohort has experienced the event.
+            </p>
+            <ul style="background: #fff3cd; padding: 15px 15px 15px 35px; border-radius: 8px; color: #856404; margin-bottom: 30px;">
+                <li>
+                    <strong>"Not Reached (NR)":</strong> If a novel drug is highly efficacious, more than 50% of the subjects might survive until the end of the study. In this scenario, the curve never drops to 0.5, and the median survival is scientifically reported as "Not Reached."
+                </li>
+            </ul>
+
+            <h3 style="color:#2c3e50;">📊 The Log-Rank Test (Statistical Validation)</h3>
+            <p>
+                While the KM plot provides an intuitive visual representation of the data, you cannot claim a drug is effective just by looking at a graph. Our calculator automatically performs the <strong>Log-Rank Test (Mantel-Cox test)</strong>. This hypothesis test generates a Chi-Square statistic and a precise <strong>P-value</strong>, determining if the survival curves of different groups (e.g., Control vs. Treatment) are statistically significantly different from one another.
+            </p>
+
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
+
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
+            
+            <div class="faq-item">
+                <h4>Why can't I just calculate the average survival time and use a T-Test?</h4>
+                <p>A standard T-test or ANOVA cannot handle "censored" data. If a mouse is still alive at the end of a 100-day study, its true survival time is unknown (it is >100 days). Averaging it as exactly 100 days artificially lowers the true mean and severely biases your results. The Kaplan-Meier method mathematically accounts for this missing information.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>Why use the SAS conversion rate (30.4375) for months?</h4>
+                <p>In rigorous clinical and preclinical reporting (including FDA submissions), dividing days by exactly 30 or 31 is inaccurate over multi-year studies due to leap years. The SAS standard standardizes a month as exactly <code>365.25 days / 12 months = 30.4375 days</code>. Our built-in converter ensures your timelines meet this publication standard.</p>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <h3>⏱️ What is "Median Survival Time"?</h3>
-                <p>
-                    This is a key statistic in medical research (e.g., oncology). It represents the time point at which <strong>50% of the subjects have experienced the event</strong> (survival probability drops to 0.5).
-                </p>
-                <ul style="background: #fff3cd; padding: 15px 15px 15px 35px; border-radius: 8px; color: #856404;">
-                    <li>
-                        <strong>"Not Reached":</strong> If the survival curve never drops below 0.5 (50%), the median survival time cannot be calculated. This usually means the treatment is very effective or the observation period was too short.
-                    </li>
-                </ul>
+            <div class="faq-item">
+                <h4>What does "Right-Censoring" mean?</h4>
+                <p>Right-censoring is the most common type of censoring in biological survival analysis. It simply means that the true time of the event occurs somewhere to the "right" of your data timeline (in the future, after your observation period has already ended).</p>
             </div>
 
-            <div>
-                <h3>💡 Research Tip: SAS Conversion</h3>
-                <p>
-                    When reporting results, journals often require converting <strong>Days</strong> to <strong>Months</strong>. 
-                    Simple division by 30 is inaccurate over long periods. 
-                    Use the <strong>SAS Standard</strong> (<code>Days / 30.4375</code>) provided in the converter above for precision (365.25 days / 12 months).
-                </p>
-            </div>
         </section>
-    </main>
+        </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
+        <br><br>
         <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
         <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
         <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+        <br><br>
+        © 2026 Scientist's Toolkit
     </footer>
 
     <script src="main.js?v=20260210_final"></script>

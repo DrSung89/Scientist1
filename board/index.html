@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Board | Scientist's Toolkit</title> <link rel="stylesheet" href="../assets/style.css">
+    <title>Community Board | Scientist's Toolkit</title> 
+    <meta name="description" content="Join the Scientist's Toolkit community. Ask statistical questions, share laboratory protocols, or report bugs to improve our research calculators.">
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/board/">
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -62,6 +65,10 @@
             cursor: pointer;
             margin-top: 10px;
         }
+        /* FAQ 전용 스타일 */
+        .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+        .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+        .faq-item p { margin: 0; color: #555; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -103,8 +110,8 @@
     </nav>
     <main>
         <section class="calculator active" style="display:block;">
-            <h2>📢 Researcher's Community</h2>
-            <p>Share ideas, report bugs, ask questions, or share protocols.</p>
+            <h2>📢 Researcher's Community Board</h2>
+            <p>A collaborative space to share ideas, report bugs, ask statistical questions, or exchange laboratory protocols.</p>
 
             <div class="board-container">
                 <div class="write-box">
@@ -121,7 +128,7 @@
                     <div class="form-row">
                         <textarea id="post-content" rows="6" placeholder="Content..."></textarea>
                     </div>
-                    <button id="save-btn" class="action-btn">Post</button>
+                    <button id="save-btn" class="action-btn">Post to Board</button>
                 </div>
 
                 <div class="list-box">
@@ -138,16 +145,55 @@
                 </div>
             </div>
         </section>
-    </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h2 style="color:#2c3e50;">🤝 Community Guidelines & Purpose</h2>
+            <p>
+                The Scientist's Toolkit Community Board is designed to foster collaboration and knowledge-sharing among researchers, graduate students, and principal investigators globally. Science thrives on open communication, whether you are troubleshooting a failed Western blot, selecting the right statistical model (such as Welch's T-Test vs. Student's T-Test), or requesting a new feature for our web calculators.
+            </p>
+
+            <h3 style="color:#007bff; margin-top: 25px;">What to Post Here:</h3>
+            <ul style="list-style-type: disc; padding-left: 20px; margin-bottom: 30px;">
+                <li style="margin-bottom: 8px;"><strong>Statistical Methodology Questions:</strong> Not sure if your data requires an IQR outlier removal method or a Grubb's test? Ask the community for guidance.</li>
+                <li style="margin-bottom: 8px;"><strong>Calculator Feature Requests:</strong> If your research requires a specific equation (e.g., specific pediatric HED formulas or one-way ANOVA), let us know so we can build it.</li>
+                <li style="margin-bottom: 8px;"><strong>Bug Reports:</strong> Found an unexpected P-value or a UI glitch? Please report it here with the numbers you inputted so we can quickly patch the system.</li>
+                <li><strong>Protocol Sharing:</strong> Share your optimized buffer recipes, molarity tips, or assay troubleshooting techniques.</li>
+            </ul>
+
+            <div style="background: #fdfdfe; border-left: 4px solid #dc3545; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #dc3545;">⚠️ Privacy & Data Protection Warning</h3>
+                <p style="margin-bottom: 0;">
+                    Please remember that this is a public forum. <strong>Do not post sensitive, unpublished raw data, proprietary chemical structures, or patient-identifiable information (PII)</strong>. If you are asking a statistical question, please use dummy variables or generalized descriptions (e.g., "Group A vs Group B") to protect the integrity of your upcoming publications.
+                </p>
+            </div>
+
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
+
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
+            
+            <div class="faq-item">
+                <h4>Do I need an account to post?</h4>
+                <p>No. The Scientist's Toolkit board operates anonymously to reduce friction. You simply need to provide a nickname and a secure password. The password is required solely so that you can edit or delete your own post later if you make a mistake.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Who answers the questions posted here?</h4>
+                <p>Questions are answered by the community, which includes peer researchers and occasionally the Ph.D. developer of the Scientist's Toolkit. While we strive for accuracy, please verify all critical statistical advice with your institution's principal investigator or biostatistician before manuscript submission.</p>
+            </div>
+
+        </section>
+        </main>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
+        <br><br>
         <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
         <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
         <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+        <br><br>
+        © 2026 Scientist's Toolkit
     </footer>
     <script src="board.js"></script>
 </body>

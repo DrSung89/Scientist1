@@ -14,6 +14,12 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+    <style>
+       /* FAQ 전용 스타일 */
+       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+       .faq-item p { margin: 0; color: #555; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -25,7 +31,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -35,12 +40,7 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
+            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
         });
     </script>
 </header>
@@ -59,30 +59,71 @@
 
     <main>
         <section id="outlier-checker" class="calculator active" style="display:block;">
-            <h2>Outlier Checker & Normality</h2>
+            <h2>📊 Outlier Checker & Normality</h2>
             <p class="warning-text">⚠️ Separate data with commas, spaces, or new lines.</p>
             
             <textarea id="outlier-data" rows="8" placeholder="e.g.: 1.2, 1.5, 1.8..."></textarea>
             
-            <button id="check-outliers" class="action-btn">Check Data</button>
+            <button id="check-outliers" class="action-btn" style="width: 100%; margin-top: 10px;">Check Data</button>
             
-            <div id="outlier-result" class="result" style="display:none;"></div>
+            <div id="outlier-result" class="result" style="display:none; text-align: left; margin-top: 20px;"></div>
         </section>
 
-<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
-    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-    <h2>📊 Why Check for Outliers?</h2>
-    <p>In scientific research, an outlier is a data point that differs significantly from other observations. Identifying outliers is critical in animal studies and clinical trials to ensure statistical validity.</p>
-    
-    <h3>Methods Used</h3>
-    <ul>
-        <li><strong>IQR Method:</strong> Uses the Interquartile Range to detect outliers. Robust for non-normal distributions. Any point falling below Q1 - 1.5*IQR or above Q3 + 1.5*IQR is flagged.</li>
-        <li><strong>Grubb's Test:</strong> A statistical test used to detect a single outlier in a univariate data set that follows an approximately normal distribution.</li>
-    </ul>
-    <p><strong>Note:</strong> Always report whether outliers were removed and the method used in your "Methods" section.</p>
-</section>
+        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h2 style="color:#2c3e50;">🔍 The Ultimate Guide to Outlier Detection & Data Cleaning</h2>
+            <p>
+                In empirical research, an outlier is a data point that differs significantly from other observations in the same dataset. Identifying and handling outliers is one of the most critical steps in data cleaning (Quality Control) before performing statistical tests like T-tests or ANOVA. Failure to address extreme outliers can severely skew your mean and standard deviation, leading to false scientific conclusions.
+            </p>
 
-    </main>
+            <div style="background: #fdfdfe; border-left: 4px solid #dc3545; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #dc3545;">⚠️ Research Ethics: Avoiding P-Hacking</h3>
+                <p style="margin-bottom: 0;">
+                    You must <strong>never</strong> remove an outlier simply because it prevents your data from achieving statistical significance (P < 0.05). This is considered data manipulation (P-hacking). Outliers should only be removed if there is a biologically justifiable reason (e.g., technical error, sick animal, assay contamination) OR if they fail a pre-defined rigorous statistical test, such as the ones provided by our calculator.
+                </p>
+            </div>
+
+            <h3 style="color:#007bff; margin-top: 25px;">1. Automated Normality Testing (Shapiro-Wilk)</h3>
+            <p>
+                Before deciding <em>how</em> to find an outlier, you must know the distribution of your data. Our tool automatically runs the <strong>Shapiro-Wilk Test</strong> in the background. If your data passes this test (P ≥ 0.05), it is considered Normally Distributed, and the tool will deploy Grubb's Test. If it fails, the tool shifts to the non-parametric IQR method.
+            </p>
+
+            <h3 style="color:#007bff; margin-top: 25px;">2. Grubb's Test (For Normal Distributions)</h3>
+            <p>
+                Also known as the maximum normed residual test, Grubb's Test is the gold standard for detecting a single outlier in a univariate data set that follows an approximately normal distribution. It compares the maximum absolute deviation from the mean against the standard deviation of the dataset. If the calculated G-value exceeds the critical threshold for your sample size, the point is flagged for removal.
+            </p>
+
+            <h3 style="color:#007bff; margin-top: 25px;">3. The IQR Method (Tukey's Fences)</h3>
+            <p>
+                When your biological data is skewed or not normally distributed, standard deviation-based tests are invalid. The Interquartile Range (IQR) method is robust against non-normality. It finds the middle 50% of your data (between the 25th percentile, Q1, and the 75th percentile, Q3). Any data point falling below $Q1 - 1.5 \times IQR$ or above $Q3 + 1.5 \times IQR$ is flagged as a mathematical outlier.
+            </p>
+            
+
+[Image of a box plot explaining Interquartile Range (IQR) and outliers]
+
+
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
+
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
+            
+            <div class="faq-item">
+                <h4>What should I write in my manuscript if I remove an outlier?</h4>
+                <p>Always be transparent. In your Methods section, write a statement like: <em>"Statistical outliers were identified and removed prior to analysis using the ROUT method or Grubb's test (alpha = 0.05)."</em> Never remove data silently.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why does the calculator say "Small N Warning"?</h4>
+                <p>When your sample size is very small (e.g., N = 3 or 4), mathematically identifying an outlier is virtually impossible because standard deviation is unreliable. If you see a weird value in a small group, you should consider repeating the experiment to increase your N number rather than deleting the data point.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What if the tool detects multiple outliers?</h4>
+                <p>Standard Grubb's test is designed to find one outlier at a time. If the tool detects multiple anomalies, it is generally recommended to remove the most extreme outlier first, then re-run the analysis to see if the second point is still an outlier without the skewing effect of the first one.</p>
+            </div>
+
+        </section>
+        </main>
 
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>

@@ -24,7 +24,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
-<style>
+    <style>
         /* 메인 페이지 전용 디자인 */
         .hero-section {
             text-align: center;
@@ -80,6 +80,11 @@
         }
         .p-value-table th { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; text-align: left; }
         .p-value-table td { border: 1px solid #ddd; padding: 10px; }
+        
+        /* FAQ 전용 스타일 */
+        .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+        .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+        .faq-item p { margin: 0; color: #555; }
     </style>
 </head>
 <body>
@@ -92,7 +97,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -102,11 +106,7 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-
-            // 2. 랜덤으로 하나 뽑기
             const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
             document.getElementById("quote-display").innerText = quotes[randomIndex];
         });
     </script>
@@ -139,7 +139,7 @@
 
 <main>
         <section class="hero-section">
-            <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; color: #333;">Essential Tools for Publication</h2>
+            <h1 style="margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; color: #333;">Essential Calculators & Statistical Tools for Researchers</h1>
             <div class="tool-grid">
                 <a href="molarity-calculator/" class="tool-card">🧪 Molarity</a>
                 <a href="dilution-calculator/" class="tool-card">💧 Dilution</a>
@@ -152,38 +152,44 @@
         </section>
 
         <section class="content-section">
-            <h2>Why Statistical Rigor Matters in Research</h2>
+            <h2>Why Statistical Rigor Matters in Biological Research</h2>
             <p>
-                In biological research, especially in fields like <strong>Cancer Biology</strong> and pharmacology, reproducibility is the cornerstone of scientific advancement. "Statistical significance" is not just a requirement for publication; it is the mathematical validation that your experimental results are not due to random chance.
+                In biological research, clinical trials, pharmacology, and translational science, reproducibility is the absolute cornerstone of scientific advancement. Achieving "statistical significance" is not just a mandatory requirement for journal publication; it is the fundamental mathematical validation that your experimental results are genuine and not simply the result of random chance or measurement error.
             </p>
             <p>
-                However, many researchers face a dilemma: relying on basic tools like Excel—which often lack advanced statistical capabilities—or struggling with complex software like R or SPSS. <strong>Scientist's Toolkit</strong> was developed by a Ph.D. researcher to provide a middle ground: <strong>robust, standard-compliant statistical tools</strong> in an accessible web format.
+                However, many laboratory researchers face a common dilemma: relying on basic spreadsheet software like Microsoft Excel—which often lacks advanced, publication-ready statistical capabilities—or struggling with complex, steep-learning-curve software environments like R, SPSS, or GraphPad Prism. <strong>Scientist's Toolkit</strong> was specifically developed by a Ph.D. researcher to bridge this gap. We provide a comprehensive suite of <strong>robust, standard-compliant statistical tools and laboratory calculators</strong> in a highly accessible, free-to-use web format.
             </p>
 
-            <h2>When to Use Which Calculator?</h2>
-            <p>Choosing the right statistical test is crucial for data integrity. Here is a guide on when to apply each tool provided on this platform:</p>
+            <h2>Comprehensive Guide: When to Use Which Calculator?</h2>
+            <p>Choosing the correct statistical test or formula is crucial for maintaining data integrity. Below is a detailed workflow guide on when to apply each tool provided on our platform:</p>
 
-            <h3>1. Experimental Preparation</h3>
-            <ul>
-                <li><strong>Molarity & Dilution:</strong> Use these before starting any experiment. Accurate reagent preparation prevents batch effects and variability.</li>
-                <li><strong>HED (Human Equivalent Dose):</strong> Essential for <em>in vivo</em> translational studies. Before moving from mice to humans (or vice versa), use BSA-based normalization, not just weight-based scaling.</li>
-            </ul>
-
-            <h3>2. Data Cleaning</h3>
-            <ul>
-                <li><strong>Outlier Detector:</strong> Biological data is noisy. Use the <strong>Grubb's Test</strong> (for normal distributions) or <strong>IQR Method</strong> (for skewed data) to scientifically identify and remove anomalies without bias (p-hacking).</li>
-            </ul>
-
-            <h3>3. Hypothesis Testing</h3>
-            <ul>
-                <li><strong>T-Test:</strong> Use when comparing the <strong>means of two groups</strong> (e.g., Control vs. Drug A). Our tool defaults to Welch's T-Test to account for unequal variances, which is safer for biological data.</li>
-                <li><strong>Chi-Square Test:</strong> Use for <strong>categorical data</strong> (e.g., "Dead/Alive", "Cured/Not Cured"). It checks if the observed distribution differs from expectations.</li>
-                <li><strong>Survival Analysis (Kaplan-Meier):</strong> The gold standard for time-to-event studies (e.g., measuring how long mice survive after tumor implantation). It handles "censored" data (subjects that leave the study early) properly.</li>
-            </ul>
-
-            <h2>Understanding P-Values and Asterisk Notation (*)</h2>
+            <h3>1. Benchwork & Experimental Preparation</h3>
             <p>
-                The P-value (Probability value) measures the evidence against the null hypothesis. A lower P-value means stronger evidence that your result is real. In scientific journals, statistical significance is often denoted by asterisks.
+                <strong>🧪 Molarity & 💧 Dilution Calculators:</strong> Before running any assay or in vitro experiment, precise reagent preparation is mandatory. Use our tools to calculate exact masses, volumes, and concentrations (using the $C_1V_1 = C_2V_2$ formula). Accurate buffer and media preparation prevents batch-to-batch effects and experimental variability.
+            </p>
+            <p>
+                <strong>🐁 HED (Human Equivalent Dose) Calculator:</strong> Essential for <em>in vivo</em> translational and preclinical studies. Before transitioning a drug dose from an animal model (e.g., mice, rats, dogs) to human clinical trials, you must perform Body Surface Area (BSA) based normalization according to FDA guidelines, rather than simple weight-based (mg/kg) scaling.
+            </p>
+
+            <h3>2. Data Cleaning & Quality Control</h3>
+            <p>
+                <strong>📊 Outlier Detector (Grubb's & IQR):</strong> Raw biological data is inherently noisy. Before running hypothesis tests, use our automated outlier detector. It scientifically identifies and recommends the removal of extreme anomalies using Grubb's Test (for normally distributed data) or the IQR Method (for skewed distributions), protecting you from the unethical practice of "p-hacking".
+            </p>
+
+            <h3>3. Hypothesis Testing & Publication Statistics</h3>
+            <p>
+                <strong>📉 T-Test Calculator (Student's & Welch's):</strong> Use this when comparing the continuous <strong>means of two independent groups</strong> (e.g., Vehicle Control vs. Drug Treatment). Our tool automatically performs an F-test for variance equality and defaults to Welch's T-Test when variances are unequal, which is the safest approach for heteroscedastic biological data.
+            </p>
+            <p>
+                <strong>🎲 Chi-Square Test Calculator:</strong> Ideal for <strong>categorical or nominal data</strong> (e.g., counting "Dead/Alive" subjects, or "Responder/Non-Responder" clinical outcomes). It analyzes 2x2 contingency tables to check if the observed frequency distribution significantly differs from the null hypothesis expectations.
+            </p>
+            <p>
+                <strong>⏳ Survival Analysis (Kaplan-Meier):</strong> The absolute gold standard for time-to-event studies, frequently used in oncology models (e.g., tracking mouse survival post-tumor implantation). Our calculator generates survival curves, handles "right-censored" data perfectly, and computes the Log-Rank test p-value to compare treatment arms.
+            </p>
+
+            <h2>Understanding P-Values and Scientific Asterisk Notation (*)</h2>
+            <p>
+                The P-value (Probability value) measures the strength of evidence against the null hypothesis. A lower P-value indicates stronger evidence that your observed experimental effect is real. In academic scientific journals, statistical significance is universally denoted by a standard asterisk system.
             </p>
 
             <table class="p-value-table">
@@ -191,24 +197,24 @@
                     <tr>
                         <th>P-value Range</th>
                         <th>Symbol</th>
-                        <th>Interpretation</th>
+                        <th>Scientific Interpretation</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>P > 0.05</strong></td>
                         <td>ns</td>
-                        <td><strong>Not Significant.</strong> The result could easily happen by chance.</td>
+                        <td><strong>Not Significant.</strong> The observed difference could easily occur by random chance. Null hypothesis retained.</td>
                     </tr>
                     <tr>
                         <td><strong>P ≤ 0.05</strong></td>
                         <td>*</td>
-                        <td><strong>Significant.</strong> There is less than a 5% chance this result is random. Standard threshold for publication.</td>
+                        <td><strong>Significant.</strong> There is less than a 5% probability this result is random. The standard baseline threshold for academic publication.</td>
                     </tr>
                     <tr>
                         <td><strong>P ≤ 0.01</strong></td>
                         <td>**</td>
-                        <td><strong>Very Significant.</strong> High confidence in the result.</td>
+                        <td><strong>Very Significant.</strong> High confidence in the experimental result.</td>
                     </tr>
                     <tr>
                         <td><strong>P ≤ 0.001</strong></td>
@@ -218,18 +224,33 @@
                     <tr>
                         <td><strong>P ≤ 0.0001</strong></td>
                         <td>****</td>
-                        <td><strong>Extremely Significant.</strong> Often used in large-scale studies or highly distinct phenotypes.</td>
+                        <td><strong>Extremely Significant.</strong> Typically seen in large-scale genomic studies, distinct phenotypes, or highly effective drug responses.</td>
                     </tr>
                 </tbody>
             </table>
             
-            <p style="background: #eef2f7; padding: 15px; border-radius: 5px;">
-                <strong>💡 Pro Tip:</strong> Never rely solely on P-values. Always consider the <strong>Effect Size</strong> (e.g., Cohen's d) and <strong>Confidence Intervals</strong>, which our T-Test calculator automatically provides.
+            <p style="background: #eef2f7; padding: 15px; border-radius: 5px; border-left: 4px solid #3b82f6;">
+                <strong>💡 Statistical Pro Tip:</strong> Never evaluate your data relying solely on P-values. Always report the <strong>Effect Size</strong> (e.g., Cohen's d or Cramér's V) and <strong>95% Confidence Intervals (CI)</strong> to demonstrate the actual magnitude and reliability of your treatment effect. Our advanced calculators automatically provide these metrics.
             </p>
+
+            <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+            <h2>Frequently Asked Questions (FAQ)</h2>
+            <div class="faq-item">
+                <h4>Are these calculators suitable for peer-reviewed publications?</h4>
+                <p>Yes. The mathematical algorithms and statistical libraries (such as jStat) powering the Scientist's Toolkit are based on standard, universally accepted formulas used in professional software. However, you should always ensure you are selecting the correct test for your specific data distribution.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Is my research data stored on your servers?</h4>
+                <p>No. All calculations (T-tests, Kaplan-Meier, Molarity, etc.) are performed strictly client-side within your own web browser using JavaScript. We do not collect, store, or transmit your raw experimental data to any external database, ensuring complete confidentiality for your pre-published research.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Why is Welch's T-Test recommended over Student's T-Test?</h4>
+                <p>Student's T-Test assumes that both groups have equal variance (homoscedasticity). In real-world biology, a treated group often has a much larger variance than a control group. Welch's T-Test adjusts the degrees of freedom to account for unequal variances, drastically reducing the chance of Type I errors (false positives).</p>
+            </div>
         </section>
     </main>
  
-
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
 <br>

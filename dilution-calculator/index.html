@@ -17,6 +17,12 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+       /* FAQ 전용 스타일 */
+       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+       .faq-item p { margin: 0; color: #555; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -28,7 +34,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -38,12 +43,7 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
+            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
         });
     </script>
 </header>
@@ -110,28 +110,69 @@
                 </div>
             </div>
 
-            <button id="calculate-dilution">Calculate</button>
+            <button id="calculate-dilution" class="action-btn" style="width: 100%;">Calculate</button>
             
-            <div id="dilution-result" class="result" style="line-height: 1.4; padding: 12px;"></div>
+            <div id="dilution-result" class="result" style="line-height: 1.4; padding: 12px; margin-top: 15px; font-weight: bold; color: #2c3e50;"></div>
         </section>
-<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
-    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-    <h2>💧 Dilution Equation Explained</h2>
-    <p>Dilution is the process of reducing the concentration of a solute in a solution, usually by mixing with more solvent. The key principle is that the amount of solute remains constant before and after dilution.</p>
-    
-    <h3>The M1V1 = M2V2 Formula</h3>
-    <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0;">
-        <strong>$$ M_1 V_1 = M_2 V_2 $$</strong>
-        <ul>
-            <li><strong>M₁</strong> = Initial Concentration (Stock Solution)</li>
-            <li><strong>V₁</strong> = Initial Volume (How much stock to use)</li>
-            <li><strong>M₂</strong> = Final Concentration (Desired)</li>
-            <li><strong>V₂</strong> = Final Volume (Total volume)</li>
-        </ul>
-    </div>
-    <p>Use this calculator to determine how much stock solution is needed to create a working solution for your experiments.</p>
-</section>
 
+        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h2 style="color:#2c3e50;">💧 The Complete Guide to Laboratory Dilutions</h2>
+            <p>
+                Dilution is the fundamental laboratory process of decreasing the concentration of a solute in a solution, typically by mixing it with an inert solvent (such as distilled water, PBS, or cell culture media). The core scientific principle behind dilution is the <strong>Conservation of Mass</strong>: adding more solvent increases the total volume and decreases the overall concentration, but the absolute number of solute molecules remains strictly constant.
+            </p>
+
+            <h3 style="color:#007bff; margin-top: 25px;">The Universal Equation: M₁V₁ = M₂V₂</h3>
+            <p>Whether you are preparing a drug treatment, diluting antibodies for Western blotting, or making standard curves for an ELISA, this formula is your primary tool.</p>
+
+            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <div style="font-size: 1.5rem; margin-bottom: 10px;">$$ M_1 V_1 = M_2 V_2 $$</div>
+                <ul style="text-align: left; max-width: 400px; margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 5px;"><strong>M₁ (or C₁):</strong> Initial Concentration of the concentrated Stock Solution</li>
+                    <li style="margin-bottom: 5px;"><strong>V₁:</strong> Volume of the Stock Solution required</li>
+                    <li style="margin-bottom: 5px;"><strong>M₂ (or C₂):</strong> Desired Final Concentration of the working solution</li>
+                    <li><strong>V₂:</strong> Final Total Volume of the working solution</li>
+                </ul>
+            </div>
+
+            <div style="background: #fdfdfe; border-left: 4px solid #f59e0b; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #d97706;">⚠️ Critical Benchwork Tip: V₂ vs. Added Solvent</h3>
+                <p style="margin-bottom: 0;">
+                    A very common mistake among junior researchers is confusing the Final Volume ($V_2$) with the amount of solvent (e.g., water) to add. <br><br>
+                    If you calculate that you need $V_1 = 10 mL$ of stock to make a $V_2 = 100 mL$ final solution, you <strong>DO NOT</strong> add 100 mL of water to the 10 mL of stock. You must add exactly <strong>90 mL</strong> of solvent ($V_2 - V_1$) to reach the final 100 mL target. Our calculator automatically displays the precise amount of solvent to add to prevent this error.
+                </p>
+            </div>
+
+            <h3 style="color:#007bff; margin-top: 25px;">Advanced Technique: Serial Dilutions</h3>
+            <p>
+                When you need to achieve a highly dilute concentration (e.g., a 1:1,000,000 dilution for microbiological colony counting), attempting to do it in a single step using the $M_1V_1$ formula might require pipetting an impossibly small volume, like 0.001 µL. Pipetting errors at this scale are massive. 
+            </p>
+            <p>
+                Instead, researchers perform a <strong>Serial Dilution</strong>—a step-wise dilution of a substance in solution. You might perform a 1:100 dilution first, and then take that new solution and perform another 1:100 dilution from it, safely and accurately achieving your final target concentration without relying on micro-volumes.
+            </p>
+
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
+
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
+            
+            <div class="faq-item">
+                <h4>What is the difference between C₁V₁ = C₂V₂ and M₁V₁ = M₂V₂?</h4>
+                <p>They are exactly the same formula. M stands for Molarity (a specific type of concentration), while C stands for Concentration (a more general term). You can use this formula for any unit of concentration (e.g., mg/mL, %, or X-fold) as long as you keep the units consistent on both sides of the equation.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I mix different units in the calculator?</h4>
+                <p>Yes! Our smart calculator automatically converts and normalizes units behind the scenes. For instance, you can input your stock concentration in Molarity (M) and your target concentration in micro-Molarity (µM), and the tool will compute the correct volume flawlessly.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>How do I calculate a dilution factor (e.g., a 1:10 dilution)?</h4>
+                <p>A dilution factor represents the ratio of the stock volume ($V_1$) to the total final volume ($V_2$). For a 1:10 dilution, you would mix 1 part of your stock solution with 9 parts of your solvent, resulting in a total of 10 parts.</p>
+            </div>
+
+        </section>
+        </main>
 
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>

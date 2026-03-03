@@ -16,6 +16,12 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+       /* FAQ 전용 스타일 */
+       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
+       .faq-item p { margin: 0; color: #555; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -27,7 +33,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. 보여주고 싶은 문구들을 여기에 적으세요 (7개)
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -37,12 +42,7 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-
-            // 2. 랜덤으로 하나 뽑기
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-
-            // 3. 화면에 표시하기
-            document.getElementById("quote-display").innerText = quotes[randomIndex];
+            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
         });
     </script>
 </header>
@@ -61,8 +61,8 @@
 
     <main>
         <section id="molarity-calc" class="calculator active" style="display:block;">
-            <h2>Molarity Calculator</h2>
-            <p>Enter 3 values to calculate the 4th.</p>
+            <h2>🧪 Molarity Calculator</h2>
+            <p>Enter 3 values to mathematically compute the 4th.</p>
             
             <div class="input-group">
                 <label for="mass">Mass</label>
@@ -101,56 +101,53 @@
                 <span>g/mol</span>
             </div>
 
-            <button id="calculate-molarity">Calculate</button>
-            <div id="molarity-result" class="result"></div>
+            <button id="calculate-molarity" class="action-btn" style="width: 100%; margin-top: 10px;">Calculate</button>
+            <div id="molarity-result" class="result" style="margin-top: 20px; font-weight: bold; color: #2c3e50;"></div>
 
-<section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.6; color: #444;">
-    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-    
-    <h2>🧪 What is Molarity?</h2>
-    <p>
-        Molarity (M) is the most common unit of concentration used in chemistry and biology. 
-        It is defined as the number of moles of solute dissolved in one liter of solution. 
-        Accurate molarity calculations are crucial for preparing buffers, media, and reagents in the laboratory.
-    </p>
+        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h2 style="color:#2c3e50;">🔬 The Comprehensive Guide to Molarity & Reagent Preparation</h2>
+            <p>
+                In analytical chemistry, molecular biology, and pharmacological research, precise reagent preparation is the foundation of reproducible experiments. Molarity (denoted as M) is the globally accepted standard unit of concentration. By definition, it measures the stoichiometric amount of a chemical substance—specifically, the number of moles of a solute—dissolved in exactly one liter of a solvent (usually water).
+            </p>
 
-<h3>The Formula</h3>
-<p>The basic formula for calculating molarity is:</p>
+            <h3 style="color:#007bff; margin-top: 25px;">The Core Mathematical Equation</h3>
+            <p>To accurately compute the required mass or volume for your buffers, the calculator utilizes the fundamental molarity equation. A single "mole" represents Avogadro's number ($6.022 \times 10^{23}$) of molecules.</p>
 
-<div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0;">
-    <div style="text-align: center; margin-bottom: 5px;">
-        $$ M = \frac{n}{V} $$
-    </div>
-    
-    <p style="margin: 5px 0 5px 0; font-weight: bold;">Where:</p>
-    
-    <ul style="margin: 0; padding-left: 20px;">
-        <li style="margin-bottom: 3px;"><strong>M</strong> = Molarity (mol/L)</li>
-        <li style="margin-bottom: 3px;"><strong>n</strong> = Moles of solute (mass / molecular weight)</li>
-        <li><strong>V</strong> = Volume of solution (L)</li>
-    </ul>
-</div>
+            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0; text-align: center; overflow-x: auto;">
+                $$ Molarity (M) = \frac{Mass (g)}{Molecular Weight (g/mol) \times Volume (L)} $$
+            </div>
 
-    <h3>How to Use This Calculator</h3>
-    <p>This tool allows you to calculate any of the four variables by inputting the other three. It is particularly useful for:</p>
-    <ul>
-        <li><strong>Making Solutions:</strong> Calculate how much powder (mass) is needed to make a specific volume of a known concentration.</li>
-        <li><strong>Dilutions:</strong> Verify the concentration of a solution prepared with a specific mass and volume.</li>
-    </ul>
+            <div style="background: #fdfdfe; border-left: 4px solid #10b981; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #10b981;">💡 How to Use This Auto-Calculator</h3>
+                <p style="margin-bottom: 10px;">This dynamic tool is designed for daily laboratory workflows. It solves for any missing variable dynamically:</p>
+                <ul style="list-style-type: disc; padding-left: 20px;">
+                    <li style="margin-bottom: 10px;"><strong>Determining Required Mass:</strong> Leave the 'Mass' field empty, input the desired Concentration, Volume, and the chemical's Molecular Weight. The tool will calculate exactly how many grams or milligrams of powder to weigh out.</li>
+                    <li><strong>Determining Final Concentration:</strong> If you have already weighed a specific amount of powder (Mass) and dissolved it in a known Volume, leave 'Concentration' empty to verify the exact molarity of your final stock solution.</li>
+                </ul>
+            </div>
 
-    <h3>Example Calculation</h3>
-    <p>
-        Suppose you want to prepare <strong>500 mL</strong> of <strong>1 M NaCl</strong> solution. 
-        The molecular weight (MW) of NaCl is approx. <strong>58.44 g/mol</strong>.
-    </p>
-    <ol>
-        <li>Enter <strong>1</strong> in Concentration (M).</li>
-        <li>Enter <strong>500</strong> in Volume and select (mL).</li>
-        <li>Enter <strong>58.44</strong> in Molecular Weight.</li>
-        <li>Click <strong>Calculate</strong>. The result will show that you need <strong>29.22 g</strong> of NaCl.</li>
-    </ol>
-</section>
+            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
 
+            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ) in the Lab</h3>
+            
+            <div class="faq-item">
+                <h4>How do I handle hydrated compounds (e.g., $CuSO_4 \cdot 5H_2O$)?</h4>
+                <p>When preparing solutions using hydrated salts, you must use the total Molecular Weight (MW) of the entire complex, including the water molecules. The water of crystallization adds significant mass. If you use the anhydrous MW for a hydrated powder, your final molarity will be significantly lower than intended.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What is the difference between Molarity and Molality?</h4>
+                <p>While Molarity (M) is moles of solute per <em>Liter of solution</em> (volume-dependent), Molality (m) is moles of solute per <em>Kilogram of solvent</em> (mass-dependent). Molarity changes slightly with temperature fluctuations as liquids expand or contract, whereas Molality remains constant regardless of temperature.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What is Normality (N) compared to Molarity (M)?</h4>
+                <p>Normality measures the reactive capacity of a molecule, usually concerning hydrogen ions ($H^+$) in acids or hydroxide ions ($OH^-$) in bases. For example, a 1 M solution of Sulfuric Acid ($H_2SO_4$) releases 2 moles of protons, making it a 2 N solution. Molarity is simply the absolute concentration of the intact molecule.</p>
+            </div>
+
+        </section>
         </section>
     </main>
 <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">

@@ -52,14 +52,14 @@
     </nav>
 
     <main>
-        <section id="help-section" class="calculator active" style="display:block; text-align: left; line-height: 1.7; color: #333;">
+        <section id="help-section" class="calculator active" style="display:block; text-align: left; line-height: 1.7; color: #333; padding: 30px;">
             <h2 style="text-align: center; margin-bottom: 30px;">Comprehensive User Guide & Methodologies</h2>
             <p style="text-align: center; color: #555; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
                 Welcome to the official documentation for the Scientist's Toolkit. This page provides an in-depth explanation of the mathematical principles, statistical assumptions, and regulatory guidelines (such as FDA standards) that power our calculators. Our goal is to ensure that your experimental design and data analysis are robust, reproducible, and ready for peer-reviewed publication.
             </p>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #2563eb; border-bottom: 2px solid #eff6ff; padding-bottom: 10px;">🧪 Molarity Calculation Principles</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #3b82f6;">
+                <h3 style="color: #2563eb; margin-top: 0;">🧪 Molarity Calculation Principles</h3>
                 <p>
                     Molarity (M) is the most ubiquitous unit of concentration in wet-lab biology, analytical chemistry, and pharmacology. It expresses the amount of a substance (solute) dissolved in a specific volume of solution. Accurately calculating molarity is the foundational step for preparing buffers, cell culture media, and drug treatments.
                 </p>
@@ -67,15 +67,15 @@
                     <strong>Core Equation:</strong><br>
                     Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)
                 </div>
-                <p><strong>Practical Considerations in the Lab:</strong></p>
-                <ul>
-                    <li><strong>Hydration States:</strong> Always check the reagent bottle for water of crystallization (e.g., CuSO₄ vs. CuSO₄·5H₂O). The molecular weight changes significantly depending on the hydration state, which will drastically alter your final molarity if ignored.</li>
-                    <li><strong>Purity:</strong> If a chemical is not 100% pure (e.g., 95% purity), you must adjust the mass weighed out by dividing the calculated mass by the purity factor (0.95).</li>
+                <h4 style="margin-bottom: 10px;">Practical Considerations in the Lab:</h4>
+                <ul style="margin-top: 0;">
+                    <li style="margin-bottom: 8px;"><strong>Hydration States:</strong> Always check the reagent bottle for water of crystallization (e.g., CuSO₄ vs. CuSO₄·5H₂O). The molecular weight changes significantly depending on the hydration state, which will drastically alter your final molarity if ignored.</li>
+                    <li><strong>Purity & Impurities:</strong> If a chemical is not 100% pure (e.g., a compound with 95% purity), you must adjust the mass weighed out by dividing the calculated theoretical mass by the purity factor (0.95) to ensure the active ingredient reaches the target concentration.</li>
                 </ul>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #16a34a; border-bottom: 2px solid #f0fdf4; padding-bottom: 10px;">💧 Dilution Dynamics (C₁V₁ = C₂V₂)</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #22c55e;">
+                <h3 style="color: #16a34a; margin-top: 0;">💧 Dilution Dynamics (C₁V₁ = C₂V₂)</h3>
                 <p>
                     The dilution of stock solutions is a routine yet critical procedure. The principle of conservation of mass dictates that the number of moles of solute remains constant before and after dilution. This is mathematically represented by the universal dilution equation.
                 </p>
@@ -88,16 +88,16 @@
                     <strong>V₂:</strong> Final total volume of the working solution
                     </span>
                 </div>
-                <p><strong>Best Practices for Serial Dilution:</strong></p>
-                <p>
-                    When attempting to create a highly dilute working solution from a highly concentrated stock (e.g., a 1:10,000 dilution), calculating a single-step dilution might require pipetting an unmeasurably small volume (e.g., 0.1 µL). Pipetting such small volumes introduces massive mechanical and human error. In these scenarios, researchers must employ <strong>Serial Dilution</strong>—creating intermediate dilutions (e.g., 1:100, then another 1:100) to ensure volumetric accuracy and reproducibility.
+                <h4 style="margin-bottom: 10px;">Best Practices for Serial Dilution:</h4>
+                <p style="margin-top: 0;">
+                    When attempting to create a highly dilute working solution from a highly concentrated stock (e.g., a 1:10,000 dilution), calculating a single-step dilution might require pipetting an unmeasurably small volume (e.g., 0.1 µL). Pipetting such small volumes introduces massive mechanical and human error. In these scenarios, researchers must employ <strong>Serial Dilution</strong>—creating intermediate dilutions (e.g., 1:100, then another 1:100 from the new stock) to ensure volumetric accuracy and reproducibility across replicates.
                 </p>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #d97706; border-bottom: 2px solid #fffbeb; padding-bottom: 10px;">📊 Statistical Outlier Detection Algorithm</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #d97706;">
+                <h3 style="color: #d97706; margin-top: 0;">📊 Statistical Outlier Detection Algorithm</h3>
                 <p>
-                    Handling extreme values (outliers) in experimental data is a delicate process. Arbitrarily removing data points to achieve statistical significance is considered scientific misconduct (p-hacking). Outlier removal must be justified mathematically. Our toolkit employs an intelligent, two-step auto-selection algorithm to ensure statistical rigor.
+                    Handling extreme values (outliers) in experimental data is a delicate process. Arbitrarily removing data points to achieve statistical significance is considered scientific misconduct (p-hacking). Outlier removal must be justified mathematically. Our toolkit employs an intelligent, two-step auto-selection algorithm to ensure statistical rigor before any data points are recommended for exclusion.
                 </p>
                 
                 <h4 style="margin-top: 20px;">Step 1: The Shapiro-Wilk Normality Test</h4>
@@ -108,14 +108,14 @@
                 <div style="background-color: #ecfdf5; padding: 15px; border-left: 4px solid #059669; margin: 20px 0; border-radius: 0 4px 4px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #065f46;">Pathway A: Normal Distribution (P ≥ 0.05) → Grubb's Test</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #064e3b;">
-                        Grubb's test (also known as the maximum normed residual test) is the gold standard for detecting exactly one outlier in a univariate dataset that follows an approximately normal distribution. It calculates a Z-like score (G) representing how far the suspected outlier is from the sample mean, scaled by the standard deviation. It is highly sensitive but should be used iteratively if multiple outliers are suspected.
+                        Grubb's test (also known as the maximum normed residual test) is the gold standard for detecting exactly one outlier in a univariate dataset that follows an approximately normal distribution. It calculates a Z-like score (G) representing how far the suspected outlier is from the sample mean, scaled by the standard deviation. It is highly sensitive but should be used iteratively if multiple outliers are suspected in a single dataset.
                     </p>
                 </div>
 
                 <div style="background-color: #fffbeb; padding: 15px; border-left: 4px solid #d97706; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #92400e;">Pathway B: Non-Normal Distribution (P < 0.05) → Robust IQR Method</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #78350f; margin-bottom: 10px;">
-                        When data heavily deviates from normality (common in small biological sample sizes or exponential biological growth data), parametric tests fail. The Interquartile Range (IQR) method (Tukey's fences) relies on medians and quartiles, making it resistant to the extreme values themselves.
+                        When data heavily deviates from normality (common in small biological sample sizes or exponential biological growth data), parametric tests fail. The Interquartile Range (IQR) method (Tukey's fences) relies on medians and quartiles, making it highly resistant to the extreme values themselves.
                     </p>
                     <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 0.9rem;">
                         Q1 = 25th Percentile<br>
@@ -126,15 +126,15 @@
                 </div>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #ea580c; border-bottom: 2px solid #fff7ed; padding-bottom: 10px;">🐁 Human Equivalent Dose (HED) & Translational Scaling</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #ea580c;">
+                <h3 style="color: #ea580c; margin-top: 0;">🐁 Human Equivalent Dose (HED) & Translational Scaling</h3>
                 <p>
                     Translating drug dosages from preclinical animal models (mice, rats, dogs, macaques) to human clinical trials (Phase I) is one of the most critical steps in pharmacology. Simply scaling the dose by body weight (mg/kg) is highly dangerous and historically inaccurate because basal metabolic rate correlates more closely with <strong>Body Surface Area (BSA)</strong> than with total body mass.
                 </p>
                 <div style="background-color: #fff7ed; padding: 15px; border-left: 4px solid #f97316; margin: 20px 0;">
                     <h4 style="margin: 0 0 8px 0; color: #9a3412;">The FDA Allometric Scaling Standard</h4>
                     <p style="margin: 0; font-size: 0.95rem; color: #9a3412;">
-                        The U.S. Food and Drug Administration (FDA) established guidelines in 2005 for calculating the Maximum Safe Starting Dose (MRSD). This guideline utilizes the <strong>K_m factor</strong> (Body weight in kg divided by BSA in m²). By comparing the K_m factor of humans to various laboratory animals, we can safely extrapolate toxicity thresholds (NOAEL - No Observed Adverse Effect Level).
+                        The U.S. Food and Drug Administration (FDA) established guidelines in 2005 for calculating the Maximum Safe Starting Dose (MRSD). This guideline utilizes the <strong>K_m factor</strong> (Body weight in kg divided by BSA in m²). By comparing the K_m factor of humans to various laboratory animals, pharmacologists can safely extrapolate toxicity thresholds (NOAEL - No Observed Adverse Effect Level).
                     </p>
                 </div>
                 <div class="formula-box" style="background-color: #f8fafc; border-left: 4px solid #cbd5e1; padding: 15px;">
@@ -148,10 +148,10 @@
                 </p>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #0284c7; border-bottom: 2px solid #f0f9ff; padding-bottom: 10px;">📉 Independent T-Test & Effect Size Metrics</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #0284c7;">
+                <h3 style="color: #0284c7; margin-top: 0;">📉 Independent T-Test & Effect Size Metrics</h3>
                 <p>
-                    The independent samples t-test is utilized to compare the means of two distinct groups (e.g., wild-type vs. knockout mice, placebo vs. drug treatment) to determine if there is statistical evidence that the associated population means are significantly different.
+                    The independent samples t-test is utilized to compare the means of two distinct groups (e.g., wild-type vs. knockout mice, placebo vs. drug treatment) to determine if there is statistical evidence that the associated population means are significantly different from one another.
                 </p>
                 
                 <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0ea5e9; margin: 20px 0; border-radius: 0 4px 4px 0;">
@@ -161,17 +161,17 @@
                     </p>
                 </div>
                 
-                <h4>Essential Reporting Statistics Generated:</h4>
-                <ul style="color: #444; font-size: 0.95rem;">
-                    <li><strong>P-value (α = 0.05):</strong> The probability of observing the data if the null hypothesis is true. A value < 0.05 generally indicates a statistically significant difference.</li>
-                    <li><strong>95% Confidence Interval (CI):</strong> Provides a range within which the true difference between population means is expected to lie with 95% certainty. If the CI crosses zero, the result is not statistically significant.</li>
+                <h4 style="margin-bottom: 10px;">Essential Reporting Statistics Generated:</h4>
+                <ul style="color: #444; font-size: 0.95rem; margin-top: 0;">
+                    <li style="margin-bottom: 8px;"><strong>P-value (α = 0.05):</strong> The probability of observing the data if the null hypothesis is true. A value < 0.05 generally indicates a statistically significant difference.</li>
+                    <li style="margin-bottom: 8px;"><strong>95% Confidence Interval (CI):</strong> Provides a range within which the true difference between population means is expected to lie with 95% certainty. If the CI crosses zero, the result is not statistically significant regardless of the p-value.</li>
                     <li><strong>Cohen's d (Effect Size):</strong> While a p-value tells you if a difference exists, Cohen's d tells you <em>how large</em> that difference is in standard deviation units. <br>
                     <em>Benchmarks: 0.2 (Small effect), 0.5 (Medium effect), 0.8+ (Large effect).</em></li>
                 </ul>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #be123c; border-bottom: 2px solid #fff1f2; padding-bottom: 10px;">🎲 Chi-Square Analysis (Contingency Tables)</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #be123c;">
+                <h3 style="color: #be123c; margin-top: 0;">🎲 Chi-Square Analysis (Contingency Tables)</h3>
                 <p>
                     The Pearson's Chi-Square test of independence evaluates whether there is a significant association between two categorical variables. It is predominantly used in genetics (Mendelian ratios), epidemiology (exposure vs. disease status), and clinical responses (responder vs. non-responder).
                 </p>
@@ -183,26 +183,26 @@
                     </p>
                 </div>
                 
-                <p><strong>Cramér's V (Effect Size):</strong></p>
-                <p style="font-size: 0.95rem; color: #444;">
-                    Similar to Cohen's d for t-tests, Cramér's V scales the Chi-Square statistic to a value between 0 and 1, representing the strength of association between the variables. (0.1 = Weak, 0.3 = Moderate, 0.5+ = Strong association).
+                <h4 style="margin-bottom: 5px;">Cramér's V (Effect Size):</h4>
+                <p style="font-size: 0.95rem; color: #444; margin-top: 0;">
+                    Similar to Cohen's d for t-tests, Cramér's V scales the Chi-Square statistic to a value between 0 and 1, representing the strength of association between the categorical variables. (0.1 = Weak, 0.3 = Moderate, 0.5+ = Strong association).
                 </p>
             </div>
 
-            <div class="help-block" style="margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <h3 style="color: #475569; border-bottom: 2px solid #f8fafc; padding-bottom: 10px;">⏳ Survival Analysis: Kaplan-Meier & Log-Rank Testing</h3>
+            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #475569;">
+                <h3 style="color: #475569; margin-top: 0;">⏳ Survival Analysis: Kaplan-Meier & Log-Rank Testing</h3>
                 <p>
                     Time-to-event analysis is the cornerstone of clinical oncology, epidemiology, and longitudinal animal studies. The Kaplan-Meier estimator is a non-parametric statistic used to estimate the survival function from lifetime data, elegantly handling incomplete observations known as "censoring".
                 </p>
                 
-                <h4 style="margin-top: 20px;">Understanding the Data Coding Structure:</h4>
-                <ul style="color: #444; font-size: 0.95rem; margin-bottom: 15px;">
-                    <li><strong>Event (Code 1):</strong> The primary endpoint of the study was reached at the specified time point. This could be overall survival (death), progression-free survival (tumor growth), or disease-free survival (relapse). The survival curve drops exactly at this time point.</li>
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Understanding the Data Coding Structure:</h4>
+                <ul style="color: #444; font-size: 0.95rem; margin-top: 0; margin-bottom: 15px;">
+                    <li style="margin-bottom: 8px;"><strong>Event (Code 1):</strong> The primary endpoint of the study was reached at the specified time point. This could be overall survival (death), progression-free survival (tumor growth), or disease-free survival (relapse). The survival curve drops exactly at this time point.</li>
                     <li><strong>Right-Censored (Code 0):</strong> The observation period ended without the event occurring, or the subject withdrew from the study (lost to follow-up). The survival curve does NOT drop, but the denominator (number of subjects at risk) decreases for subsequent calculations.</li>
                 </ul>
 
-                <h4 style="margin-top: 20px;">Key Interpretations:</h4>
-                <p style="font-size: 0.95rem; color: #444;">
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Key Interpretations:</h4>
+                <p style="font-size: 0.95rem; color: #444; margin-top: 0;">
                     <strong>Median Survival Time:</strong> The exact time point at which the calculated survival probability crosses 0.5 (50%). If a treatment is highly efficacious and more than half of the cohort survives past the end of the study, the median survival is statistically reported as <strong>"Not Reached (NR)"</strong>.
                 </p>
 
@@ -217,14 +217,14 @@
         </section>
     </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
         <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
+        <br><br>
         <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
         <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
         <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+        <br><br>
+        © 2026 Scientist's Toolkit
     </footer>
     
     <script>
