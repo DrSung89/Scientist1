@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
 
     // ====================================================
-    // 1. [핵심] 통계 로직 (D'Agostino-Pearson K-squared Test 적용)
+    // 1. [핵심] 통계 로직 (D'Agostino-Pearson K-squared Test 수정 완료)
     // ====================================================
     const stat = {
         mean: d => d.reduce((a,b)=>a+b,0)/d.length,
@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sd = stat.sd(data, mean);
         if (sd === 0) return { p: 1 }; 
         
+        // Z1 (왜도 변환)
         const g1 = stat.skewness(data, mean, sd);
         const y_skew = g1 * Math.sqrt(((n + 1) * (n + 3)) / (6 * (n - 2)));
         const beta2_skew = (3 * (n*n + 27*n - 70) * (n+1) * (n+3)) / ((n-2) * (n+5) * (n+7) * (n+9));
@@ -84,19 +85,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const alpha_skew = Math.sqrt(2 / (w2_skew - 1));
         const z1 = delta_skew * Math.log(y_skew / alpha_skew + Math.sqrt(Math.pow(y_skew / alpha_skew, 2) + 1));
 
+        // Z2 (첨도 변환 - 버그 수정 완료 부분)
         const g2 = stat.kurtosis(data, mean, sd);
         const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3));
         const var_g2 = (24 * n * (n - 2) * (n - 3)) / (Math.pow(n + 1, 2) * (n + 3) * (n + 5));
         const x_kurt = (g2 - mean_g2) / Math.sqrt(var_g2);
         const root_beta1_kurt = (6 * (n*n - 5*n + 2)) / ((n + 7) * (n + 9)) * Math.sqrt((6 * (n + 3) * (n + 5)) / (n * (n - 2) * (n - 3)));
         const a_kurt = 6 + (8 / root_beta1_kurt) * (2 / root_beta1_kurt + Math.sqrt(1 + 4 / Math.pow(root_beta1_kurt, 2)));
-        const term1_kurt = 1 - 2/a_kurt;
-        const term2_kurt = (1 + x_kurt * Math.sqrt(2 / (a_kurt - 4))) / (1 - 2 / Math.sqrt(a_kurt)); 
+        
+        const W = 1 + x_kurt * Math.sqrt(2 / (a_kurt - 4));
         let z2 = 0;
-        if (term2_kurt > 0) {
-            z2 = Math.sqrt(9 * a_kurt / 2) * (Math.pow(term2_kurt, 1/3) - 1 + 2 / (9 * a_kurt));
+        
+        // 자바스크립트 음수 제곱근(NaN) 에러를 방지하는 Math.cbrt 적용
+        if (W > 0) {
+            const term1 = 1 - 2 / (9 * a_kurt);
+            const term2 = Math.cbrt((1 - 2 / a_kurt) / W); 
+            z2 = Math.sqrt(9 * a_kurt / 2) * (term1 - term2);
+        } else {
+            z2 = 10; // 극한의 비정규 상태일 때 통과 방지
         }
 
+        // K-squared 통계량 및 P-value
         const k2 = Math.pow(z1, 2) + Math.pow(z2, 2);
         let p = 1 - chiSquareCDF(k2, 2);
         
@@ -107,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 2. Outlier Checker (가이드 문구 추가됨)
+    // 2. Outlier Checker 
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
@@ -142,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const skew = stat.skewness(data, mean, sd);
 
-            // [정규성 판단]
             let isNormal, pValueDisplay, normMsg;
             if (n <= 5) {
                 isNormal = Math.abs(skew) < 0.8;
@@ -156,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 normMsg = isNormal ? "<span style='color:#059669; font-weight:bold;'>Passed (Normal)</span>" : "<span style='color:#d97706; font-weight:bold;'>Failed (Non-Normal)</span>";
             }
 
-            // [이상치 탐지]
             let methodUsed, outliers = [], thresholdInfo;
             if (isNormal) {
                 methodUsed = "Grubb's Test";
@@ -177,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 thresholdInfo = `Limit: ${lower.toFixed(1)} ~ ${upper.toFixed(1)}`;
             }
 
-            // [HTML 생성]
             let html = `
             <div style="border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:10px;">
                 <div style="font-size:0.9em; color:#666; margin-bottom:4px;">Desc. Stats (N=${n})</div>
@@ -227,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
     function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM'];if(t==='mass')U=['kg','g','mg','ug'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
 
-    // Molarity
     const mb = document.getElementById('calculate-molarity');
     if(mb) mb.addEventListener('click',()=>{
         const m=parseFloat(document.getElementById('mass').value), mw=parseFloat(document.getElementById('mw').value), v=parseFloat(document.getElementById('volume').value), c=parseFloat(document.getElementById('concentration').value), rd=document.getElementById('molarity-result');
@@ -240,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else rd.innerHTML="<span style='color:red'>Fill 3 fields.</span>";
     });
 
-    // HED
     const hb=document.getElementById('calculate-hed');
     if(hb) hb.addEventListener('click',()=>{
         const km={"Mouse":3,"Hamster":5,"Rat":6,"Ferret":7,"Guinea Pig":8,"Rabbit":12,"Dog":20,"Monkey":12,"Marmoset":6,"Squirrel Monkey":7,"Baboon":20,"Micro Pig":27,"Mini Pig":35,"Human":37};
@@ -251,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hed-result').innerHTML=txt;
     });
 
-    // Dilution
     const db=document.getElementById('calculate-dilution');
     if(db) db.addEventListener('click',()=>{
         const m1=parseFloat(document.getElementById('m1').value), v1=parseFloat(document.getElementById('v1').value), m2=parseFloat(document.getElementById('m2').value), v2=parseFloat(document.getElementById('v2').value), rd=document.getElementById('dilution-result');
