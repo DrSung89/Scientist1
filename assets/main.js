@@ -28,17 +28,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) {}
 
-    // ====================================================
-    // [핵심] 통계 로직 (Numeric Safety Clamp 적용)
+ // ====================================================
+    // [핵심] 통계 로직 (D'Agostino-Pearson K-squared Test 적용)
     // ====================================================
     const stat = {
         mean: d => d.reduce((a,b)=>a+b,0)/d.length,
         sd: (d, m) => Math.sqrt(d.reduce((a,b)=>a+Math.pow(b-m,2),0)/(d.length-1)),
+        // 왜도 (Skewness - g1)
         skewness: (d, m, s) => {
             const n = d.length;
             if (n < 3) return 0;
             let sum = 0; d.forEach(v => sum += Math.pow((v-m)/s, 3));
             return (n / ((n-1)*(n-2))) * sum;
+        },
+        // 첨도 (Kurtosis - g2) : 엑셀과 동일한 공식 (Excess Kurtosis)
+        kurtosis: (d, m, s) => {
+            const n = d.length;
+            if (n < 4) return 0;
+            let sum = 0; d.forEach(v => sum += Math.pow((v-m)/s, 4));
+            const part1 = (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3));
+            const part2 = sum;
+            const part3 = (3 * Math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
+            return (part1 * part2) - part3;
         },
         percentile: (d, p) => {
             const sorted = [...d].sort((a,b)=>a-b);
@@ -49,69 +60,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // [정밀] Shapiro-Wilk 계산 (NaN 방지)
-    function calculateShapiroWilkInternal(data) {
+    // Chi-Square CDF (jStat 활용)
+    function chiSquareCDF(x, df) {
+        if (typeof jStat !== 'undefined') return jStat.chisquare.cdf(x, df);
+        // jStat이 로드되지 않았을 때를 대비한 근사치 Fallback
+        return 1 - Math.exp(-x / 2); 
+    }
+
+    // [정밀] D'Agostino-Pearson Omnibus K2 Test
+    function testNormalityDP(data) {
         const n = data.length;
-        if (n < 3) return { p: 0 };
+        if (n < 8) {
+            // N이 8 미만이면 통계적 검정력이 너무 낮아 Skewness 절대값으로 대략적 판단
+            const m = stat.mean(data);
+            const s = stat.sd(data, m);
+            const sk = stat.skewness(data, m, s);
+            return { p: Math.abs(sk) < 1 ? 0.5 : 0.01 }; // 1 이하면 정상으로 취급
+        }
+
         const mean = stat.mean(data);
-        const ss = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
-        if (ss === 0) return { p: 1 }; 
+        const sd = stat.sd(data, mean);
+        if (sd === 0) return { p: 1 }; // 모두 같은 값이면 완전 정규분포로 취급
+        
+        // 1. 왜도 Z-score (Z1)
+        const g1 = stat.skewness(data, mean, sd);
+        const y_skew = g1 * Math.sqrt(((n + 1) * (n + 3)) / (6 * (n - 2)));
+        const beta2_skew = (3 * (n*n + 27*n - 70) * (n+1) * (n+3)) / ((n-2) * (n+5) * (n+7) * (n+9));
+        const w2_skew = -1 + Math.sqrt(2 * (beta2_skew - 1));
+        const delta_skew = 1 / Math.sqrt(0.5 * Math.log(w2_skew));
+        const alpha_skew = Math.sqrt(2 / (w2_skew - 1));
+        const z1 = delta_skew * Math.log(y_skew / alpha_skew + Math.sqrt(Math.pow(y_skew / alpha_skew, 2) + 1));
 
-        const m = new Array(n);
-        for (let i = 0; i < n; i++) {
-            m[i] = inverseNormalCDF((i + 1 - 0.375) / (n + 0.25));
+        // 2. 첨도 Z-score (Z2)
+        const g2 = stat.kurtosis(data, mean, sd);
+        const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3)); // Expected excess kurtosis
+        const var_g2 = (24 * n * (n - 2) * (n - 3)) / (Math.pow(n + 1, 2) * (n + 3) * (n + 5));
+        const x_kurt = (g2 - mean_g2) / Math.sqrt(var_g2);
+        const root_beta1_kurt = (6 * (n*n - 5*n + 2)) / ((n + 7) * (n + 9)) * Math.sqrt((6 * (n + 3) * (n + 5)) / (n * (n - 2) * (n - 3)));
+        const a_kurt = 6 + (8 / root_beta1_kurt) * (2 / root_beta1_kurt + Math.sqrt(1 + 4 / Math.pow(root_beta1_kurt, 2)));
+        const term1_kurt = 1 - 2/a_kurt;
+        const term2_kurt = (1 + x_kurt * Math.sqrt(2 / (a_kurt - 4))) / (1 - 2 / Math.sqrt(a_kurt)); // Correction applied
+        let z2 = 0;
+        // 음수 제곱근 에러 방지 (Clamp)
+        if (term2_kurt > 0) {
+            z2 = Math.sqrt(9 * a_kurt / 2) * (Math.pow(term2_kurt, 1/3) - 1 + 2 / (9 * a_kurt));
         }
-        
-        const sorted = [...data].sort((x,y)=>x-y);
-        let sumM = 0, sumD = 0;
-        for(let val of m) sumM += val;
-        for(let val of sorted) sumD += val;
-        const mM = sumM/n, mD = sumD/n;
-        let num = 0, den1 = 0, den2 = 0;
-        for(let i=0; i<n; i++){
-            num += (m[i]-mM)*(sorted[i]-mD);
-            den1 += (m[i]-mM)**2;
-            den2 += (sorted[i]-mD)**2;
-        }
-        
-        let W = (num**2) / (den1*den2);
 
-        // [Safety Clamp]
-        if (!isFinite(W)) return { p: 0, w: 0 };
-        if (W >= 1) W = 0.999999; 
-        if (W <= 0) W = 1e-8;
+        // 3. K-squared 통계량 계산
+        const k2 = Math.pow(z1, 2) + Math.pow(z2, 2);
 
-        const mu = 0.0038915 * Math.pow(Math.log(n), 3) - 0.083751 * Math.pow(Math.log(n), 2) - 0.31082 * Math.log(n) - 1.5861;
-        const sigma = Math.exp(0.0030302 * Math.pow(Math.log(n), 2) - 0.082676 * Math.log(n) - 0.4803);
-        const z = (Math.log(1 - W) - mu) / sigma;
+        // 4. P-value (df=2 카이제곱 분포)
+        let p = 1 - chiSquareCDF(k2, 2);
         
-        let p = 1 - normalCDF(z);
+        // Safety Clamp
         if (!isFinite(p) || p < 0) p = 0;
         if (p > 1) p = 1;
-        
+
         return { p: p };
     }
-
-    function inverseNormalCDF(p) { 
-        if (p >= 1) return Infinity; if (p <= 0) return -Infinity;
-        const a1 = -39.6968302866538, a2 = 220.946098424521, a3 = -275.928510446969;
-        const a4 = 138.357751867269, a5 = -30.6647980661472, a6 = 2.50662827745924;
-        const b1 = -54.4760987982241, b2 = 161.585836858041, b3 = -155.698979859887;
-        const b4 = 66.8013118877197, b5 = -13.2806815528857;
-        const c1 = -7.78489400243029e-03, c2 = -0.322396458041136, c3 = -2.40075827716184;
-        const c4 = -2.54973253934373, c5 = 4.37466414146497, c6 = 2.93816398269878;
-        const d1 = 7.78469570904146e-03, d2 = 0.322467129070039, d3 = 2.445134137143, d4 = 3.75440866190742;
-        const q = p - 0.5; 
-        if (Math.abs(q) <= 0.42) { let r = q*q; return (((((a1*r+a2)*r+a3)*r+a4)*r+a5)*r+a6)*q / (((((b1*r+b2)*r+b3)*r+b4)*r+b5)*r+1); }
-        let r = p; if (q > 0) r = 1-p; r = Math.sqrt(-Math.log(r));
-        let ret = (((((c1*r+c2)*r+c3)*r+c4)*r+c5)*r+c6) / ((((d1*r+d2)*r+d3)*r+d4)*r+1);
-        return q < 0 ? -ret : ret;
-    }
-    function normalCDF(x) {
-        var t = 1 / (1 + 0.2316419 * Math.abs(x));
-        var d = 0.3989423 * Math.exp(-x * x / 2);
-        var prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
-        return x > 0 ? 1 - prob : prob;
     }
 
     // ====================================================
@@ -157,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 pValueDisplay = "N/A <span style='color:#999; font-size:0.8em'>(N≤5)</span>";
                 normMsg = isNormal ? "Assumed Normal (Low Skew)" : "Assumed Non-Normal (High Skew)";
             } else {
-                const sw = calculateShapiroWilkInternal(data);
+                const normTest = testNormalityDP(data);
+                const pVal = normTest.p;
                 const pVal = sw.p;
                 isNormal = pVal >= 0.05;
                 pValueDisplay = pVal.toFixed(3);
@@ -193,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div style="background:#f9fafb; padding:8px; border-radius:4px; margin-bottom:10px; font-size:0.9em;">
                 <div style="display:flex; justify-content:space-between;">
-                    <span>S-W P-value: <strong>${pValueDisplay}</strong></span>
+                    <span>Normality P-value: <strong>${pValueDisplay}</strong></span>
                     <span>${normMsg}</span>
                 </div>
             </div>
