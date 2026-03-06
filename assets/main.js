@@ -28,20 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) {}
 
- // ====================================================
-    // [핵심] 통계 로직 (D'Agostino-Pearson K-squared Test 적용)
+    // ====================================================
+    // 1. [핵심] 통계 로직 (D'Agostino-Pearson K-squared Test 적용)
     // ====================================================
     const stat = {
         mean: d => d.reduce((a,b)=>a+b,0)/d.length,
         sd: (d, m) => Math.sqrt(d.reduce((a,b)=>a+Math.pow(b-m,2),0)/(d.length-1)),
-        // 왜도 (Skewness - g1)
         skewness: (d, m, s) => {
             const n = d.length;
             if (n < 3) return 0;
             let sum = 0; d.forEach(v => sum += Math.pow((v-m)/s, 3));
             return (n / ((n-1)*(n-2))) * sum;
         },
-        // 첨도 (Kurtosis - g2) : 엑셀과 동일한 공식 (Excess Kurtosis)
         kurtosis: (d, m, s) => {
             const n = d.length;
             if (n < 4) return 0;
@@ -60,29 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Chi-Square CDF (jStat 활용)
     function chiSquareCDF(x, df) {
         if (typeof jStat !== 'undefined') return jStat.chisquare.cdf(x, df);
-        // jStat이 로드되지 않았을 때를 대비한 근사치 Fallback
         return 1 - Math.exp(-x / 2); 
     }
 
-    // [정밀] D'Agostino-Pearson Omnibus K2 Test
     function testNormalityDP(data) {
         const n = data.length;
         if (n < 8) {
-            // N이 8 미만이면 통계적 검정력이 너무 낮아 Skewness 절대값으로 대략적 판단
             const m = stat.mean(data);
             const s = stat.sd(data, m);
             const sk = stat.skewness(data, m, s);
-            return { p: Math.abs(sk) < 1 ? 0.5 : 0.01 }; // 1 이하면 정상으로 취급
+            return { p: Math.abs(sk) < 1 ? 0.5 : 0.01 }; 
         }
 
         const mean = stat.mean(data);
         const sd = stat.sd(data, mean);
-        if (sd === 0) return { p: 1 }; // 모두 같은 값이면 완전 정규분포로 취급
+        if (sd === 0) return { p: 1 }; 
         
-        // 1. 왜도 Z-score (Z1)
         const g1 = stat.skewness(data, mean, sd);
         const y_skew = g1 * Math.sqrt(((n + 1) * (n + 3)) / (6 * (n - 2)));
         const beta2_skew = (3 * (n*n + 27*n - 70) * (n+1) * (n+3)) / ((n-2) * (n+5) * (n+7) * (n+9));
@@ -91,33 +84,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const alpha_skew = Math.sqrt(2 / (w2_skew - 1));
         const z1 = delta_skew * Math.log(y_skew / alpha_skew + Math.sqrt(Math.pow(y_skew / alpha_skew, 2) + 1));
 
-        // 2. 첨도 Z-score (Z2)
         const g2 = stat.kurtosis(data, mean, sd);
-        const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3)); // Expected excess kurtosis
+        const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3));
         const var_g2 = (24 * n * (n - 2) * (n - 3)) / (Math.pow(n + 1, 2) * (n + 3) * (n + 5));
         const x_kurt = (g2 - mean_g2) / Math.sqrt(var_g2);
         const root_beta1_kurt = (6 * (n*n - 5*n + 2)) / ((n + 7) * (n + 9)) * Math.sqrt((6 * (n + 3) * (n + 5)) / (n * (n - 2) * (n - 3)));
         const a_kurt = 6 + (8 / root_beta1_kurt) * (2 / root_beta1_kurt + Math.sqrt(1 + 4 / Math.pow(root_beta1_kurt, 2)));
         const term1_kurt = 1 - 2/a_kurt;
-        const term2_kurt = (1 + x_kurt * Math.sqrt(2 / (a_kurt - 4))) / (1 - 2 / Math.sqrt(a_kurt)); // Correction applied
+        const term2_kurt = (1 + x_kurt * Math.sqrt(2 / (a_kurt - 4))) / (1 - 2 / Math.sqrt(a_kurt)); 
         let z2 = 0;
-        // 음수 제곱근 에러 방지 (Clamp)
         if (term2_kurt > 0) {
             z2 = Math.sqrt(9 * a_kurt / 2) * (Math.pow(term2_kurt, 1/3) - 1 + 2 / (9 * a_kurt));
         }
 
-        // 3. K-squared 통계량 계산
         const k2 = Math.pow(z1, 2) + Math.pow(z2, 2);
-
-        // 4. P-value (df=2 카이제곱 분포)
         let p = 1 - chiSquareCDF(k2, 2);
         
-        // Safety Clamp
         if (!isFinite(p) || p < 0) p = 0;
         if (p > 1) p = 1;
 
         return { p: p };
-    }
     }
 
     // ====================================================
@@ -165,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const normTest = testNormalityDP(data);
                 const pVal = normTest.p;
-                const pVal = sw.p;
                 isNormal = pVal >= 0.05;
                 pValueDisplay = pVal.toFixed(3);
                 normMsg = isNormal ? "<span style='color:#059669; font-weight:bold;'>Passed (Normal)</span>" : "<span style='color:#d97706; font-weight:bold;'>Failed (Non-Normal)</span>";
@@ -210,13 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (outliers.length > 0) {
                 if (n <= 5) {
-                    // Small N Warning
                     html += `<div style="background:#fff7ed; padding:10px; border-radius:4px; color:#9a3412;">
                         <strong>⚠️ Potential: ${outliers.join(", ")}</strong><br>
                         <span style="font-size:0.85em">Small N (≤5). Recommend increasing replicates.</span>
                     </div>`;
                 } else {
-                    // [★추가됨★] Outliers > 1 이면 Stepwise 가이드 표시
                     let tipText = "";
                     if (outliers.length > 1) {
                         tipText = `<div style="margin-top:8px; border-top:1px dashed #fca5a5; padding-top:5px; font-size:0.85em; color:#7f1d1d;">
@@ -240,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================================================
-    // 3. Other Calculators (유지)
+    // 3. Other Calculators
     // ====================================================
     function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM'];if(t==='mass')U=['kg','g','mg','ug'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
 
