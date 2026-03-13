@@ -12,7 +12,7 @@
 <script>
     MathJax = {
         tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] // $ ... $ 를 인라인 수식으로 인식하도록 설정
+            inlineMath: [['$', '$'], ['\\(', '\\)']] 
         }
     };
 </script>
@@ -92,8 +92,12 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label>Dose (mg/kg)</label>
-                            <input type="number" id="dose-a" placeholder="mg/kg">
+                            <label>Dose</label>
+                            <input type="number" id="dose-a" placeholder="Input..." style="flex:1;">
+                            <select id="dose-a-unit" style="width: 80px; margin-left: 5px;">
+                                <option value="mpk" selected>mg/kg</option>
+                                <option value="mg">mg</option>
+                            </select>
                         </div>
                     </div>
                     <div class="hed-group">
@@ -109,8 +113,8 @@
                                 </select>
                         </div>
                         <div class="input-group">
-                            <label>Body Weight</label>
-                            <input type="number" id="weight-b" placeholder="Weight">
+                            <label>Body Weight <br><span style="font-size:0.8em; color:#888;">(Optional)</span></label>
+                            <input type="number" id="weight-b" placeholder="Standard Wt. used if empty">
                             <select id="weight-b-unit"><option value="kg">kg</option><option value="g">g</option></select>
                         </div>
                     </div>
@@ -136,7 +140,7 @@
                     </ul>
                 </div>
                 </div>
-            <div id="hed-result" class="result" style="margin-top: 20px; font-weight: bold; color: #2c3e50;"></div>
+            <div id="hed-result" class="result" style="margin-top: 20px; font-size: 1.1rem; line-height: 1.6;"></div>
         </section>
 
         <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">

@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const alpha_skew = Math.sqrt(2 / (w2_skew - 1));
         const z1 = delta_skew * Math.log(y_skew / alpha_skew + Math.sqrt(Math.pow(y_skew / alpha_skew, 2) + 1));
 
-        // Z2 (첨도 변환 - 버그 수정 완료 부분)
+        // Z2 (첨도 변환)
         const g2 = stat.kurtosis(data, mean, sd);
         const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3));
         const var_g2 = (24 * n * (n - 2) * (n - 3)) / (Math.pow(n + 1, 2) * (n + 3) * (n + 5));
@@ -96,13 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const W = 1 + x_kurt * Math.sqrt(2 / (a_kurt - 4));
         let z2 = 0;
         
-        // 자바스크립트 음수 제곱근(NaN) 에러를 방지하는 Math.cbrt 적용
         if (W > 0) {
             const term1 = 1 - 2 / (9 * a_kurt);
             const term2 = Math.cbrt((1 - 2 / a_kurt) / W); 
             z2 = Math.sqrt(9 * a_kurt / 2) * (term1 - term2);
         } else {
-            z2 = 10; // 극한의 비정규 상태일 때 통과 방지
+            z2 = 10; 
         }
 
         // K-squared 통계량 및 P-value
@@ -233,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
     function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM'];if(t==='mass')U=['kg','g','mg','ug'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
 
+    // Molarity Calculator
     const mb = document.getElementById('calculate-molarity');
     if(mb) mb.addEventListener('click',()=>{
         const m=parseFloat(document.getElementById('mass').value), mw=parseFloat(document.getElementById('mw').value), v=parseFloat(document.getElementById('volume').value), c=parseFloat(document.getElementById('concentration').value), rd=document.getElementById('molarity-result');
@@ -245,16 +245,57 @@ document.addEventListener('DOMContentLoaded', () => {
         else rd.innerHTML="<span style='color:red'>Fill 3 fields.</span>";
     });
 
+    // ★★★ [업그레이드된 HED Calculator] ★★★
     const hb=document.getElementById('calculate-hed');
     if(hb) hb.addEventListener('click',()=>{
+        // Km 값 및 표준 체중 (Standard Weights in kg)
         const km={"Mouse":3,"Hamster":5,"Rat":6,"Ferret":7,"Guinea Pig":8,"Rabbit":12,"Dog":20,"Monkey":12,"Marmoset":6,"Squirrel Monkey":7,"Baboon":20,"Micro Pig":27,"Mini Pig":35,"Human":37};
-        const sA=document.getElementById('species-a').value, dA=parseFloat(document.getElementById('dose-a').value), sB=document.getElementById('species-b').value, wB=parseFloat(document.getElementById('weight-b').value);
+        const stdW={"Mouse":0.02,"Hamster":0.08,"Rat":0.15,"Ferret":0.3,"Guinea Pig":0.4,"Rabbit":1.8,"Dog":10,"Monkey":3,"Marmoset":0.35,"Squirrel Monkey":1,"Baboon":12,"Micro Pig":20,"Mini Pig":35,"Human":60};
+        
+        const sA=document.getElementById('species-a').value;
+        const dA=parseFloat(document.getElementById('dose-a').value);
+        const unitA=document.getElementById('dose-a-unit').value; // HTML에 새로 추가된 단위 판별
+        
+        const sB=document.getElementById('species-b').value;
+        const wB=parseFloat(document.getElementById('weight-b').value);
+        
         if(isNaN(dA)){document.getElementById('hed-result').innerHTML="<span style='color:red'>Enter Dose.</span>";return;}
-        const dB=dA*(km[sA]/km[sB]); let txt=`Equiv: <strong>${dB.toFixed(4)} mg/kg</strong>`;
-        if(!isNaN(wB)){const unit=document.getElementById('weight-b-unit').value; const kg=unit==='kg'?wB:wB/1000; txt+=`<br>Abs Dose (${kg}kg): ${(dB*kg).toFixed(4)} mg`;}
+        
+        // 사용자가 mg을 입력했을 경우, A 동물의 표준 체중으로 나누어 mg/kg으로 환산
+        let baseMpk = dA;
+        if (unitA === 'mg') {
+            baseMpk = dA / stdW[sA];
+        }
+        
+        // HED 변환 공식 적용 (항상 mg/kg 기준으로 계산)
+        const dB = baseMpk * (km[sA] / km[sB]); 
+        
+        let txt = "";
+        
+        // mg 입력 시, 어떻게 변환되었는지 안내 문구 표시
+        if (unitA === 'mg') {
+            txt += `<div style="font-size:0.85em; color:#888; margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 5px;">
+                    Info: ${dA}mg parsed as <strong>${baseMpk.toFixed(2)} mg/kg</strong> (Assuming standard ${sA} wt: ${stdW[sA]}kg)
+                    </div>`;
+        }
+        
+        txt += `Equivalent Dose: <strong style="color:#2c3e50;">${dB.toFixed(4)} mg/kg</strong>`;
+        
+        // 타겟 동물(B)의 체중 처리 및 절대 투여량(mg) 자동 계산
+        if(!isNaN(wB)){
+            // 사용자가 타겟 동물의 체중을 직접 입력한 경우
+            const unit=document.getElementById('weight-b-unit').value; 
+            const kg=unit==='kg'?wB:wB/1000; 
+            txt+=`<br>Absolute Dose (<span style="color:#666;">Custom ${kg}kg</span>): <strong style="color:#007bff;">${(dB*kg).toFixed(4)} mg</strong>`;
+        } else {
+            // 사용자가 타겟 동물의 체중을 비워둔 경우 -> 표준 체중(stdW)으로 자동 계산
+            txt+=`<br>Absolute Dose (<span style="color:#666;">Standard ${stdW[sB]}kg</span>): <strong style="color:#007bff;">${(dB*stdW[sB]).toFixed(4)} mg</strong>`;
+        }
+        
         document.getElementById('hed-result').innerHTML=txt;
     });
 
+    // Dilution Calculator
     const db=document.getElementById('calculate-dilution');
     if(db) db.addEventListener('click',()=>{
         const m1=parseFloat(document.getElementById('m1').value), v1=parseFloat(document.getElementById('v1').value), m2=parseFloat(document.getElementById('m2').value), v2=parseFloat(document.getElementById('v2').value), rd=document.getElementById('dilution-result');
