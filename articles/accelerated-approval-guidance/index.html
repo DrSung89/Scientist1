@@ -10,6 +10,10 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -55,17 +59,24 @@
 
             <section>
                 <h2 style="color: #1e40af;">1. The Accelerated Approval Pathway</h2>
-                <p>The accelerated approval pathway is utilized for drugs addressing an unmet medical need in the treatment of a serious or life-threatening condition. During this process, the FDA considers the severity, rarity, or prevalence of the condition alongside the lack of alternative treatments. This pathway allows sponsors to obtain approval based on a surrogate endpoint or an intermediate clinical endpoint that is reasonably likely to predict clinical benefit.</p>
-                                <p>A surrogate endpoint is generally a biomarker, such as a laboratory measurement or radiographic image, that is thought to predict clinical benefit but is not itself a measure of clinical benefit. Before submitting an application, analyzing preliminary data thoroughly is key. Tools such as our <a href="../../t-test-calculator/" style="color: #2563eb; font-weight: bold;">T-Test Calculator</a> can help determine if early changes in biomarker levels are statistically significant between treatment groups.</p>
+                <p>The accelerated approval pathway is utilized for drugs addressing an unmet medical need in the treatment of a serious or life-threatening condition.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> During this process, the FDA considers the severity, rarity, or prevalence of the condition alongside the lack of alternative treatments.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> This pathway allows sponsors to obtain approval based on a surrogate endpoint or an intermediate clinical endpoint that is reasonably likely to predict clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>A surrogate endpoint is generally a biomarker, such as a laboratory measurement or radiographic image, that is thought to predict clinical benefit but is not itself a measure of clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Before submitting an application, analyzing preliminary data thoroughly is key. Tools such as our <a href="../../t-test-calculator/" style="color: #2563eb; font-weight: bold;">T-Test Calculator</a> can help determine if early changes in biomarker levels are statistically significant between treatment groups.</p>
 
                 <h2 style="color: #1e40af;">2. The Role of Confirmatory Trials</h2>
-                <p>Because accelerated approvals are granted before direct clinical benefit is proven, sponsors are required to conduct postapproval confirmatory trials to verify and describe the clinical benefit. Under the Consolidated Appropriations Act, 2023, the FDA will specify conditions for these trials, including enrollment targets, protocols, and study completion milestones no later than the date of approval. </p>
-                <p>Sponsors must act with due diligence; trials should generally be underway at the time the marketing application is submitted. When establishing long-term clinical benefit in these trials—especially in oncology where overall survival is the gold standard—researchers often depend on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
+                <p>Because accelerated approvals are granted before direct clinical benefit is proven, sponsors are required to conduct postapproval confirmatory trials to verify and describe the clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Under the Consolidated Appropriations Act, 2023, the FDA will specify conditions for these trials, including enrollment targets, protocols, and study completion milestones no later than the date of approval.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>Sponsors must act with due diligence; trials should generally be underway at the time the marketing application is submitted.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When establishing long-term clinical benefit in these trials—especially in oncology where overall survival is the gold standard—researchers often depend on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
 
                 <h2 style="color: #1e40af;">3. Expedited Withdrawal Procedures</h2>
-                <p>If a drug fails to prove its worth, the FDA can remove it from the market. The FDA may use expedited procedures to withdraw approval if the sponsor fails to conduct trials with due diligence, if a confirmatory study fails to verify clinical benefit, if the product is not shown to be safe or effective under the conditions of use, or if promotional materials are false or misleading.</p>
-                                <p>The expedited withdrawal process includes providing the sponsor with due notice, an opportunity for public comment on the proposed withdrawal, an opportunity for a written appeal, and the potential convening of an advisory committee if requested by the sponsor.</p>
+                <p>The FDA may use expedited procedures to withdraw approval if the sponsor fails to conduct trials with due diligence, if a confirmatory study fails to verify clinical benefit, if the product is not shown to be safe or effective under the conditions of use, or if promotional materials are false or misleading.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>The expedited withdrawal process includes providing the sponsor with due notice, an opportunity for public comment on the proposed withdrawal, an opportunity for a written appeal, and the potential convening of an advisory committee if requested by the sponsor.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
             </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">U.S. Food and Drug Administration. (2024). <em>Expedited Program for Serious Conditions - Accelerated Approval of Drugs and Biologics Guidance for Industry</em>.</li>
+                </ol>
+            </div>
         </article>
     </main>
 

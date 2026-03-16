@@ -10,6 +10,10 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -24,10 +28,7 @@
                     "Cheering for your dedication and hard work today. 🧪", 
                     "Behind every data point, there is a researcher’s effort. 📊",
                     "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                    "Believe in your hypothesis, but trust your data. 📉"
+                    "Your failed experiment is just a stepping stone to discovery. 💡"
                 ];
                 document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
             });
@@ -58,20 +59,27 @@
 
             <section>
                 <h2 style="color: #1e40af;">1. The Need to Modernize Eligibility Criteria</h2>
-                <p>The primary purposes of eligibility criteria for cancer clinical trials are to select the intended patient population and reduce potential risks to participants. However, unnecessarily restrictive criteria may slow patient accrual, limit access to trials, and lead to clinical results that do not fully represent treatment effects in the patient population that will ultimately use the drug. Appropriately broadening cancer trial eligibility criteria can improve the generalizability of trial results. For statistical validation of these broader populations, researchers frequently rely on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
+                <p>The primary purposes of eligibility criteria for cancer clinical trials are to select the intended patient population and reduce potential risks to participants.<sup><a href="#ref1">[1]</a>, <a href="#ref2">[2]</a></sup><span style="display:none;"></span> However, unnecessarily restrictive criteria may slow patient accrual, limit access to trials, and lead to clinical results that do not fully represent treatment effects in the patient population that will ultimately use the drug.<sup><a href="#ref1">[1]</a>, <a href="#ref2">[2]</a></sup><span style="display:none;"></span> Appropriately broadening cancer trial eligibility criteria can improve the generalizability of trial results.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span> For statistical validation of these broader populations, researchers frequently rely on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
 
                 <h2 style="color: #1e40af;">2. Rethinking Washout Periods and Concomitant Medications</h2>
-                <p>A washout period is a treatment-free period between the most recent anti-cancer treatment and the initiation of the investigational drug. Time-based washout periods should be scientifically justified. The FDA guidance recommends that relevant clinical and laboratory parameters should be used in place of time-based washout periods to address safety considerations. Furthermore, patients using concomitant medication should only be excluded from trial participation when clinically relevant known or predicted drug-drug interactions (DDIs) and potential overlapping toxicities will impact the safety of trial participants.</p>
+                <p>A washout period is a treatment-free period between the most recent anti-cancer treatment and the initiation of the investigational drug.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Time-based washout periods should be scientifically justified.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The FDA guidance recommends that relevant clinical and laboratory parameters should be used in place of time-based washout periods to address safety considerations.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Furthermore, patients using concomitant medication should only be excluded from trial participation when clinically relevant known or predicted drug-drug interactions (DDIs) and potential overlapping toxicities will impact the safety of trial participants.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
 
                 <h2 style="color: #1e40af;">3. Re-evaluating Performance Status (PS)</h2>
-                <p>Many trials exclude lower-functioning patients based on the Eastern Cooperative Oncology Group (ECOG) and Karnofsky (KPS) scales. </p>
-                
-                <p>The FDA advises that patients with ECOG PS2 (or KPS 60-70) should be included unless there is a scientific and/or clinical rationale for exclusion justified by established safety considerations.</p>
+                <p>Many trials exclude lower-functioning patients based on the Eastern Cooperative Oncology Group (ECOG) and Karnofsky (KPS) scales.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span></p>
+                <p>The FDA advises that patients with ECOG PS2 (or KPS 60-70) should be included unless there is a scientific and/or clinical rationale for exclusion justified by established safety considerations.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span></p>
 
                 <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 30px 0;">
                     <strong>Statistical Analysis Tip:</strong> When evaluating differences in adverse event frequencies between cohorts, utilize our <a href="../../chi-square-calculator/" style="color: #2563eb; font-weight: bold;">Chi-Square Calculator</a> to determine the statistical significance of categorical outcomes in your trial data.
                 </div>
             </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">U.S. Food and Drug Administration. (2024). <em>Cancer Clinical Trial Eligibility Criteria: Washout Periods and Concomitant Medications Guidance for Industry</em>.</li>
+                    <li id="ref2">U.S. Food and Drug Administration. (2024). <em>Cancer Clinical Trial Eligibility Criteria: Performance Status Guidance for Industry</em>.</li>
+                </ol>
+            </div>
         </article>
     </main>
 

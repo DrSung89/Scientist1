@@ -10,6 +10,10 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -55,21 +59,28 @@
 
             <section>
                 <h2 style="color: #1e40af;">1. Precision Medicine and Companion Diagnostics</h2>
-                <p>In oncology, precision medicine aims to match therapeutic products to those patients who will positively respond to that therapeutic product, to maximize benefits and minimize risks. A companion diagnostic is an in vitro diagnostic device that provides information that is essential for the safe and effective use of a corresponding therapeutic product. Precision oncology depends on understanding the molecular pathophysiology of cancer and the ability of companion diagnostics to accurately and reliably detect and measure molecular biomarkers.</p>
-                                <p>To accurately identify the differences in biomarker frequencies across patient demographics during CDx development, researchers can use tools like our <a href="../../chi-square-calculator/" style="color: #2563eb; font-weight: bold;">Chi-Square Calculator</a> to analyze categorical contingency tables.</p>
+                <p>In oncology, precision medicine aims to match therapeutic products to those patients who will positively respond to that therapeutic product, to maximize benefits and minimize risks.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> A companion diagnostic is an in vitro diagnostic device that provides information that is essential for the safe and effective use of a corresponding therapeutic product.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Precision oncology depends on understanding the molecular pathophysiology of cancer and the ability of companion diagnostics to accurately and reliably detect and measure molecular biomarkers.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>To accurately identify the differences in biomarker frequencies across patient demographics during CDx development, researchers can use tools like our <a href="../../chi-square-calculator/" style="color: #2563eb; font-weight: bold;">Chi-Square Calculator</a> to analyze categorical contingency tables.</p>
 
                 <h2 style="color: #1e40af;">2. The Shift Toward Broader Labeling</h2>
-                <p>Historically, trials designed to support approval of a specific therapeutic product and a specific companion diagnostic have led to companion diagnostic labels that reference only a specific therapeutic product(s). Such specificity in labeling can limit a potentially broader use of a companion diagnostic that may be scientifically appropriate.</p>
-                <p>The FDA now states that if evidence is sufficient to conclude that the companion diagnostic is appropriate for use with a specific group of therapeutic products, the companion diagnostic's intended use should name the specific group of therapeutic products, rather than specific products. This broader labeling prevents the need to obtain an additional biopsy from a patient simply to switch to another approved therapeutic in the same class.</p>
+                <p>Historically, trials designed to support approval of a specific therapeutic product and a specific companion diagnostic have led to companion diagnostic labels that reference only a specific therapeutic product(s).<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Such specificity in labeling can limit a potentially broader use of a companion diagnostic that may be scientifically appropriate.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>The FDA now states that if evidence is sufficient to conclude that the companion diagnostic is appropriate for use with a specific group of therapeutic products, the companion diagnostic's intended use should name the specific group of therapeutic products, rather than specific products.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> This broader labeling prevents the need to obtain an additional biopsy from a patient simply to switch to another approved therapeutic in the same class.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
 
                 <h2 style="color: #1e40af;">3. Scientific Considerations for Broader Labeling</h2>
                 <p>The FDA recommends that developers consider several factors when determining whether their test could support a broader labeling claim:</p>
                 <ul>
-                    <li><strong>Mechanism of Action:</strong> There must be a detailed understanding of the mechanism of action of the specific group of oncology therapeutic products and the interaction between the therapeutic products and the biomarker(s).</li>
-                    <li><strong>Clinical Experience:</strong> There should generally be experience with at least two FDA-approved therapeutic products that would comprise the group.</li>
-                    <li><strong>Analytical and Clinical Validity:</strong> Analytical validity is the ability of a companion diagnostic to perform as intended in terms of its sensitivity, specificity, accuracy, and precision. Clinical validity is the ability to identify, measure, or predict the presence or absence of a clinical condition or predisposition.</li>
+                    <li><strong>Mechanism of Action:</strong> There must be a detailed understanding of the mechanism of action of the specific group of oncology therapeutic products and the interaction between the therapeutic products and the biomarker(s).<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
+                    <li><strong>Clinical Experience:</strong> There should generally be experience with at least two FDA-approved therapeutic products that would comprise the group.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
+                    <li><strong>Analytical and Clinical Validity:</strong> Analytical validity is the ability of a companion diagnostic to perform as intended in terms of its sensitivity, specificity, accuracy, and precision.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Clinical validity is the ability to identify, measure, or predict the presence or absence of a clinical condition or predisposition.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
                 </ul>
             </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">U.S. Food and Drug Administration. (2020). <em>Developing and Labeling In vitro Companion Diagnostic Devices for a Specific Group of Oncology Therapeutic Products</em>.</li>
+                </ol>
+            </div>
         </article>
     </main>
 

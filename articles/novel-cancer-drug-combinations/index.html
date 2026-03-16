@@ -10,6 +10,10 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -55,16 +59,23 @@
 
             <section>
                 <h2 style="color: #1e40af;">1. The Rationale for Combination Therapies</h2>
-                <p>Combination therapy in oncology is an important treatment modality designed to target multiple therapeutic pathways to improve treatment response, minimize adverse events, or both. When pursuing a novel combination, a marketing application must demonstrate both the safety and effectiveness of the novel combination, as well as provide evidence to demonstrate that the individual components contribute to the treatment effect.</p>
+                <p>Combination therapy in oncology is an important treatment modality designed to target multiple therapeutic pathways to improve treatment response, minimize adverse events, or both.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When pursuing a novel combination, a marketing application must demonstrate both the safety and effectiveness of the novel combination, as well as provide evidence to demonstrate that the individual components contribute to the treatment effect.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
 
                 <h2 style="color: #1e40af;">2. Factorial Clinical Trial Designs</h2>
-                <p>To definitively prove the contribution of each drug, a factorial design randomized trial is highly recommended. Traditional evaluation of novel combinations is accomplished using a multi-arm, randomized trial that includes a combination arm, the monotherapy arms, and a standard-of-care arm.</p>
-                                <p>When analyzing time-to-event endpoints from these multi-arm clinical trials, investigators can utilize tools like our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a> to compute overall survival curves and Log-Rank P-values.</p>
+                <p>To definitively prove the contribution of each drug, a factorial design randomized trial is highly recommended.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Traditional evaluation of novel combinations is accomplished using a multi-arm, randomized trial that includes a combination arm, the monotherapy arms, and a standard-of-care arm.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>When analyzing time-to-event endpoints from these multi-arm clinical trials, investigators can utilize tools like our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a> to compute overall survival curves and Log-Rank P-values.</p>
 
                 <h2 style="color: #1e40af;">3. Using External Data Sources</h2>
-                <p>In some cases, the conventional approach employing a standard factorial design may be infeasible. When appropriate, sponsors can use external data, such as prospectively collected patient-level data (e.g., registry data) or Real-World Data (RWD) sources, to supplement or replace single-agent arms.</p>
-                                <p>When assessing whether an external data source is fit for purpose, sponsors should consider data provenance, extent of missing data, knowledge of the disease's natural history, and the availability of patient-level data. The guidance emphasizes that summary-level evidence from published studies should generally be considered only for hypothesis generating.</p>
+                <p>In some cases, the conventional approach employing a standard factorial design may be infeasible.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When appropriate, sponsors can use external data, such as prospectively collected patient-level data (e.g., registry data) or Real-World Data (RWD) sources, to supplement or replace single-agent arms.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>When assessing whether an external data source is fit for purpose, sponsors should consider data provenance, extent of missing data, knowledge of the disease's natural history, and the availability of patient-level data.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The guidance emphasizes that summary-level evidence from published studies should generally be considered only for hypothesis generating.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
             </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">U.S. Food and Drug Administration. (2025). <em>Development of Cancer Drugs for Use in Novel Combination – Determining the Contribution of the Individual Drugs' Effects</em>.</li>
+                </ol>
+            </div>
         </article>
     </main>
 

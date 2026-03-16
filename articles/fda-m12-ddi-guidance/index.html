@@ -10,6 +10,10 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header style="text-align: center; padding-bottom: 20px;">
@@ -24,10 +28,7 @@
                     "Cheering for your dedication and hard work today. 🧪", 
                     "Behind every data point, there is a researcher’s effort. 📊",
                     "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                    "Believe in your hypothesis, but trust your data. 📉"
+                    "Your failed experiment is just a stepping stone to discovery. 💡"
                 ];
                 document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
             });
@@ -58,26 +59,32 @@
 
             <section>
                 <h2 style="color: #1e40af;">1. Introduction and Scope</h2>
-                <p>The evaluation of drug-drug interactions (DDIs) is a critical component of pharmacological research. The International Council for Harmonisation (ICH) M12 guidance aims to harmonize regulatory expectations worldwide, effectively reducing duplicative clinical trials and standardizing safety reporting. The scope of the M12 guidance is primarily limited to pharmacokinetic interactions, focusing on metabolic enzyme- and transporter-mediated interactions for small chemical molecules.</p>
+                <p>The evaluation of drug-drug interactions (DDIs) is a critical component of pharmacological research. The International Council for Harmonisation (ICH) M12 guidance aims to harmonize regulatory expectations worldwide, effectively reducing duplicative clinical trials and standardizing safety reporting.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The scope of the M12 guidance is primarily limited to pharmacokinetic interactions, focusing on metabolic enzyme- and transporter-mediated interactions for small chemical molecules.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
                 
                 <h2 style="color: #1e40af;">2. In Vitro Evaluation of DDIs</h2>
-                <p>Evaluating a drug's DDI potential usually begins with in vitro experiments to identify the principal routes of elimination. If oxidative metabolism is important, studies should first determine whether the drug is a substrate for the most common Cytochrome P450 (CYP) enzymes: CYP1A2, CYP2B6, CYP2C8, CYP2C9, CYP2C19, CYP2D6, and CYP3A.</p>
-                
+                <p>Evaluating a drug's DDI potential usually begins with in vitro experiments to identify the principal routes of elimination.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> If oxidative metabolism is important, studies should first determine whether the drug is a substrate for the most common Cytochrome P450 (CYP) enzymes: CYP1A2, CYP2B6, CYP2C8, CYP2C9, CYP2C19, CYP2D6, and CYP3A.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
                 <p>If researchers need to perform accurate data analysis during these in vitro phases, utilizing tools like our <a href="../../outlier-detector/" style="color: #2563eb; font-weight: bold;">Outlier Detector</a> can help ensure the robustness of technical replicates.</p>
 
                 <h2 style="color: #1e40af;">3. Clinical Evaluation Strategies</h2>
-                <p>Regulatory decision-making relies upon prospective studies specifically designed to evaluate DDI potential. The guidance defines several study types:</p>
+                <p>Regulatory decision-making relies upon prospective studies specifically designed to evaluate DDI potential.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The guidance defines several study types:</p>
                 <ul>
-                    <li><strong>Stand-Alone DDI Studies:</strong> Conducted with the primary objective of determining the presence or absence of a clinical DDI and its magnitude.</li>
-                    <li><strong>Nested DDI Studies:</strong> Investigations evaluated as part of larger phase 2/3 clinical studies, where DDI assessment is not the primary objective.</li>
-                    <li><strong>Cocktail Approaches:</strong> Involves the simultaneous administration of substrates for multiple enzymes/transporters.</li>
+                    <li><strong>Stand-Alone DDI Studies:</strong> Conducted with the primary objective of determining the presence or absence of a clinical DDI and its magnitude.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
+                    <li><strong>Nested DDI Studies:</strong> Investigations evaluated as part of larger phase 2/3 clinical studies, where DDI assessment is not the primary objective.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
+                    <li><strong>Cocktail Approaches:</strong> Involves the simultaneous administration of substrates for multiple enzymes/transporters.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></li>
                 </ul>
-                <p>To reduce variability in the magnitude of DDIs during clinical evaluation, the guidance strictly recommends the exclusion of other medications, dietary/herbal supplements, tobacco, smoking, alcohol, and certain fruit juices.</p>
+                <p>To reduce variability in the magnitude of DDIs during clinical evaluation, the guidance strictly recommends the exclusion of other medications, dietary/herbal supplements, tobacco, smoking, alcohol, and certain fruit juices.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
 
                 <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 30px 0;">
                     <strong>Translational Application:</strong> When transitioning a compound to human trials, properly scaling the dosage is mandatory. Ensure you use BSA-based allometric scaling via our <a href="../../hed-calculator/" style="color: #2563eb; font-weight: bold;">HED Calculator</a>.
                 </div>
             </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">U.S. Food and Drug Administration. (2024). <em>M12 Drug Interaction Studies Guidance for Industry</em>.</li>
+                </ol>
+            </div>
         </article>
     </main>
 
