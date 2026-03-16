@@ -111,4 +111,16 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+<url>
+    <loc>https://scientisttoolkit.xyz/articles/empathy-in-mice-science/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/brain-spinal-interface-nature/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
