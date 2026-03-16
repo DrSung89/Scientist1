@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal | Scientist's Toolkit</title>
+    <meta name="description" content="A detailed review of the FDA's draft guidance on accelerated approval for serious conditions, highlighting surrogate endpoints and expedited withdrawal procedures.">
+    <link rel="stylesheet" href="../../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/accelerated-approval-guidance/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header style="text-align: center; padding-bottom: 20px;">
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quotes = [
+                    "Cheering for your dedication and hard work today. 🧪", 
+                    "Behind every data point, there is a researcher’s effort. 📊",
+                    "Science is a journey of resilience. Keep going. 🚀",
+                    "Your failed experiment is just a stepping stone to discovery. 💡"
+                ];
+                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            });
+        </script>
+    </header>
+    
+    <nav>
+        <a href="../../" class="nav-btn">Home</a>
+        <a href="../../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../../survival-calculator/" class="nav-btn">Survival</a>
+        <a href="../../board/" class="nav-btn">Board</a>
+        <a href="../../help/" class="nav-btn">Help & Info</a>
+        <a href="../../articles/" class="nav-btn active">Articles</a>
+    </nav>
+
+    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #334155; text-align: left;">
+        <article>
+            <header style="margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+                <time datetime="2024-12-01" style="color: #64748b; font-weight: bold;">December 2024</time>
+                <h1 style="color: #0f172a; font-size: 2.2rem; margin: 10px 0;">FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal</h1>
+                <p style="color: #475569; font-size: 1.1rem;">Understanding the FDA's updated draft guidance on the accelerated approval pathway for treating serious or life-threatening conditions.</p>
+            </header>
+
+            <section>
+                <h2 style="color: #1e40af;">1. The Accelerated Approval Pathway</h2>
+                <p>The accelerated approval pathway is utilized for drugs addressing an unmet medical need in the treatment of a serious or life-threatening condition. During this process, the FDA considers the severity, rarity, or prevalence of the condition alongside the lack of alternative treatments. This pathway allows sponsors to obtain approval based on a surrogate endpoint or an intermediate clinical endpoint that is reasonably likely to predict clinical benefit.</p>
+                                <p>A surrogate endpoint is generally a biomarker, such as a laboratory measurement or radiographic image, that is thought to predict clinical benefit but is not itself a measure of clinical benefit. Before submitting an application, analyzing preliminary data thoroughly is key. Tools such as our <a href="../../t-test-calculator/" style="color: #2563eb; font-weight: bold;">T-Test Calculator</a> can help determine if early changes in biomarker levels are statistically significant between treatment groups.</p>
+
+                <h2 style="color: #1e40af;">2. The Role of Confirmatory Trials</h2>
+                <p>Because accelerated approvals are granted before direct clinical benefit is proven, sponsors are required to conduct postapproval confirmatory trials to verify and describe the clinical benefit. Under the Consolidated Appropriations Act, 2023, the FDA will specify conditions for these trials, including enrollment targets, protocols, and study completion milestones no later than the date of approval. </p>
+                <p>Sponsors must act with due diligence; trials should generally be underway at the time the marketing application is submitted. When establishing long-term clinical benefit in these trials—especially in oncology where overall survival is the gold standard—researchers often depend on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
+
+                <h2 style="color: #1e40af;">3. Expedited Withdrawal Procedures</h2>
+                <p>If a drug fails to prove its worth, the FDA can remove it from the market. The FDA may use expedited procedures to withdraw approval if the sponsor fails to conduct trials with due diligence, if a confirmatory study fails to verify clinical benefit, if the product is not shown to be safe or effective under the conditions of use, or if promotional materials are false or misleading.</p>
+                                <p>The expedited withdrawal process includes providing the sponsor with due notice, an opportunity for public comment on the proposed withdrawal, an opportunity for a written appeal, and the potential convening of an advisory committee if requested by the sponsor.</p>
+            </section>
+        </article>
+    </main>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br><br>
+        <a href="../../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
+        <a href="../../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+        <br><br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+            authDomain: "scientisttoolkit.firebaseapp.com",
+            projectId: "scientisttoolkit",
+            storageBucket: "scientisttoolkit.firebasestorage.app",
+            messagingSenderId: "611412737478",
+            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+            measurementId: "G-5K0XVX0TFM"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        function updateVisitorCount() {
+            if (typeof firebase === 'undefined') return;
+            const db = firebase.firestore();
+            const countSpan = document.getElementById('visitor-count'); 
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const docRef = db.collection('visitors').doc(dateStr);
+            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+            }
+            docRef.onSnapshot((doc) => {
+                if (doc.exists && countSpan) {
+                    const count = doc.data().count;
+                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', updateVisitorCount);
+    </script>
+</body>
+</html>

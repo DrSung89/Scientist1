@@ -2,79 +2,113 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://scientisttoolkit.xyz/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
     <loc>https://scientisttoolkit.xyz/about/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://scientisttoolkit.xyz/help/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://scientisttoolkit.xyz/privacy/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://scientisttoolkit.xyz/molarity-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/dilution-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/outlier-detector/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/hed-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/t-test-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/chi-square-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://scientisttoolkit.xyz/survival-calculator/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://scientisttoolkit.xyz/board/</loc>
-    <lastmod>2026-03-09</lastmod>
+    <lastmod>2026-03-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/fda-m12-ddi-guidance/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/cancer-trial-eligibility/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/fda-companion-diagnostics/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/novel-cancer-drug-combinations/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/accelerated-approval-guidance/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

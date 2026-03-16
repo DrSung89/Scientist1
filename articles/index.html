@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles & Scientific Guides | Scientist's Toolkit</title>
+    <meta name="description" content="In-depth articles, case studies, and reviews of FDA guidelines on pharmacology, drug-drug interactions, and clinical trial designs.">
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header style="text-align: center; padding-bottom: 20px;">
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quotes = [
+                    "Cheering for your dedication and hard work today. 🧪", 
+                    "Behind every data point, there is a researcher’s effort. 📊",
+                    "Science is a journey of resilience. Keep going. 🚀",
+                    "Your failed experiment is just a stepping stone to discovery. 💡",
+                    "Rest is also part of the experiment. Don't burn out. ☕",
+                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                    "Believe in your hypothesis, but trust your data. 📉"
+                ];
+                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            });
+        </script>
+    </header>
+    
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../survival-calculator/" class="nav-btn">Survival</a>
+        <a href="../board/" class="nav-btn">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+        <a href="../articles/" class="nav-btn active">Articles</a>
+    </nav>
+
+    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Latest Articles</h2>
+        
+        <article style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <time style="color: #64748b; font-size: 0.85rem; font-weight: bold;">December 2024 / Regulatory Policy</time>
+            <h3 style="margin: 10px 0;"><a href="accelerated-approval-guidance/" style="color: #1e40af; text-decoration: none;">FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal</a></h3>
+            <p style="color: #475569; line-height: 1.6;">A deep dive into the updated FDA guidance on the accelerated approval pathway for serious conditions, focusing on surrogate endpoints and new expedited withdrawal procedures.</p>
+            <a href="accelerated-approval-guidance/" style="color: #2563eb; font-weight: bold; text-decoration: none;">Read Full Article &rarr;</a>
+        </article>
+
+        <article style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <time style="color: #64748b; font-size: 0.85rem; font-weight: bold;">July 2025 / Clinical Trial Design</time>
+            <h3 style="margin: 10px 0;"><a href="novel-cancer-drug-combinations/" style="color: #1e40af; text-decoration: none;">Evaluating Contribution of Effect in Novel Cancer Drug Combinations</a></h3>
+            <p style="color: #475569; line-height: 1.6;">Insights into the FDA guidance on demonstrating the individual contribution of drugs in combination therapies using factorial designs and external real-world data.</p>
+            <a href="novel-cancer-drug-combinations/" style="color: #2563eb; font-weight: bold; text-decoration: none;">Read Full Article &rarr;</a>
+        </article>
+
+        <article style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <time style="color: #64748b; font-size: 0.85rem; font-weight: bold;">April 2020 / Precision Oncology</time>
+            <h3 style="margin: 10px 0;"><a href="fda-companion-diagnostics/" style="color: #1e40af; text-decoration: none;">Broader Labeling for In Vitro Companion Diagnostics (CDx)</a></h3>
+            <p style="color: #475569; line-height: 1.6;">Understanding FDA's push towards precision medicine by allowing broader labeling of companion diagnostic devices for specific groups of oncology therapeutic products.</p>
+            <a href="fda-companion-diagnostics/" style="color: #2563eb; font-weight: bold; text-decoration: none;">Read Full Article &rarr;</a>
+        </article>
+
+        <article style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <time style="color: #64748b; font-size: 0.85rem; font-weight: bold;">August 2024 / Pharmacology</time>
+            <h3 style="margin: 10px 0;"><a href="fda-m12-ddi-guidance/" style="color: #1e40af; text-decoration: none;">Navigating the ICH M12 Guidance on Drug-Drug Interaction Studies</a></h3>
+            <p style="color: #475569; line-height: 1.6;">A comprehensive review of the latest FDA/ICH M12 guidelines for in vitro and clinical evaluation of metabolic enzyme- and transporter-mediated DDIs.</p>
+            <a href="fda-m12-ddi-guidance/" style="color: #2563eb; font-weight: bold; text-decoration: none;">Read Full Article &rarr;</a>
+        </article>
+
+        <article style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <time style="color: #64748b; font-size: 0.85rem; font-weight: bold;">April 2024 / Clinical Oncology</time>
+            <h3 style="margin: 10px 0;"><a href="cancer-trial-eligibility/" style="color: #1e40af; text-decoration: none;">Broadening Eligibility in Cancer Clinical Trials: Washout, Meds, and Performance Status</a></h3>
+            <p style="color: #475569; line-height: 1.6;">An analysis of the FDA's draft guidances on modernizing oncology trial eligibility criteria to improve diversity, emphasizing performance status and concomitant medications.</p>
+            <a href="cancer-trial-eligibility/" style="color: #2563eb; font-weight: bold; text-decoration: none;">Read Full Article &rarr;</a>
+        </article>
+    </main>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br><br>
+        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
+        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+        <br><br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+            authDomain: "scientisttoolkit.firebaseapp.com",
+            projectId: "scientisttoolkit",
+            storageBucket: "scientisttoolkit.firebasestorage.app",
+            messagingSenderId: "611412737478",
+            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+            measurementId: "G-5K0XVX0TFM"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        function updateVisitorCount() {
+            if (typeof firebase === 'undefined') return;
+            const db = firebase.firestore();
+            const countSpan = document.getElementById('visitor-count'); 
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const docRef = db.collection('visitors').doc(dateStr);
+            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+            }
+            docRef.onSnapshot((doc) => {
+                if (doc.exists && countSpan) {
+                    const count = doc.data().count;
+                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', updateVisitorCount);
+    </script>
+</body>
+</html>
