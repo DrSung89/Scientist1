@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Computational Model of the Drosophila Brain | Scientist's Toolkit</title>
+    <meta name="description" content="A review of a Nature paper modeling the Drosophila brain connectome to predict sensorimotor processing and behaviors.">
+    <link rel="stylesheet" href="../../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/drosophila-brain-model/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
+        sup a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header style="text-align: center; padding-bottom: 20px;">
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quotes = [
+                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                    "Science is a journey of resilience. Keep going. 🚀"
+                ];
+                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            });
+        </script>
+    </header>
+    
+    <nav>
+        <a href="../../" class="nav-btn">Home</a>
+        <a href="../../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../../survival-calculator/" class="nav-btn">Survival</a>
+        <a href="../../board/" class="nav-btn">Board</a>
+        <a href="../../help/" class="nav-btn">Help & Info</a>
+        <a href="../../articles/" class="nav-btn active">Articles</a>
+    </nav>
+
+    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #334155; text-align: left;">
+        <article>
+            <header style="margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+                <time datetime="2024-10-03" style="color: #64748b; font-weight: bold;">October 2024</time>
+                <h1 style="color: #0f172a; font-size: 2.2rem; margin: 10px 0;">A Computational Model of the Drosophila Brain: Unlocking Sensorimotor Processing</h1>
+                <p style="color: #475569; font-size: 1.1rem;">How modeling 50 million synaptic connections reveals the intricate logic of behavior.</p>
+            </header>
+
+            <section>
+                <h2 style="color: #1e40af;">1. The Era of Complete Connectomics</h2>
+                <p>The assembly of the adult Drosophila melanogaster central brain connectome is a monumental milestone in neuroscience. Containing more than 125,000 neurons and 50 million synaptic connections, it provides an unprecedented template for examining sensory processing.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Shiu et al. (Nature, 2024) created a leaky integrate-and-fire computational model of the entire Drosophila brain based on neural connectivity and neurotransmitter identity to study circuit properties of feeding and grooming behaviors.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+
+                <h2 style="color: #1e40af;">2. Simulating Taste and Behavior</h2>
+                <p>To examine the neural circuits that influence feeding, the researchers focused on Gustatory Receptor Neurons (GRNs) responding to sugar, water, bitter, and salt.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The computational model accurately predicts that activation of sugar-sensing or water-sensing gustatory neurons activates neurons required for feeding initiation (proboscis extension).<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Interestingly, the model predicted that sugar and water pathways share common interneurons, functioning synergistically, while bitter stimuli strongly inhibit this extension.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+
+                <h2 style="color: #1e40af;">3. In Vivo Validation</h2>
+                <p>The power of a computational model lies in its ability to generate testable hypotheses. By using optogenetics (CsChrimson), the team validated these predictions in living flies. They found that out of 11 cell types computationally predicted to activate the motor neuron MN9 (responsible for rostrum extension), 10 actually elicited proboscis extension in vivo.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <p>If you are conducting similar behavioral validations using optogenetics and need to evaluate whether the behavioral responses (e.g., extension vs. no extension) differ significantly from controls, you can use our <a href="../../chi-square-calculator/" style="color: #2563eb; font-weight: bold;">Chi-Square Calculator</a> to analyze the frequency data.</p>
+                <p>This study demonstrates that modeling brain circuits using only synapse-level connectivity and predicted neurotransmitter identity can accurately describe complete sensorimotor transformations.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+            </section>
+
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
+                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
+                    <li id="ref1">Shiu, P. K., et al. (2024). A Drosophila computational brain model reveals sensorimotor processing. <em>Nature</em>, 634, 210-219.</li>
+                </ol>
+            </div>
+        </article>
+    </main>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
+        <span id="visitor-count">Today's Visitors: Loading...</span>
+        <br><br>
+        <a href="../../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
+        <a href="../../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
+        <br><br>
+        © 2026 Scientist's Toolkit
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+            authDomain: "scientisttoolkit.firebaseapp.com",
+            projectId: "scientisttoolkit",
+            storageBucket: "scientisttoolkit.firebasestorage.app",
+            messagingSenderId: "611412737478",
+            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+            measurementId: "G-5K0XVX0TFM"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        function updateVisitorCount() {
+            if (typeof firebase === 'undefined') return;
+            const db = firebase.firestore();
+            const countSpan = document.getElementById('visitor-count'); 
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
+            const docRef = db.collection('visitors').doc(dateStr);
+            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+            }
+            docRef.onSnapshot((doc) => {
+                if (doc.exists && countSpan) {
+                    const count = doc.data().count;
+                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', updateVisitorCount);
+    </script>
+</body>
+</html>

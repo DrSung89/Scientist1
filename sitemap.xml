@@ -24,7 +24,6 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://scientisttoolkit.xyz/molarity-calculator/</loc>
     <lastmod>2026-03-16</lastmod>
@@ -66,15 +65,13 @@
     <lastmod>2026-03-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  
+  </url>  
   <url>
     <loc>https://scientisttoolkit.xyz/board/</loc>
     <lastmod>2026-03-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
-
   <url>
     <loc>https://scientisttoolkit.xyz/articles/</loc>
     <lastmod>2026-03-16</lastmod>
@@ -120,6 +117,24 @@
   <url>
     <loc>https://scientisttoolkit.xyz/articles/brain-spinal-interface-nature/</loc>
     <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<url>
+    <loc>https://scientisttoolkit.xyz/articles/drosophila-brain-model/</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/frogs-deep-learning/</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://scientisttoolkit.xyz/articles/bracanalysis-cdx-lynparza/</loc>
+    <lastmod>2026-03-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
