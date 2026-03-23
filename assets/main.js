@@ -322,11 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if(isNaN(m1)) rd.innerHTML=`Stock Conc: ${smartFormat((m2*m2U*v2*v2U)/(v1*v1U),'M','conc')}`;
         else if(isNaN(v1)){
             const val=(m2*m2U*v2*v2U)/(m1*m1U); 
-            rd.innerHTML=`Stock Vol: ${smartFormat(val,'L','vol')}<br><span style='font-size:0.9em;color:#666'>(Add + ${((v2*v2U-val)/v1U).toFixed(3)} Solvent)</span>`;
+            rd.innerHTML=`Stock Vol: ${smartFormat(val,'L','vol')}<br><span style='font-size:0.9em;color:#666'>(Add + ${((v2*v2U-val)/v2U).toFixed(3)} Solvent)</span>`;
         }
         else if(isNaN(m2)) rd.innerHTML=`Final Conc: ${smartFormat((m1*m1U*v1*v1U)/(v2*v2U),'M','conc')}`;
         else rd.innerHTML=`Final Vol: ${smartFormat((m1*m1U*v1*v1U)/(m2*m2U),'L','vol')}`;
-    });
+
+
 // ====================================================
     // 4. Protein Quantification & Western Prep Calculator
     // ====================================================
@@ -482,3 +483,4 @@ document.addEventListener('DOMContentLoaded', () => {
         resDiv.innerHTML = html;
         resDiv.style.display = 'block';
     });
+});
