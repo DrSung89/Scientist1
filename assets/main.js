@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else if(isNaN(m2)) rd.innerHTML=`Final Conc: ${smartFormat((m1*m1U*v1*v1U)/(v2*v2U),'M','conc')}`;
         else rd.innerHTML=`Final Vol: ${smartFormat((m1*m1U*v1*v1U)/(m2*m2U),'L','vol')}`;
-
+});
 
 // ====================================================
     // 4. Protein Quantification & Western Prep Calculator
