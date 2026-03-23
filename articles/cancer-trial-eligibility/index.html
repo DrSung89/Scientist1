@@ -1,132 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broadening Eligibility in Cancer Clinical Trials | Scientist's Toolkit</title>
-    <meta name="description" content="An analysis of FDA draft guidances on modernizing oncology trial eligibility criteria, focusing on washout periods and performance status.">
-    <link rel="stylesheet" href="../../assets/style.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
+    <title>Broadening Eligibility in Cancer Trials | Scientist's Toolkit</title>
     <link rel="canonical" href="https://scientisttoolkit.xyz/articles/cancer-trial-eligibility/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0059bb",
+              "surface": "#f8f9fa",
+              "on-surface": "#191c1d",
+              "outline-variant": "#c1c6d7"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
-        sup a:hover { text-decoration: underline; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡"
-                ];
-                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            });
-        </script>
-    </header>
+<body class="bg-surface font-body text-slate-800 flex flex-col min-h-screen">
     
-    <nav>
-        <a href="../../" class="nav-btn">Home</a>
-        <a href="../../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../../board/" class="nav-btn">Board</a>
-        <a href="../../help/" class="nav-btn">Help & Info</a>
-        <a href="../../articles/" class="nav-btn active">Articles</a>
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm px-6 py-4 flex justify-between">
+        <a href="../../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+        <a href="../" class="font-bold text-sm text-slate-500 hover:text-primary transition-colors">← Back to Articles</a>
     </nav>
 
-    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #334155; text-align: left;">
-        <article>
-            <header style="margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-                <time datetime="2024-04-01" style="color: #64748b; font-weight: bold;">April 2024</time>
-                <h1 style="color: #0f172a; font-size: 2.2rem; margin: 10px 0;">Broadening Eligibility in Cancer Clinical Trials: Washout, Meds, and Performance Status</h1>
-                <p style="color: #475569; font-size: 1.1rem;">Examining the FDA's draft guidances on modernizing oncology eligibility criteria to improve trial diversity and generalizability.</p>
+    <main class="relative pt-28 pb-20 flex-grow max-w-screen-md mx-auto w-full px-6 z-10">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+        
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/30 relative z-10">
+            <header class="mb-10 border-b border-outline-variant/30 pb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Clinical Oncology</span>
+                    <time class="text-sm text-slate-500 font-medium">April 2024</time>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">Broadening Eligibility in Cancer Clinical Trials: Washout, Meds, and Performance Status</h1>
+                <p class="text-lg text-slate-600 font-light leading-relaxed">An analysis of the FDA's draft guidances on modernizing oncology trial eligibility criteria to improve diversity and real-world applicability.</p>
             </header>
 
-            <section>
-                <h2 style="color: #1e40af;">1. The Need to Modernize Eligibility Criteria</h2>
-                <p>The primary purposes of eligibility criteria for cancer clinical trials are to select the intended patient population and reduce potential risks to participants.<sup><a href="#ref1">[1]</a>, <a href="#ref2">[2]</a></sup><span style="display:none;"></span> However, unnecessarily restrictive criteria may slow patient accrual, limit access to trials, and lead to clinical results that do not fully represent treatment effects in the patient population that will ultimately use the drug.<sup><a href="#ref1">[1]</a>, <a href="#ref2">[2]</a></sup><span style="display:none;"></span> Appropriately broadening cancer trial eligibility criteria can improve the generalizability of trial results.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span> For statistical validation of these broader populations, researchers frequently rely on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
+            <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
+                
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Problem with Restrictive Criteria</h2>
+                <p>For decades, oncology clinical trials have relied on highly restrictive eligibility criteria to isolate the effect of an investigational drug and protect patient safety. However, this practice systematically excludes a vast portion of the real-world cancer population—such as the elderly, those with mild organ dysfunction, or patients taking concomitant medications for common comorbidities. The resulting clinical trial cohorts are often homogenous, limiting the generalizability of the efficacy and safety data.</p>
 
-                <h2 style="color: #1e40af;">2. Rethinking Washout Periods and Concomitant Medications</h2>
-                <p>A washout period is a treatment-free period between the most recent anti-cancer treatment and the initiation of the investigational drug.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Time-based washout periods should be scientifically justified.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The FDA guidance recommends that relevant clinical and laboratory parameters should be used in place of time-based washout periods to address safety considerations.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Furthermore, patients using concomitant medication should only be excluded from trial participation when clinically relevant known or predicted drug-drug interactions (DDIs) and potential overlapping toxicities will impact the safety of trial participants.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. Key Areas of Modernization</h2>
+                <p>To address this critical flaw, the FDA has released specific draft guidances urging sponsors to broaden trial eligibility. Key focus areas include:</p>
+                <ul class="list-disc pl-5">
+                    <li><strong>Washout Periods:</strong> Reducing the arbitrary waiting periods between prior therapies and trial enrollment, relying instead on pharmacokinetic properties to determine safe intervals.</li>
+                    <li><strong>Performance Status:</strong> Encouraging the inclusion of patients with an ECOG performance status of 2, rather than restricting trials strictly to patients with an ECOG of 0 or 1.</li>
+                    <li><strong>Organ Dysfunction & Concomitant Medications:</strong> Allowing patients with controlled comorbidities or mild renal/hepatic impairment to enroll, provided there is no mechanistic rationale for elevated risk.</li>
+                </ul>
 
-                <h2 style="color: #1e40af;">3. Re-evaluating Performance Status (PS)</h2>
-                <p>Many trials exclude lower-functioning patients based on the Eastern Cooperative Oncology Group (ECOG) and Karnofsky (KPS) scales.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span></p>
-                <p>The FDA advises that patients with ECOG PS2 (or KPS 60-70) should be included unless there is a scientific and/or clinical rationale for exclusion justified by established safety considerations.<sup><a href="#ref2">[2]</a></sup><span style="display:none;"></span></p>
-
-                <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 30px 0;">
-                    <strong>Statistical Analysis Tip:</strong> When evaluating differences in adverse event frequencies between cohorts, utilize our <a href="../../chi-square-calculator/" style="color: #2563eb; font-weight: bold;">Chi-Square Calculator</a> to determine the statistical significance of categorical outcomes in your trial data.
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. Impact on Real-World Evidence (RWE)</h2>
+                <p>By liberalizing these criteria, clinical trials will accrue patients faster and reflect the true heterogeneity of the patient population. This shift ensures that the safety and efficacy data generated during Phase II and III trials are far more representative of the clinical reality, ultimately improving real-world clinical decision-making and patient outcomes.</p>
+                
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-primary my-8">
+                    <p class="text-sm text-blue-900 m-0"><strong>Toolkit Tip:</strong> When evaluating adverse event frequencies (e.g., Grade 3+ toxicities) or categorical response rates between a newly broadened trial cohort and historical controls, use our <a href="../../chi-square-calculator/" class="font-bold underline">Chi-Square Calculator</a> to determine if the differences in nominal data are statistically significant.</p>
                 </div>
-            </section>
 
-            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
-                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
-                    <li id="ref1">U.S. Food and Drug Administration. (2024). <em>Cancer Clinical Trial Eligibility Criteria: Washout Periods and Concomitant Medications Guidance for Industry</em>.</li>
-                    <li id="ref2">U.S. Food and Drug Administration. (2024). <em>Cancer Clinical Trial Eligibility Criteria: Performance Status Guidance for Industry</em>.</li>
-                </ol>
             </div>
         </article>
     </main>
-
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
-    </footer>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-            authDomain: "scientisttoolkit.firebaseapp.com",
-            projectId: "scientisttoolkit",
-            storageBucket: "scientisttoolkit.firebasestorage.app",
-            messagingSenderId: "611412737478",
-            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-            measurementId: "G-5K0XVX0TFM"
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        function updateVisitorCount() {
-            if (typeof firebase === 'undefined') return;
-            const db = firebase.firestore();
-            const countSpan = document.getElementById('visitor-count'); 
-            const today = new Date();
-            const offset = today.getTimezoneOffset() * 60000;
-            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
-            const docRef = db.collection('visitors').doc(dateStr);
-            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-            }
-            docRef.onSnapshot((doc) => {
-                if (doc.exists && countSpan) {
-                    const count = doc.data().count;
-                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', updateVisitorCount);
-    </script>
 </body>
 </html>

@@ -1,129 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal | Scientist's Toolkit</title>
-    <meta name="description" content="A detailed review of the FDA's draft guidance on accelerated approval for serious conditions, highlighting surrogate endpoints and expedited withdrawal procedures.">
-    <link rel="stylesheet" href="../../assets/style.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
+    <title>FDA Accelerated Approval Guidance | Scientist's Toolkit</title>
     <link rel="canonical" href="https://scientisttoolkit.xyz/articles/accelerated-approval-guidance/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0059bb",
+              "surface": "#f8f9fa",
+              "on-surface": "#191c1d",
+              "outline-variant": "#c1c6d7"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
-        sup a:hover { text-decoration: underline; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡"
-                ];
-                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            });
-        </script>
-    </header>
+<body class="bg-surface font-body text-slate-800 flex flex-col min-h-screen">
     
-    <nav>
-        <a href="../../" class="nav-btn">Home</a>
-        <a href="../../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../../board/" class="nav-btn">Board</a>
-        <a href="../../help/" class="nav-btn">Help & Info</a>
-        <a href="../../articles/" class="nav-btn active">Articles</a>
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm px-6 py-4 flex justify-between">
+        <a href="../../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+        <a href="../" class="font-bold text-sm text-slate-500 hover:text-primary transition-colors">← Back to Articles</a>
     </nav>
 
-    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #334155; text-align: left;">
-        <article>
-            <header style="margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-                <time datetime="2024-12-01" style="color: #64748b; font-weight: bold;">December 2024</time>
-                <h1 style="color: #0f172a; font-size: 2.2rem; margin: 10px 0;">FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal</h1>
-                <p style="color: #475569; font-size: 1.1rem;">Understanding the FDA's updated draft guidance on the accelerated approval pathway for treating serious or life-threatening conditions.</p>
+    <main class="relative pt-28 pb-20 flex-grow max-w-screen-md mx-auto w-full px-6 z-10">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+        
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/30 relative z-10">
+            <header class="mb-10 border-b border-outline-variant/30 pb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Regulatory Policy</span>
+                    <time class="text-sm text-slate-500 font-medium">December 2024</time>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal</h1>
+                <p class="text-lg text-slate-600 font-light leading-relaxed">A deep dive into the updated FDA guidance on the accelerated approval pathway for serious conditions and the statutory changes introduced by FDORA.</p>
             </header>
 
-            <section>
-                <h2 style="color: #1e40af;">1. The Accelerated Approval Pathway</h2>
-                <p>The accelerated approval pathway is utilized for drugs addressing an unmet medical need in the treatment of a serious or life-threatening condition.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> During this process, the FDA considers the severity, rarity, or prevalence of the condition alongside the lack of alternative treatments.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> This pathway allows sponsors to obtain approval based on a surrogate endpoint or an intermediate clinical endpoint that is reasonably likely to predict clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-                <p>A surrogate endpoint is generally a biomarker, such as a laboratory measurement or radiographic image, that is thought to predict clinical benefit but is not itself a measure of clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Before submitting an application, analyzing preliminary data thoroughly is key. Tools such as our <a href="../../t-test-calculator/" style="color: #2563eb; font-weight: bold;">T-Test Calculator</a> can help determine if early changes in biomarker levels are statistically significant between treatment groups.</p>
+            <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
+                
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Evolution of the Accelerated Approval Pathway</h2>
+                <p>The FDA's Accelerated Approval pathway was originally instituted in 1992 to expedite the availability of drugs that treat serious conditions and fill an unmet medical need. It allows approval based on a surrogate endpoint (e.g., tumor shrinkage) or an intermediate clinical endpoint that is reasonably likely to predict clinical benefit. However, the reliance on surrogate endpoints necessitates rigorous post-marketing confirmatory trials to verify the anticipated clinical benefit.</p>
 
-                <h2 style="color: #1e40af;">2. The Role of Confirmatory Trials</h2>
-                <p>Because accelerated approvals are granted before direct clinical benefit is proven, sponsors are required to conduct postapproval confirmatory trials to verify and describe the clinical benefit.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Under the Consolidated Appropriations Act, 2023, the FDA will specify conditions for these trials, including enrollment targets, protocols, and study completion milestones no later than the date of approval.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-                <p>Sponsors must act with due diligence; trials should generally be underway at the time the marketing application is submitted.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When establishing long-term clinical benefit in these trials—especially in oncology where overall survival is the gold standard—researchers often depend on our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a>.</p>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. FDORA and Confirmatory Trial Mandates</h2>
+                <p>Following the enactment of the Food and Drug Omnibus Reform Act (FDORA), the FDA has fundamentally strengthened its oversight. The updated guidance clearly specifies that the FDA may require a sponsor to have a confirmatory trial already underway <em>prior</em> to granting accelerated approval. This policy shift addresses historical criticisms regarding "dangling" accelerated approvals where confirmatory trials were delayed for years or never completed.</p>
 
-                <h2 style="color: #1e40af;">3. Expedited Withdrawal Procedures</h2>
-                <p>The FDA may use expedited procedures to withdraw approval if the sponsor fails to conduct trials with due diligence, if a confirmatory study fails to verify clinical benefit, if the product is not shown to be safe or effective under the conditions of use, or if promotional materials are false or misleading.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-                <p>The expedited withdrawal process includes providing the sponsor with due notice, an opportunity for public comment on the proposed withdrawal, an opportunity for a written appeal, and the potential convening of an advisory committee if requested by the sponsor.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-            </section>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. Expedited Withdrawal Procedures</h2>
+                <p>Crucially, the revised statute establishes streamlined procedures for withdrawing an accelerated approval if the confirmatory trial fails to verify clinical benefit, or if the sponsor fails to conduct the trial with due diligence. The regulatory threshold for establishing clinical benefit in oncology, for example, heavily relies on demonstrating an improvement in Overall Survival (OS) or robust Progression-Free Survival (PFS).</p>
+                
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-primary my-8">
+                    <p class="text-sm text-blue-900 m-0"><strong>Toolkit Tip:</strong> When evaluating clinical endpoints such as Progression-Free Survival (PFS) or Overall Survival (OS) for confirmatory trials, utilize our <a href="../../survival-calculator/" class="font-bold underline">Kaplan-Meier Survival Calculator</a> to rigorously compute Log-Rank P-values and median survival times to assess clinical benefit.</p>
+                </div>
 
-            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
-                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
-                    <li id="ref1">U.S. Food and Drug Administration. (2024). <em>Expedited Program for Serious Conditions - Accelerated Approval of Drugs and Biologics Guidance for Industry</em>.</li>
-                </ol>
             </div>
         </article>
     </main>
-
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
-    </footer>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-            authDomain: "scientisttoolkit.firebaseapp.com",
-            projectId: "scientisttoolkit",
-            storageBucket: "scientisttoolkit.firebasestorage.app",
-            messagingSenderId: "611412737478",
-            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-            measurementId: "G-5K0XVX0TFM"
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        function updateVisitorCount() {
-            if (typeof firebase === 'undefined') return;
-            const db = firebase.firestore();
-            const countSpan = document.getElementById('visitor-count'); 
-            const today = new Date();
-            const offset = today.getTimezoneOffset() * 60000;
-            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
-            const docRef = db.collection('visitors').doc(dateStr);
-            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-            }
-            docRef.onSnapshot((doc) => {
-                if (doc.exists && countSpan) {
-                    const count = doc.data().count;
-                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', updateVisitorCount);
-    </script>
 </body>
 </html>

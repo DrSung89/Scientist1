@@ -1,82 +1,162 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
     <title>Human Equivalent Dose (HED) Calculator | Scientist's Toolkit</title>
     <meta name="description" content="Convert drug doses between species (mice, rats, dogs, humans) using FDA Body Surface Area (BSA) normalization guidelines for preclinical trials.">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/hed-calculator/">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="HED Calculator (FDA Standard) | Scientist's Toolkit">
+    <meta property="og:description" content="Convert drug doses between species using FDA Body Surface Area (BSA) normalization guidelines.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/hed-calculator/">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
     <link rel="icon" type="image/png" href="/favicon.png">
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] 
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/hed-calculator/">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
     <style>
-       /* FAQ 전용 스타일 */
-       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
-       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
-       .faq-item p { margin: 0; color: #555; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 테이블/인풋 스핀 버튼 숨김 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-    <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-    
-    <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-        Loading inspiration... 🧪
-    </p>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const quotes = [
-                "Cheering for your dedication and hard work today. 🧪", 
-                "Behind every data point, there is a researcher’s effort. 📊",
-                "Science is a journey of resilience. Keep going. 🚀",
-                "Your failed experiment is just a stepping stone to discovery. 💡",
-                "Rest is also part of the experiment. Don't burn out. ☕",
-                "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                "Believe in your hypothesis, but trust your data. 📉"
-            ];
-            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-        });
-    </script>
-</header>
-    
-<nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn active">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-primary" href="../hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-primary whitespace-nowrap" href="../hed-calculator/">HED</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
     </nav>
 
-    <main>
-        <section id="hed-calculator" class="calculator active" style="display:block;">
-            <h2>🐁 HED (Human Equivalent Dose) Calculator</h2>
-            <div class="hed-container">
-                <div class="hed-inputs">
-                    <div class="hed-group">
-                        <h3>Species A (Source)</h3>
-                        <div class="input-group">
-                            <label>Species</label>
-                            <select id="species-a">
+    <div class="pt-24 lg:pt-20 max-w-screen-2xl mx-auto px-6 relative z-10 text-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9274620489745017"
+             data-ad-slot="6554136062" 
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <main class="relative flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Translational Science</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">HED Scale Calculator</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Convert drug doses between species using FDA Body Surface Area (BSA) normalization guidelines.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    
+                    <div class="bg-surface-bright p-5 md:p-6 rounded-lg border border-outline-variant/30">
+                        <h3 class="font-headline font-bold text-lg text-primary mb-4 border-b border-outline-variant/30 pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">pest_control</span> Species A (Source)
+                        </h3>
+                        
+                        <div class="mb-4">
+                            <label class="block font-headline text-sm font-bold text-on-surface mb-2">Species</label>
+                            <select id="species-a" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface cursor-pointer">
                                 <option value="Mouse">Mouse</option>
                                 <option value="Hamster">Hamster</option>
                                 <option value="Rat">Rat</option>
@@ -93,116 +173,199 @@
                                 <option value="Human">Human</option>
                             </select>
                         </div>
-                        <div class="input-group">
-                            <label>Dose</label>
-                            <input type="number" id="dose-a" placeholder="Input..." style="flex:1;">
-                            <select id="dose-a-unit" style="width: 80px; margin-left: 5px;">
-                                <option value="mpk" selected>mg/kg</option>
-                                <option value="mg">mg</option>
-                            </select>
+
+                        <div>
+                            <label class="block font-headline text-sm font-bold text-on-surface mb-2">Dose</label>
+                            <div class="flex">
+                                <input type="number" id="dose-a" placeholder="Input..." class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                                <select id="dose-a-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer w-24">
+                                    <option value="mpk" selected>mg/kg</option>
+                                    <option value="mg">mg</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="hed-group">
-                        <h3>Species B (Target)</h3>
-                        <div class="input-group">
-                            <label>Species</label>
-                            <select id="species-b">
+
+                    <div class="bg-surface-bright p-5 md:p-6 rounded-lg border border-outline-variant/30">
+                        <h3 class="font-headline font-bold text-lg text-primary mb-4 border-b border-outline-variant/30 pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">accessibility_new</span> Species B (Target)
+                        </h3>
+                        
+                        <div class="mb-4">
+                            <label class="block font-headline text-sm font-bold text-on-surface mb-2">Species</label>
+                            <select id="species-b" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface cursor-pointer">
                                 <option value="Human" selected>Human</option>
                                 <option value="Mouse">Mouse</option>
                                 <option value="Rat">Rat</option>
                                 <option value="Dog">Dog</option>
                                 <option value="Monkey">Monkey</option>
-                                </select>
+                            </select>
                         </div>
-                        <div class="input-group">
-                            <label>Body Weight <br><span style="font-size:0.8em; color:#888;">(Optional)</span></label>
-                            <input type="number" id="weight-b" placeholder="Standard Wt. used if empty">
-                            <select id="weight-b-unit"><option value="kg">kg</option><option value="g">g</option></select>
+
+                        <div>
+                            <label class="block font-headline text-sm font-bold text-on-surface mb-2 flex items-center justify-between">
+                                <span>Body Weight</span>
+                                <span class="font-normal text-xs text-outline font-body bg-surface-container px-2 py-0.5 rounded">Optional</span>
+                            </label>
+                            <div class="flex">
+                                <input type="number" id="weight-b" placeholder="Standard Wt. used if empty" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                                <select id="weight-b-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer w-24">
+                                    <option value="kg">kg</option>
+                                    <option value="g">g</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <button id="calculate-hed" class="action-btn" style="width: 100%; margin-top: 10px;">Calculate HED</button>
+
                 </div>
-                
-                <div class="hed-reference">
-                    <h4>Reference Body Weights (FDA Standard)</h4>
-                    <ul style="display: grid; grid-template-columns: 1fr; gap: 5px;">
-                        <li><strong>Mouse:</strong> 0.02 kg</li>
-                        <li><strong>Hamster:</strong> 0.08 kg</li>
-                        <li><strong>Rat:</strong> 0.15 kg</li>
-                        <li><strong>Ferret:</strong> 0.3 kg</li>
-                        <li><strong>Guinea Pig:</strong> 0.4 kg</li>
-                        <li><strong>Rabbit:</strong> 1.8 kg</li>
-                        <li><strong>Dog:</strong> 10 kg</li>
-                        <li><strong>Monkey:</strong> 3 kg</li>
-                        <li><strong>Marmoset:</strong> 0.35 kg</li>
-                        <li><strong>Baboon:</strong> 12 kg</li>
-                        <li><strong>Micro Pig:</strong> 20 kg</li>
-                        <li><strong>Mini Pig:</strong> 35 kg</li>
-                        <li><strong>Human:</strong> 60 kg</li>
+
+                <div class="bg-surface-container-low p-5 rounded-lg border border-outline-variant/30 mb-8">
+                    <h4 class="font-headline font-bold text-sm text-on-surface mb-3">Reference Body Weights (FDA Standard)</h4>
+                    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs text-on-surface-variant font-light">
+                        <li><strong class="font-medium text-on-surface">Mouse:</strong> 0.02 kg</li>
+                        <li><strong class="font-medium text-on-surface">Hamster:</strong> 0.08 kg</li>
+                        <li><strong class="font-medium text-on-surface">Rat:</strong> 0.15 kg</li>
+                        <li><strong class="font-medium text-on-surface">Ferret:</strong> 0.3 kg</li>
+                        <li><strong class="font-medium text-on-surface">Guinea Pig:</strong> 0.4 kg</li>
+                        <li><strong class="font-medium text-on-surface">Rabbit:</strong> 1.8 kg</li>
+                        <li><strong class="font-medium text-on-surface">Dog:</strong> 10 kg</li>
+                        <li><strong class="font-medium text-on-surface">Monkey:</strong> 3 kg</li>
+                        <li><strong class="font-medium text-on-surface">Marmoset:</strong> 0.35 kg</li>
+                        <li><strong class="font-medium text-on-surface">Baboon:</strong> 12 kg</li>
+                        <li><strong class="font-medium text-on-surface">Micro Pig:</strong> 20 kg</li>
+                        <li><strong class="font-medium text-on-surface">Mini Pig:</strong> 35 kg</li>
+                        <li><strong class="font-medium text-on-surface">Human:</strong> 60 kg</li>
                     </ul>
                 </div>
-                </div>
-            <div id="hed-result" class="result" style="margin-top: 20px; font-size: 1.1rem; line-height: 1.6;"></div>
+
+                <button id="calculate-hed" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
+                    <span class="material-symbols-outlined">swap_horiz</span> Calculate HED
+                </button>
+
+                <div id="hed-result" class="empty:hidden bg-surface-container-lowest border border-outline-variant/30 p-6 rounded-lg shadow-sm text-center text-lg text-on-surface font-body mt-8 leading-relaxed">
+                    </div>
+
+            </div>
         </section>
 
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">🔬 The FDA Guide to Interspecies Dose Scaling</h2>
-            <p>
-                A critical milestone in pharmacological research and drug development is transitioning a novel therapeutic compound from preclinical animal models (e.g., murine or canine models) to Phase I human clinical trials. This process requires determining the <strong>Human Equivalent Dose (HED)</strong> to establish the Maximum Recommended Starting Dose (MRSD) for healthy volunteers.
-            </p>
-
-            <div style="background: #fdfdfe; border-left: 4px solid #ea580c; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: #ea580c;">⚠️ Why Simple Weight Scaling is Dangerous</h3>
-                <p style="margin-bottom: 0;">
-                    Historically, researchers scaled doses directly by body weight (mg/kg). For example, if a 20g mouse tolerated 10 mg/kg, they assumed a 60kg human could also tolerate 10 mg/kg. <strong>This is scientifically inaccurate and highly dangerous.</strong> Smaller animals have much higher basal metabolic rates and clear drugs significantly faster than larger animals. To account for this metabolic disparity, the FDA mandates that dose translation must be normalized to <strong>Body Surface Area (BSA)</strong>, not just total body mass.
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu_book</span> The FDA Guide to Interspecies Dose Scaling
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-8">
+                    A critical milestone in pharmacological research and drug development is transitioning a novel therapeutic compound from preclinical animal models (e.g., murine or canine models) to Phase I human clinical trials. This process requires determining the <strong class="text-on-surface font-medium">Human Equivalent Dose (HED)</strong> to establish the Maximum Recommended Starting Dose (MRSD) for healthy volunteers.
                 </p>
+
+                <div class="space-y-12">
+
+                    <div class="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500 shadow-sm">
+                        <h3 class="font-headline font-bold text-lg mb-2 text-amber-900 flex items-center gap-2">
+                            <span class="material-symbols-outlined">warning</span> Why Simple Weight Scaling is Dangerous
+                        </h3>
+                        <p class="text-sm leading-relaxed text-amber-800 font-light">
+                            Historically, researchers scaled doses directly by body weight (mg/kg). For example, if a 20g mouse tolerated 10 mg/kg, they assumed a 60kg human could also tolerate 10 mg/kg. <strong class="font-bold">This is scientifically inaccurate and highly dangerous.</strong> Smaller animals have much higher basal metabolic rates and clear drugs significantly faster than larger animals. To account for this metabolic disparity, the FDA mandates that dose translation must be normalized to <strong>Body Surface Area (BSA)</strong>, not just total body mass.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">The Allometric Scaling Formula</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                            To simplify BSA calculations, the FDA introduced the <strong class="text-on-surface font-medium">$K_m$ factor</strong> (where $K_m = \text{Body Weight (kg)} \div \text{BSA (m}^2\text{)}$). By dividing the animal's $K_m$ by the human's $K_m$, we get an accurate conversion ratio.
+                        </p>
+                        
+                        <div class="bg-surface-container-lowest p-8 rounded-lg border-l-4 border-primary shadow-sm flex flex-col items-center justify-center overflow-x-auto">
+                            <div class="text-xl md:text-2xl mb-4 font-serif text-on-surface whitespace-nowrap">
+                                $$ HED (mg/kg) = \text{Animal Dose} (mg/kg) \times \frac{\text{Animal } K_m}{\text{Human } K_m} $$
+                            </div>
+                            <p class="text-xs text-outline font-light text-center">
+                                <em>*Common $K_m$ values: Mouse (3), Rat (6), Dog (20), Adult Human (37).</em>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-6">
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What is the difference between "Equivalent Dose (mg/kg)" and "Absolute Dose (mg)"?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">The <strong>Equivalent Dose</strong> is the concentration of the drug normalized to the target species' weight (e.g., 2.4 mg of drug per 1 kg of human). The <strong>Absolute Dose</strong> is the total physical amount of the drug you must administer to the specific subject. Our calculator provides the Absolute Dose if you input the target subject's specific body weight.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use this formula for pediatric (children) clinical trials?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">No. The standard human $K_m$ factor of 37 is based on a standard healthy adult weighing 60 kg. Children and infants have a drastically different Body Surface Area-to-weight ratio compared to adults. Pediatric dose scaling requires specific allometric formulas that account for developmental pharmacokinetics.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Does this formula apply to all types of administration?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">BSA normalization is primarily designed for drugs administered systemically (e.g., Intravenous (IV) or Oral (PO)). It is generally <strong class="font-medium text-error">not appropriate</strong> for drugs administered topically (on the skin), intramuscularly, or via local injection, as these do not scale directly with systemic basal metabolic rate.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <h3 style="color:#007bff; margin-top: 25px;">The Allometric Scaling Formula</h3>
-            <p>
-                To simplify BSA calculations, the FDA introduced the <strong>$K_m$ factor</strong> (where $K_m = \text{Body Weight (kg)} \div \text{BSA (m}^2\text{)}$). By dividing the animal's $K_m$ by the human's $K_m$, we get an accurate conversion ratio.
-            </p>
-
-            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0; text-align: center; overflow-x: auto;">
-                $$ HED (mg/kg) = \text{Animal Dose} (mg/kg) \times \frac{\text{Animal } K_m}{\text{Human } K_m} $$
-            </div>
-            <p style="font-size: 0.9rem; color: #666; text-align: center;">
-                <em>*Common $K_m$ values: Mouse (3), Rat (6), Dog (20), Adult Human (37).</em>
-            </p>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div class="faq-item">
-                <h4>What is the difference between "Equivalent Dose (mg/kg)" and "Absolute Dose (mg)"?</h4>
-                <p>The <strong>Equivalent Dose</strong> is the concentration of the drug normalized to the target species' weight (e.g., 2.4 mg of drug per 1 kg of human). The <strong>Absolute Dose</strong> is the total physical amount of the drug you must administer to the specific subject. Our calculator provides the Absolute Dose if you input the target subject's specific body weight.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>Can I use this formula for pediatric (children) clinical trials?</h4>
-                <p>No. The standard human $K_m$ factor of 37 is based on a standard healthy adult weighing 60 kg. Children and infants have a drastically different Body Surface Area-to-weight ratio compared to adults. Pediatric dose scaling requires specific allometric formulas that account for developmental pharmacokinetics.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>Does this formula apply to all types of administration?</h4>
-                <p>BSA normalization is primarily designed for drugs administered systemically (e.g., Intravenous (IV) or Oral (PO)). It is generally <strong>not appropriate</strong> for drugs administered topically (on the skin), intramuscularly, or via local injection, as these do not scale directly with systemic basal metabolic rate.</p>
-            </div>
-
         </section>
-        </main>
 
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        // 1. Firebase Init & Visitor Counter
+        document.addEventListener("DOMContentLoaded", function() {
+            // Quote
+            const quotes = [
+                "Cheering for your dedication and hard work today. 🧪", 
+                "Behind every data point, there is a researcher’s effort. 📊",
+                "Science is a journey of resilience. Keep going. 🚀",
+                "Your failed experiment is just a stepping stone to discovery. 💡",
+                "Rest is also part of the experiment. Don't burn out. ☕",
+                "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                "Believe in your hypothesis, but trust your data. 📉"
+            ];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+    </script>
     <script src="../assets/main.js"></script>
 </body>
 </html>

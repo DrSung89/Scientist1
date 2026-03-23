@@ -1,244 +1,338 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
     <title>Comprehensive Guide & Statistical References | Scientist's Toolkit</title>
     <meta name="description" content="Detailed methodologies, formulas, and clinical references for Molarity, Dilution, Outlier detection, HED, T-Test, Chi-Square, and Survival Analysis.">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/help/">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Guide & Methodology | Scientist's Toolkit">
+    <meta property="og:description" content="Detailed methodologies, formulas, and clinical references for research calculators.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/help/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/help/">
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] // $ ... $ 를 인라인 수식으로 인식하도록 설정
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-</head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                    "Believe in your hypothesis, but trust your data. 📉"
-                ];
-                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            });
-        </script>
-    </header>
-    
-    <nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn active">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
-    </nav>
-
-    <main>
-        <section id="help-section" class="calculator active" style="display:block; text-align: left; line-height: 1.7; color: #333; padding: 30px;">
-            <h2 style="text-align: center; margin-bottom: 30px;">Comprehensive User Guide & Methodologies</h2>
-            <p style="text-align: center; color: #555; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Welcome to the official documentation for the Scientist's Toolkit. This page provides an in-depth explanation of the mathematical principles, statistical assumptions, and regulatory guidelines (such as FDA standards) that power our calculators. Our goal is to ensure that your experimental design and data analysis are robust, reproducible, and ready for peer-reviewed publication.
-            </p>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #3b82f6;">
-                <h3 style="color: #2563eb; margin-top: 0;">🧪 Molarity Calculation Principles</h3>
-                <p>
-                    Molarity (M) is the most ubiquitous unit of concentration in wet-lab biology, analytical chemistry, and pharmacology. It expresses the amount of a substance (solute) dissolved in a specific volume of solution. Accurately calculating molarity is the foundational step for preparing buffers, cell culture media, and drug treatments.
-                </p>
-                <div class="formula-box" style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 15px 0;">
-                    <strong>Core Equation:</strong><br>
-                    Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)
-                </div>
-                <h4 style="margin-bottom: 10px;">Practical Considerations in the Lab:</h4>
-                <ul style="margin-top: 0;">
-                    <li style="margin-bottom: 8px;"><strong>Hydration States:</strong> Always check the reagent bottle for water of crystallization (e.g., CuSO₄ vs. CuSO₄·5H₂O). The molecular weight changes significantly depending on the hydration state, which will drastically alter your final molarity if ignored.</li>
-                    <li><strong>Purity & Impurities:</strong> If a chemical is not 100% pure (e.g., a compound with 95% purity), you must adjust the mass weighed out by dividing the calculated theoretical mass by the purity factor (0.95) to ensure the active ingredient reaches the target concentration.</li>
-                </ul>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #22c55e;">
-                <h3 style="color: #16a34a; margin-top: 0;">💧 Dilution Dynamics (C₁V₁ = C₂V₂)</h3>
-                <p>
-                    The dilution of stock solutions is a routine yet critical procedure. The principle of conservation of mass dictates that the number of moles of solute remains constant before and after dilution. This is mathematically represented by the universal dilution equation.
-                </p>
-                <div class="formula-box" style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin: 15px 0;">
-                    <strong>The Dilution Equation: C₁V₁ = C₂V₂</strong><br><br>
-                    <span style="font-size: 0.95rem;">
-                    <strong>C₁:</strong> Concentration of the initial stock solution<br>
-                    <strong>V₁:</strong> Volume of the stock solution required<br>
-                    <strong>C₂:</strong> Desired final concentration of the working solution<br>
-                    <strong>V₂:</strong> Final total volume of the working solution
-                    </span>
-                </div>
-                <h4 style="margin-bottom: 10px;">Best Practices for Serial Dilution:</h4>
-                <p style="margin-top: 0;">
-                    When attempting to create a highly dilute working solution from a highly concentrated stock (e.g., a 1:10,000 dilution), calculating a single-step dilution might require pipetting an unmeasurably small volume (e.g., 0.1 µL). Pipetting such small volumes introduces massive mechanical and human error. In these scenarios, researchers must employ <strong>Serial Dilution</strong>—creating intermediate dilutions (e.g., 1:100, then another 1:100 from the new stock) to ensure volumetric accuracy and reproducibility across replicates.
-                </p>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #d97706;">
-                <h3 style="color: #d97706; margin-top: 0;">📊 Statistical Outlier Detection Algorithm</h3>
-                <p>
-                    Handling extreme values (outliers) in experimental data is a delicate process. Arbitrarily removing data points to achieve statistical significance is considered scientific misconduct (p-hacking). Outlier removal must be justified mathematically. Our toolkit employs an intelligent, two-step auto-selection algorithm to ensure statistical rigor before any data points are recommended for exclusion.
-                </p>
-                
-                <h4 style="margin-top: 20px;">Step 1: The Shapiro-Wilk Normality Test</h4>
-                <p>
-                    Before identifying an outlier, we must understand the shape of the data distribution. The Shapiro-Wilk test evaluates the null hypothesis that the data was drawn from a normally distributed population. If the P-value is ≥ 0.05, we assume normality and proceed to parametric tests. If P < 0.05, the data is skewed, requiring non-parametric approaches.
-                </p>
-
-                <div style="background-color: #ecfdf5; padding: 15px; border-left: 4px solid #059669; margin: 20px 0; border-radius: 0 4px 4px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #065f46;">Pathway A: Normal Distribution (P ≥ 0.05) → Grubb's Test</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #064e3b;">
-                        Grubb's test (also known as the maximum normed residual test) is the gold standard for detecting exactly one outlier in a univariate dataset that follows an approximately normal distribution. It calculates a Z-like score (G) representing how far the suspected outlier is from the sample mean, scaled by the standard deviation. It is highly sensitive but should be used iteratively if multiple outliers are suspected in a single dataset.
-                    </p>
-                </div>
-
-                <div style="background-color: #fffbeb; padding: 15px; border-left: 4px solid #d97706; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #92400e;">Pathway B: Non-Normal Distribution (P < 0.05) → Robust IQR Method</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #78350f; margin-bottom: 10px;">
-                        When data heavily deviates from normality (common in small biological sample sizes or exponential biological growth data), parametric tests fail. The Interquartile Range (IQR) method (Tukey's fences) relies on medians and quartiles, making it highly resistant to the extreme values themselves.
-                    </p>
-                    <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 0.9rem;">
-                        Q1 = 25th Percentile<br>
-                        Q3 = 75th Percentile<br>
-                        IQR = Q3 - Q1<br>
-                        Strict Outlier Boundaries: < [Q1 - 1.5 × IQR] OR > [Q3 + 1.5 × IQR]
-                    </div>
-                </div>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #ea580c;">
-                <h3 style="color: #ea580c; margin-top: 0;">🐁 Human Equivalent Dose (HED) & Translational Scaling</h3>
-                <p>
-                    Translating drug dosages from preclinical animal models (mice, rats, dogs, macaques) to human clinical trials (Phase I) is one of the most critical steps in pharmacology. Simply scaling the dose by body weight (mg/kg) is highly dangerous and historically inaccurate because basal metabolic rate correlates more closely with <strong>Body Surface Area (BSA)</strong> than with total body mass.
-                </p>
-                <div style="background-color: #fff7ed; padding: 15px; border-left: 4px solid #f97316; margin: 20px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #9a3412;">The FDA Allometric Scaling Standard</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #9a3412;">
-                        The U.S. Food and Drug Administration (FDA) established guidelines in 2005 for calculating the Maximum Safe Starting Dose (MRSD). This guideline utilizes the <strong>K_m factor</strong> (Body weight in kg divided by BSA in m²). By comparing the K_m factor of humans to various laboratory animals, pharmacologists can safely extrapolate toxicity thresholds (NOAEL - No Observed Adverse Effect Level).
-                    </p>
-                </div>
-                <div class="formula-box" style="background-color: #f8fafc; border-left: 4px solid #cbd5e1; padding: 15px;">
-                    <strong>Step 1: Normalize Human Dose</strong><br>
-                    Human Dose (mg/kg) = Total Flat Human Dose (mg) / 60 kg <em>(Standard FDA adult weight)</em><br><br>
-                    <strong>Step 2: Apply BSA Correction Factor</strong><br>
-                    Animal Dose (mg/kg) = Human Dose (mg/kg) × (Human K_m / Animal K_m)
-                </div>
-                <p style="margin-top: 15px; font-size: 0.9rem; color: #555;">
-                    <strong>Regulatory Reference:</strong> <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank" style="color: #ea580c;">Guidance for Industry: Estimating the Maximum Safe Starting Dose in Initial Clinical Trials for Therapeutics in Adult Healthy Volunteers (FDA, July 2005)</a>
-                </p>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #0284c7;">
-                <h3 style="color: #0284c7; margin-top: 0;">📉 Independent T-Test & Effect Size Metrics</h3>
-                <p>
-                    The independent samples t-test is utilized to compare the means of two distinct groups (e.g., wild-type vs. knockout mice, placebo vs. drug treatment) to determine if there is statistical evidence that the associated population means are significantly different from one another.
-                </p>
-                
-                <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0ea5e9; margin: 20px 0; border-radius: 0 4px 4px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #0369a1;">Why We Default to Welch's T-Test</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #0c4a6e;">
-                        The traditional Student's t-test operates under a strict assumption of "Homogeneity of Variances" (homoscedasticity)—meaning both groups must have identical standard deviations. In biological sciences, treatment groups often exhibit much higher variance than control groups. <strong>Welch's t-test</strong> dynamically adjusts the degrees of freedom to account for unequal variances, making it significantly more reliable and preventing false positives (Type I error).
-                    </p>
-                </div>
-                
-                <h4 style="margin-bottom: 10px;">Essential Reporting Statistics Generated:</h4>
-                <ul style="color: #444; font-size: 0.95rem; margin-top: 0;">
-                    <li style="margin-bottom: 8px;"><strong>P-value (α = 0.05):</strong> The probability of observing the data if the null hypothesis is true. A value < 0.05 generally indicates a statistically significant difference.</li>
-                    <li style="margin-bottom: 8px;"><strong>95% Confidence Interval (CI):</strong> Provides a range within which the true difference between population means is expected to lie with 95% certainty. If the CI crosses zero, the result is not statistically significant regardless of the p-value.</li>
-                    <li><strong>Cohen's d (Effect Size):</strong> While a p-value tells you if a difference exists, Cohen's d tells you <em>how large</em> that difference is in standard deviation units. <br>
-                    <em>Benchmarks: 0.2 (Small effect), 0.5 (Medium effect), 0.8+ (Large effect).</em></li>
-                </ul>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #be123c;">
-                <h3 style="color: #be123c; margin-top: 0;">🎲 Chi-Square Analysis (Contingency Tables)</h3>
-                <p>
-                    The Pearson's Chi-Square test of independence evaluates whether there is a significant association between two categorical variables. It is predominantly used in genetics (Mendelian ratios), epidemiology (exposure vs. disease status), and clinical responses (responder vs. non-responder).
-                </p>
-                
-                <div style="background-color: #fff1f2; padding: 15px; border-left: 4px solid #e11d48; margin: 20px 0; border-radius: 0 4px 4px 0;">
-                    <h4 style="margin: 0 0 8px 0; color: #9f1239;">⚠️ The "Low Expected Count" Warning Explained</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #881337;">
-                        A fundamental mathematical limitation of the Chi-Square approximation is that it breaks down when sample sizes are too small. Our calculator automatically generates expected counts for every cell. If any cell has an expected count of <strong>less than 5</strong>, a warning is triggered. In such cases, researchers are highly advised to use <strong>Fisher's Exact Test</strong> instead, which calculates exact probabilities rather than relying on chi-square distribution approximations.
-                    </p>
-                </div>
-                
-                <h4 style="margin-bottom: 5px;">Cramér's V (Effect Size):</h4>
-                <p style="font-size: 0.95rem; color: #444; margin-top: 0;">
-                    Similar to Cohen's d for t-tests, Cramér's V scales the Chi-Square statistic to a value between 0 and 1, representing the strength of association between the categorical variables. (0.1 = Weak, 0.3 = Moderate, 0.5+ = Strong association).
-                </p>
-            </div>
-
-            <div class="help-block" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #475569;">
-                <h3 style="color: #475569; margin-top: 0;">⏳ Survival Analysis: Kaplan-Meier & Log-Rank Testing</h3>
-                <p>
-                    Time-to-event analysis is the cornerstone of clinical oncology, epidemiology, and longitudinal animal studies. The Kaplan-Meier estimator is a non-parametric statistic used to estimate the survival function from lifetime data, elegantly handling incomplete observations known as "censoring".
-                </p>
-                
-                <h4 style="margin-top: 20px; margin-bottom: 10px;">Understanding the Data Coding Structure:</h4>
-                <ul style="color: #444; font-size: 0.95rem; margin-top: 0; margin-bottom: 15px;">
-                    <li style="margin-bottom: 8px;"><strong>Event (Code 1):</strong> The primary endpoint of the study was reached at the specified time point. This could be overall survival (death), progression-free survival (tumor growth), or disease-free survival (relapse). The survival curve drops exactly at this time point.</li>
-                    <li><strong>Right-Censored (Code 0):</strong> The observation period ended without the event occurring, or the subject withdrew from the study (lost to follow-up). The survival curve does NOT drop, but the denominator (number of subjects at risk) decreases for subsequent calculations.</li>
-                </ul>
-
-                <h4 style="margin-top: 20px; margin-bottom: 10px;">Key Interpretations:</h4>
-                <p style="font-size: 0.95rem; color: #444; margin-top: 0;">
-                    <strong>Median Survival Time:</strong> The exact time point at which the calculated survival probability crosses 0.5 (50%). If a treatment is highly efficacious and more than half of the cohort survives past the end of the study, the median survival is statistically reported as <strong>"Not Reached (NR)"</strong>.
-                </p>
-
-                <div style="background-color: #f3f4f6; padding: 15px; border-left: 4px solid #6b7280; border-radius: 0 4px 4px 0; margin-top: 20px;">
-                    <h4 style="margin: 0 0 8px 0; color: #374151;">📊 The Log-Rank Test</h4>
-                    <p style="margin: 0; font-size: 0.95rem; color: #4b5563;">
-                        While the Kaplan-Meier plot provides a visual representation, the Log-Rank Test provides the statistical rigorousness. It tests the null hypothesis that there is no difference in the probability of an event between groups at any point in time. Our calculator automatically computes the Chi-Square statistic and P-value for pairwise comparisons, allowing researchers to claim statistical superiority of a novel treatment arm compared to a control vehicle.
-                    </p>
-                </div>
-            </div>
-
-        </section>
-    </main>
-
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
-    </footer>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
     <script>
-        window.addEventListener('load', function() {
-            setTimeout(() => {
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-primary">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../hed-calculator/">HED</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
+    </nav>
+
+    <div class="pt-24 lg:pt-20 max-w-screen-2xl mx-auto px-6 relative z-10 text-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9274620489745017"
+             data-ad-slot="6554136062" 
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <main class="relative flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-12 md:py-16 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Documentation</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">User Guide & Methodologies</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">In-depth explanations of the mathematical principles, statistical assumptions, and regulatory guidelines powering our tools.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 pb-24 max-w-screen-md mx-auto z-10 relative">
+            <div class="space-y-12">
+                
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                    <h3 class="text-2xl font-headline font-bold text-primary mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">science</span> Molarity Calculation Principles
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        Molarity (M) is the most ubiquitous unit of concentration in wet-lab biology, analytical chemistry, and pharmacology. It expresses the amount of a substance (solute) dissolved in a specific volume of solution. Accurately calculating molarity is the foundational step for preparing buffers, cell culture media, and drug treatments.
+                    </p>
+                    
+                    <div class="bg-surface-bright p-5 rounded-lg border-l-4 border-primary shadow-sm mb-6 flex flex-col items-center">
+                        <span class="font-bold text-sm text-on-surface mb-2">Core Equation:</span>
+                        <div class="text-lg font-serif text-on-surface text-center">
+                            Mass (g) = Concentration (mol/L) × Volume (L) × Molecular Weight (g/mol)
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-headline font-bold text-on-surface mb-3">Practical Considerations in the Lab:</h4>
+                    <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
+                        <li><strong class="font-medium text-on-surface">Hydration States:</strong> Always check the reagent bottle for water of crystallization (e.g., CuSO₄ vs. CuSO₄·5H₂O). The molecular weight changes significantly depending on the hydration state, which will drastically alter your final molarity if ignored.</li>
+                        <li><strong class="font-medium text-on-surface">Purity & Impurities:</strong> If a chemical is not 100% pure (e.g., a compound with 95% purity), you must adjust the mass weighed out by dividing the calculated theoretical mass by the purity factor (0.95) to ensure the active ingredient reaches the target concentration.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-emerald-500">
+                    <h3 class="text-2xl font-headline font-bold text-emerald-600 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">water_drop</span> Dilution Dynamics (C₁V₁ = C₂V₂)
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        The dilution of stock solutions is a routine yet critical procedure. The principle of conservation of mass dictates that the number of moles of solute remains constant before and after dilution. This is mathematically represented by the universal dilution equation.
+                    </p>
+                    
+                    <div class="bg-emerald-50 p-5 rounded-lg border-l-4 border-emerald-500 shadow-sm mb-6 flex flex-col items-center">
+                        <span class="font-bold text-sm text-emerald-900 mb-2">The Dilution Equation:</span>
+                        <div class="text-2xl font-serif text-emerald-800 mb-4">$$ C_1 \times V_1 = C_2 \times V_2 $$</div>
+                        <ul class="text-sm font-light text-emerald-800 w-full max-w-sm space-y-1">
+                            <li><strong class="font-medium">C₁:</strong> Concentration of initial stock</li>
+                            <li><strong class="font-medium">V₁:</strong> Volume of stock required</li>
+                            <li><strong class="font-medium">C₂:</strong> Desired final concentration</li>
+                            <li><strong class="font-medium">V₂:</strong> Final total volume</li>
+                        </ul>
+                    </div>
+
+                    <h4 class="font-headline font-bold text-on-surface mb-3">Best Practices for Serial Dilution:</h4>
+                    <p class="text-on-surface-variant font-light leading-relaxed">
+                        When attempting to create a highly dilute working solution from a highly concentrated stock (e.g., a 1:10,000 dilution), calculating a single-step dilution might require pipetting an unmeasurably small volume. In these scenarios, researchers must employ <strong>Serial Dilution</strong>—creating intermediate dilutions (e.g., 1:100, then another 1:100) to ensure volumetric accuracy.
+                    </p>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-amber-500">
+                    <h3 class="text-2xl font-headline font-bold text-amber-600 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">troubleshoot</span> Statistical Outlier Detection Algorithm
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        Handling extreme values (outliers) in experimental data is a delicate process. Arbitrarily removing data points to achieve statistical significance is considered scientific misconduct (p-hacking). Our toolkit employs an intelligent, two-step auto-selection algorithm to ensure statistical rigor before any data points are recommended for exclusion.
+                    </p>
+
+                    <h4 class="font-headline font-bold text-on-surface mb-2">Step 1: The Shapiro-Wilk Normality Test</h4>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        Before identifying an outlier, we must understand the shape of the data distribution. If the P-value is ≥ 0.05, we assume normality and proceed to parametric tests. If P < 0.05, the data is skewed, requiring non-parametric approaches.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-emerald-50 p-5 rounded-lg border border-emerald-200">
+                            <h4 class="font-headline font-bold text-emerald-800 mb-2">Normal (P ≥ 0.05) → Grubb's Test</h4>
+                            <p class="text-sm font-light text-emerald-900 leading-relaxed">
+                                Grubb's test is the gold standard for detecting exactly one outlier in a univariate dataset that follows an approximately normal distribution. It calculates a Z-like score (G) representing how far the suspected outlier is from the sample mean.
+                            </p>
+                        </div>
+                        <div class="bg-amber-50 p-5 rounded-lg border border-amber-200">
+                            <h4 class="font-headline font-bold text-amber-800 mb-2">Non-Normal (P < 0.05) → IQR Method</h4>
+                            <p class="text-sm font-light text-amber-900 leading-relaxed mb-3">
+                                When data heavily deviates from normality, parametric tests fail. The Interquartile Range (IQR) method (Tukey's fences) relies on medians and quartiles, making it highly resistant to the extreme values themselves.
+                            </p>
+                            <div class="bg-white/60 p-3 rounded text-xs font-mono text-amber-950">
+                                Q1 = 25th Percentile<br>
+                                Q3 = 75th Percentile<br>
+                                IQR = Q3 - Q1<br>
+                                Limits: < [Q1 - 1.5×IQR] OR > [Q3 + 1.5×IQR]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-orange-500">
+                    <h3 class="text-2xl font-headline font-bold text-orange-600 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">cruelty_free</span> Human Equivalent Dose (HED) & Scaling
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        Translating drug dosages from preclinical animal models (mice, rats, dogs, macaques) to human clinical trials (Phase I) is one of the most critical steps in pharmacology. Simply scaling the dose by body weight (mg/kg) is highly dangerous because basal metabolic rate correlates more closely with <strong>Body Surface Area (BSA)</strong> than with total body mass.
+                    </p>
+
+                    <div class="bg-orange-50 p-5 rounded-lg border-l-4 border-orange-500 shadow-sm mb-6">
+                        <h4 class="font-headline font-bold text-orange-800 mb-2">The FDA Allometric Scaling Standard</h4>
+                        <p class="text-sm font-light text-orange-900 leading-relaxed">
+                            The FDA established guidelines in 2005 utilizing the <strong>K_m factor</strong> (Body weight in kg divided by BSA in m²). By comparing the K_m factor of humans to various laboratory animals, pharmacologists can safely extrapolate toxicity thresholds (NOAEL).
+                        </p>
+                    </div>
+
+                    <div class="bg-surface-bright p-5 rounded-lg border border-outline-variant/30 text-center font-serif text-lg mb-4">
+                        $$ HED = \text{Animal Dose} \times \frac{\text{Animal } K_m}{\text{Human } K_m} $$
+                    </div>
+                    
+                    <p class="text-sm text-on-surface-variant font-light italic text-center">
+                        Reference: <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/estimating-maximum-safe-starting-dose-initial-clinical-trials-therapeutics-adult-healthy-volunteers" target="_blank" class="text-primary hover:underline font-medium">FDA Guidance for Industry (July 2005)</a>
+                    </p>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-sky-500">
+                    <h3 class="text-2xl font-headline font-bold text-sky-600 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">stacked_line_chart</span> Independent T-Test & Effect Size
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        The independent samples t-test is utilized to compare the means of two distinct groups (e.g., wild-type vs. knockout mice, placebo vs. drug treatment) to determine if there is statistical evidence that the associated population means are significantly different from one another.
+                    </p>
+
+                    <div class="bg-sky-50 p-5 rounded-lg border-l-4 border-sky-500 shadow-sm mb-6">
+                        <h4 class="font-headline font-bold text-sky-800 mb-2">Why We Default to Welch's T-Test</h4>
+                        <p class="text-sm font-light text-sky-900 leading-relaxed">
+                            The traditional Student's t-test operates under a strict assumption of "Homogeneity of Variances" (homoscedasticity)—meaning both groups must have identical standard deviations. In biological sciences, treatment groups often exhibit much higher variance than control groups. <strong>Welch's t-test</strong> dynamically adjusts the degrees of freedom to account for unequal variances, making it significantly more reliable.
+                        </p>
+                    </div>
+
+                    <h4 class="font-headline font-bold text-on-surface mb-3">Essential Reporting Statistics Generated:</h4>
+                    <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
+                        <li><strong class="font-medium text-on-surface">P-value (α = 0.05):</strong> The probability of observing the data if the null hypothesis is true.</li>
+                        <li><strong class="font-medium text-on-surface">95% Confidence Interval (CI):</strong> Provides a range within which the true difference between population means is expected to lie with 95% certainty.</li>
+                        <li><strong class="font-medium text-on-surface">Cohen's d (Effect Size):</strong> While a p-value tells you if a difference exists, Cohen's d tells you <em>how large</em> that difference is in standard deviation units (0.2 = Small, 0.5 = Medium, 0.8+ = Large).</li>
+                    </ul>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-rose-600">
+                    <h3 class="text-2xl font-headline font-bold text-rose-600 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">grid_4x4</span> Chi-Square Analysis
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        The Pearson's Chi-Square test of independence evaluates whether there is a significant association between two categorical variables. It is predominantly used in genetics (Mendelian ratios), epidemiology (exposure vs. disease status), and clinical responses (responder vs. non-responder).
+                    </p>
+
+                    <div class="bg-rose-50 p-5 rounded-lg border-l-4 border-rose-500 shadow-sm mb-6">
+                        <h4 class="font-headline font-bold text-rose-800 mb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">warning</span> The "Low Expected Count" Warning
+                        </h4>
+                        <p class="text-sm font-light text-rose-900 leading-relaxed">
+                            A fundamental mathematical limitation of the Chi-Square approximation is that it breaks down when sample sizes are too small. Our calculator automatically generates expected counts for every cell. If any cell has an expected count of <strong>less than 5</strong>, a warning is triggered. In such cases, researchers are highly advised to use <strong>Fisher's Exact Test</strong> instead.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-slate-500">
+                    <h3 class="text-2xl font-headline font-bold text-slate-700 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-3xl">timeline</span> Survival Analysis: Kaplan-Meier
+                    </h3>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                        Time-to-event analysis is the cornerstone of clinical oncology, epidemiology, and longitudinal animal studies. The Kaplan-Meier estimator elegantly handles incomplete observations known as "censoring".
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h4 class="font-headline font-bold text-on-surface mb-2">Data Coding Structure</h4>
+                            <ul class="space-y-2 text-sm text-on-surface-variant font-light list-disc pl-5">
+                                <li><strong class="font-medium text-on-surface">Event (Code 1):</strong> The primary endpoint (e.g., death, tumor growth) was reached. The survival curve drops.</li>
+                                <li><strong class="font-medium text-on-surface">Right-Censored (Code 0):</strong> The observation period ended without the event occurring, or the subject was lost to follow-up. The curve does NOT drop, but the denominator decreases.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-headline font-bold text-on-surface mb-2">The Log-Rank Test</h4>
+                            <p class="text-sm text-on-surface-variant font-light leading-relaxed">
+                                While the Kaplan-Meier plot provides a visual representation, the Log-Rank Test provides the statistical rigorousness. It tests the null hypothesis that there is no difference in the probability of an event between groups at any point in time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            try {
                 const firebaseConfig = {
                     apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
                     authDomain: "scientisttoolkit.firebaseapp.com",
@@ -248,25 +342,23 @@
                     appId: "1:611412737478:web:e7389b1b03c002f56546c7",
                     measurementId: "G-5K0XVX0TFM"
                 };
-                if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
                     const db = firebase.firestore();
                     const countSpan = document.getElementById('visitor-count');
-                    const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
-                    const docRef = db.collection('visitors').doc(dateStr);
-                    
-                    if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                        docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                              .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-                    }
-                    
-                    docRef.onSnapshot((doc) => {
-                        if (doc.exists && countSpan) {
-                            countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
                         }
-                    });
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
                 }
-            }, 500); 
+            } catch (e) {}
         });
     </script>
 </body>

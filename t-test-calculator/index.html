@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T-Test Calculator (Student's & Welch's) | Scientist's Toolkit</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
+    <title>T-Test Calculator (Student's & Welch's) | Scientist's Toolkit</title>
     <meta name="description" content="Calculate both Student's and Welch's t-tests with F-test for equal variances. Get P-value, 95% CI, and Cohen's d. Publication-ready statistics for researchers.">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/t-test-calculator/">
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="Robust T-Test Calculator | Scientist's Toolkit">
@@ -13,218 +14,392 @@
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/t-test-calculator/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Robust T-Test Calculator | Scientist's Toolkit">
-    <meta name="twitter:description" content="Calculate Student's & Welch's t-test, P-value, 95% CI, and Cohen's d.">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-    
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] // $ ... $ 를 인라인 수식으로 인식하도록 설정
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/t-test-calculator/">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
-</head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                    "Believe in your hypothesis, but trust your data. 📉"
-                ];
-                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            });
-        </script>
-    </header>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
-    <nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn active">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+              "warning": "#d97706"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 텍스트 영역 커스텀 스크롤바 등 */
+        textarea { resize: vertical; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-primary" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-primary whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../hed-calculator/">HED</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
     </nav>
 
-    <main>
-        <section class="calculator active">
-            <h2>📉 Independent Samples T-Test</h2>
-            <p>Automatically tests for equality of variances (F-test) to recommend between <strong>Student's</strong> and <strong>Welch's</strong> T-Test.</p>
+    <div class="pt-24 lg:pt-20 max-w-screen-2xl mx-auto px-6 relative z-10 text-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9274620489745017"
+             data-ad-slot="6554136062" 
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
 
-            <div class="input-group">
-                <label>Group A Data:</label>
-                <textarea id="group-a" rows="3" placeholder="e.g. 10.2  11.5  10.8 ..."></textarea>
-            </div>
+    <main class="relative flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
 
-            <div class="input-group">
-                <label>Group B Data:</label>
-                <textarea id="group-b" rows="3" placeholder="e.g. 9.5  9.8  10.1 ..."></textarea>
-            </div>
+        <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Statistical Module</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Independent Samples T-Test</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Automatically tests for equality of variances (F-test) to recommend between <strong>Student's</strong> and <strong>Welch's</strong> T-Test.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
 
-            <button onclick="runAnalysis()" class="action-btn">Run Statistical Analysis</button>
-
-            <div id="result-area" class="result-box" style="display:none; margin-top: 20px; text-align: left;">
-                <h3 style="margin-top: 0;">📊 Statistical Report</h3>
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
                 
-                <table style="width:100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.9em;">
-                    <tr style="background:#f1f1f1; text-align:left;">
-                        <th style="padding:6px;">Group</th>
-                        <th style="padding:6px;">N</th>
-                        <th style="padding:6px;">Mean ± SD</th>
-                        <th style="padding:6px;">SE</th>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding:6px;"><strong>A</strong></td>
-                        <td id="n-a" style="padding:6px;"></td>
-                        <td id="mean-sd-a" style="padding:6px;"></td>
-                        <td id="se-a" style="padding:6px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:6px;"><strong>B</strong></td>
-                        <td id="n-b" style="padding:6px;"></td>
-                        <td id="mean-sd-b" style="padding:6px;"></td>
-                        <td id="se-b" style="padding:6px;"></td>
-                    </tr>
-                </table>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label for="group-a" class="block font-headline text-sm font-bold text-on-surface mb-2 flex justify-between">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> Group A Data</span>
+                        </label>
+                        <textarea id="group-a" rows="4" placeholder="e.g. 10.2, 11.5, 10.8..." class="w-full p-4 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-mono text-sm text-on-surface resize-y"></textarea>
+                    </div>
 
-                <div id="f-test-box" style="padding: 12px; margin-bottom: 15px; border-radius: 6px; font-size: 0.9em;">
-                    <strong style="font-size: 1em;">1. Assumption Check (F-Test for Variances):</strong><br>
-                    <span id="f-test-result"></span>
+                    <div>
+                        <label for="group-b" class="block font-headline text-sm font-bold text-on-surface mb-2 flex justify-between">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> Group B Data</span>
+                        </label>
+                        <textarea id="group-b" rows="4" placeholder="e.g. 9.5, 9.8, 10.1..." class="w-full p-4 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-mono text-sm text-on-surface resize-y"></textarea>
+                    </div>
                 </div>
 
-                <strong style="font-size: 0.95em;">2. T-Test Results:</strong>
-                <table style="width:100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 15px; font-size: 0.9em;">
-                    <tr style="background:#f8f9fa; border-bottom: 1px solid #ccc; text-align: left;">
-                        <th style="padding:8px;">Test Type</th>
-                        <th style="padding:8px;">t-stat</th>
-                        <th style="padding:8px;">df</th>
-                        <th style="padding:8px;">P-value</th>
-                        <th style="padding:8px;">95% CI</th>
-                    </tr>
-                    <tr id="row-student" style="border-bottom: 1px solid #eee;">
-                        <td style="padding:8px;"><strong>Student's</strong><br><span style="font-size: 0.8em; color:#666;">(Equal Variances)</span></td>
-                        <td id="t-student" style="padding:8px;"></td>
-                        <td id="df-student" style="padding:8px;"></td>
-                        <td id="p-student" style="padding:8px; font-weight:bold;"></td>
-                        <td id="ci-student" style="padding:8px;"></td>
-                    </tr>
-                    <tr id="row-welch">
-                        <td style="padding:8px;"><strong>Welch's</strong><br><span style="font-size: 0.8em; color:#666;">(Unequal Variances)</span></td>
-                        <td id="t-welch" style="padding:8px;"></td>
-                        <td id="df-welch" style="padding:8px;"></td>
-                        <td id="p-welch" style="padding:8px; font-weight:bold;"></td>
-                        <td id="ci-welch" style="padding:8px;"></td>
-                    </tr>
-                </table>
+                <button onclick="runAnalysis()" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
+                    <span class="material-symbols-outlined">stacked_line_chart</span> Run Statistical Analysis
+                </button>
 
-                <div style="background: #fafafa; border: 1px solid #eee; padding: 12px; border-radius: 6px; font-size: 0.9em; display: flex; justify-content: space-between;">
-                    <div><strong>Mean Difference:</strong> <span id="mean-diff" style="color:#007bff;"></span></div>
-                    <div><strong>Effect Size (Cohen's d):</strong> <span id="effect-size" style="color:#007bff;"></span></div>
+                <div id="result-area" style="display:none;" class="mt-10">
+                    <h3 class="font-headline font-bold text-xl text-on-surface flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-primary">assessment</span> Statistical Report
+                    </h3>
+                    
+                    <div class="overflow-x-auto mb-6 rounded-lg border border-outline-variant/30 shadow-sm">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container-low font-headline text-on-surface border-b border-outline-variant/30">
+                                <tr>
+                                    <th class="p-4 font-bold">Group</th>
+                                    <th class="p-4 font-bold">N</th>
+                                    <th class="p-4 font-bold">Mean ± SD</th>
+                                    <th class="p-4 font-bold">SE</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-surface-container-lowest font-body">
+                                <tr class="border-b border-outline-variant/20 hover:bg-surface-bright">
+                                    <td class="p-4 font-bold text-on-surface">A</td>
+                                    <td id="n-a" class="p-4 text-on-surface-variant"></td>
+                                    <td id="mean-sd-a" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="se-a" class="p-4 text-on-surface-variant font-mono"></td>
+                                </tr>
+                                <tr class="hover:bg-surface-bright">
+                                    <td class="p-4 font-bold text-on-surface">B</td>
+                                    <td id="n-b" class="p-4 text-on-surface-variant"></td>
+                                    <td id="mean-sd-b" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="se-b" class="p-4 text-on-surface-variant font-mono"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="f-test-box" class="p-5 mb-8 rounded-lg border-l-4 shadow-sm">
+                        <strong class="font-headline text-on-surface text-base flex items-center gap-1 mb-2">
+                            <span class="material-symbols-outlined text-[18px]">rule</span> 1. Assumption Check (F-Test for Variances):
+                        </strong>
+                        <span id="f-test-result" class="text-sm font-light text-on-surface-variant block mt-1"></span>
+                    </div>
+
+                    <strong class="font-headline text-on-surface text-base flex items-center gap-1 mb-3">
+                        <span class="material-symbols-outlined text-[18px]">functions</span> 2. T-Test Results:
+                    </strong>
+                    <div class="overflow-x-auto mb-6 rounded-lg border border-outline-variant/30 shadow-sm">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container-low font-headline text-on-surface border-b border-outline-variant/30">
+                                <tr>
+                                    <th class="p-4 font-bold">Test Type</th>
+                                    <th class="p-4 font-bold">t-stat</th>
+                                    <th class="p-4 font-bold">df</th>
+                                    <th class="p-4 font-bold">P-value</th>
+                                    <th class="p-4 font-bold">95% CI</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-surface-container-lowest font-body">
+                                <tr id="row-student" class="border-b border-outline-variant/20 transition-colors">
+                                    <td class="p-4">
+                                        <strong class="text-on-surface block">Student's</strong>
+                                        <span class="text-[11px] text-on-surface-variant font-light">(Equal Variances)</span>
+                                    </td>
+                                    <td id="t-student" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="df-student" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="p-student" class="p-4 font-bold font-mono"></td>
+                                    <td id="ci-student" class="p-4 text-on-surface-variant font-mono"></td>
+                                </tr>
+                                <tr id="row-welch" class="transition-colors">
+                                    <td class="p-4">
+                                        <strong class="text-on-surface block">Welch's</strong>
+                                        <span class="text-[11px] text-on-surface-variant font-light">(Unequal Variances)</span>
+                                    </td>
+                                    <td id="t-welch" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="df-welch" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="p-welch" class="p-4 font-bold font-mono"></td>
+                                    <td id="ci-welch" class="p-4 text-on-surface-variant font-mono"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-surface-bright border border-outline-variant/30 p-5 rounded-lg text-sm flex flex-col sm:flex-row justify-between items-center shadow-sm">
+                        <div class="mb-2 sm:mb-0">
+                            <span class="text-on-surface-variant font-medium">Mean Difference:</span> 
+                            <span id="mean-diff" class="text-primary font-bold ml-1 font-mono"></span>
+                        </div>
+                        <div>
+                            <span class="text-on-surface-variant font-medium">Effect Size (Cohen's d):</span> 
+                            <span id="effect-size" class="text-primary font-bold ml-1 font-mono"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">📉 The Ultimate Guide to Independent T-Tests in Biological Research</h2>
-            <p>
-                In empirical research, whether you are analyzing molecular assays, animal models, or clinical trial data, determining if a treatment caused a real effect is critical. The <strong>Independent Samples T-Test</strong> (also known as the two-sample t-test) is the most widely used statistical method to compare the means of two distinct, unrelated groups (e.g., a vehicle control group versus a drug treatment arm) to ascertain if they are significantly different from one another.
-            </p>
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu_book</span> The Ultimate Guide to Independent T-Tests
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-8">
+                    In empirical research, whether you are analyzing molecular assays, animal models, or clinical trial data, determining if a treatment caused a real effect is critical. The <strong>Independent Samples T-Test</strong> (also known as the two-sample t-test) is the most widely used statistical method to compare the means of two distinct, unrelated groups (e.g., a vehicle control group versus a drug treatment arm) to ascertain if they are significantly different from one another.
+                </p>
 
-            <h3 style="color:#007bff; margin-top: 25px;">1. Why We Automatically Check for Variance (The F-Test)</h3>
-            <p>
-                A massive pitfall for many researchers is running a standard t-test without verifying the assumptions of their data. The traditional Student's T-Test strictly assumes <strong>Homoscedasticity</strong>—meaning that the variance (the spread of data points) in both Group A and Group B is statistically equal.
-            </p>
-            
-            <p>
-                However, in biology, a treatment often increases the variability of a group alongside its mean. To prevent Type I errors (false positives), our calculator automatically runs an <strong>F-test for equality of variances</strong> in the background. If the F-test yields a P-value < 0.05, it flags the data as having unequal variances (heteroscedasticity) and recommends Welch's method.
-            </p>
+                <div class="space-y-12">
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">1. Why We Automatically Check for Variance (The F-Test)</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                            A massive pitfall for many researchers is running a standard t-test without verifying the assumptions of their data. The traditional Student's T-Test strictly assumes <strong>Homoscedasticity</strong>—meaning that the variance (the spread of data points) in both Group A and Group B is statistically equal.
+                        </p>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                            However, in biology, a treatment often increases the variability of a group alongside its mean. To prevent Type I errors (false positives), our calculator automatically runs an <strong>F-test for equality of variances</strong> in the background. If the F-test yields a P-value < 0.05, it flags the data as having unequal variances (heteroscedasticity) and recommends Welch's method.
+                        </p>
+                        
+                        
+                    </div>
 
-            <h3 style="color:#007bff; margin-top: 25px;">2. Student's T-Test vs. Welch's T-Test</h3>
-            <ul>
-                <li style="margin-bottom: 10px;"><strong>Student's T-Test:</strong> Uses a "pooled variance" approach. It is only mathematically appropriate when the F-test confirms your groups have similar standard deviations.</li>
-                <li><strong>Welch's T-Test:</strong> The robust modern standard. It does not assume equal variance and dynamically adjusts the degrees of freedom (df) using the Satterthwaite approximation. Welch's equation for the t-statistic is defined as:</li>
-            </ul>
-            
-            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #6610f2; margin: 15px 0; text-align: center; overflow-x: auto;">
-                $$ t = \frac{\overline{X}_1 - \overline{X}_2}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}} $$
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">2. Student's T-Test vs. Welch's T-Test</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 shadow-sm">
+                                <h4 class="font-headline font-bold text-on-surface mb-2">Student's T-Test</h4>
+                                <p class="text-sm font-light text-on-surface-variant leading-relaxed">
+                                    Uses a "pooled variance" approach. It is only mathematically appropriate when the F-test confirms your groups have similar standard deviations.
+                                </p>
+                            </div>
+                            <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 shadow-sm">
+                                <h4 class="font-headline font-bold text-on-surface mb-2">Welch's T-Test</h4>
+                                <p class="text-sm font-light text-on-surface-variant leading-relaxed">
+                                    The robust modern standard. It does not assume equal variance and dynamically adjusts the degrees of freedom (df) using the Satterthwaite approximation.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-primary shadow-sm flex flex-col items-center justify-center overflow-x-auto">
+                            <p class="font-bold text-sm text-on-surface mb-2">Welch's T-Statistic Equation:</p>
+                            <div class="text-xl md:text-2xl mb-2 font-serif text-on-surface whitespace-nowrap">
+                                $$ t = \frac{\overline{X}_1 - \overline{X}_2}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}} $$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">3. How to Interpret Your Output Metrics</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4">Beyond the simple P-value, high-impact journals require comprehensive statistical reporting. Our tool provides these essential metrics:</p>
+                        <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
+                            <li><strong class="font-medium text-on-surface">P-value:</strong> If P < 0.05, the difference between the groups is considered statistically significant, allowing you to reject the null hypothesis.</li>
+                            <li><strong class="font-medium text-on-surface">95% Confidence Interval (CI):</strong> This shows the range where the true mean difference likely falls. <em>Crucial rule:</em> If the CI range includes zero (e.g., [-1.2, 3.4]), the test is NOT statistically significant.</li>
+                            <li><strong class="font-medium text-on-surface">Cohen's d (Effect Size):</strong> While a p-value tells you if an effect exists, Cohen's d tells you <em>how large</em> the effect is in standard deviation units. <br><span class="text-sm">(Benchmarks: 0.2 = Small effect, 0.5 = Medium effect, 0.8+ = Large and obvious effect).</span></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-6">
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use this calculator for paired data?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">No. This calculator is specifically for <em>independent</em> samples (e.g., comparing different mice or distinct patient cohorts). If you are measuring the exact same subjects before and after a treatment, you must use a Paired T-Test.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What should I do if my sample size is very small (N < 5)?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">T-tests rely on the assumption of normal distribution. With very small sample sizes, proving normality is nearly impossible. While Welch's test is robust against variance issues, for ultra-small cohorts, a non-parametric test like the Mann-Whitney U test might be safer, though it has lower statistical power.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why did my degrees of freedom (df) output as a decimal?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">If you look at the Welch's T-Test result, the df is often a fractional number (e.g., df = 14.3). This is normal and correct. It is the result of the Satterthwaite equation mathematically penalizing the test due to the unequal variances between your two groups.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <h3 style="color:#007bff; margin-top: 25px;">3. How to Interpret Your Output Metrics</h3>
-            <p>Beyond the simple P-value, high-impact journals require comprehensive statistical reporting. Our tool provides these essential metrics:</p>
-            <ul>
-                <li><strong>P-value:</strong> If P < 0.05, the difference between the groups is considered statistically significant, allowing you to reject the null hypothesis.</li>
-                <li><strong>95% Confidence Interval (CI):</strong> This shows the range where the true mean difference likely falls. <em>Crucial rule:</em> If the CI range includes zero (e.g., [-1.2, 3.4]), the test is NOT statistically significant.</li>
-                <li><strong>Cohen's d (Effect Size):</strong> While a p-value tells you if an effect exists, Cohen's d tells you <em>how large</em> the effect is in standard deviation units. <br>
-                (Benchmarks: 0.2 = Small effect, 0.5 = Medium effect, 0.8+ = Large and obvious effect).</li>
-            </ul>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div style="margin-bottom: 20px;">
-                <h4 style="margin: 0 0 5px 0; color: #333;">Can I use this calculator for paired data?</h4>
-                <p style="margin: 0; color: #555;">No. This calculator is specifically for <em>independent</em> samples (e.g., comparing different mice or distinct patient cohorts). If you are measuring the exact same subjects before and after a treatment, you must use a Paired T-Test.</p>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <h4 style="margin: 0 0 5px 0; color: #333;">What should I do if my sample size is very small (N < 5)?</h4>
-                <p style="margin: 0; color: #555;">T-tests rely on the assumption of normal distribution. With very small sample sizes, proving normality is nearly impossible. While Welch's test is robust against variance issues, for ultra-small cohorts, a non-parametric test like the Mann-Whitney U test might be safer, though it has lower statistical power.</p>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <h4 style="margin: 0 0 5px 0; color: #333;">Why did my degrees of freedom (df) output as a decimal?</h4>
-                <p style="margin: 0; color: #555;">If you look at the Welch's T-Test result, the df is often a fractional number (e.g., df = 14.3). This is normal and correct. It is the result of the Satterthwaite equation mathematically penalizing the test due to the unequal variances between your two groups.</p>
-            </div>
-
         </section>
-        </main>
 
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // 기초 통계 함수
+        // 1. Firebase Init & Visitor Counter
+        document.addEventListener("DOMContentLoaded", function() {
+            // Quote
+            const quotes = [
+                "Cheering for your dedication and hard work today. 🧪", 
+                "Behind every data point, there is a researcher’s effort. 📊",
+                "Science is a journey of resilience. Keep going. 🚀",
+                "Your failed experiment is just a stepping stone to discovery. 💡",
+                "Rest is also part of the experiment. Don't burn out. ☕",
+                "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                "Believe in your hypothesis, but trust your data. 📉"
+            ];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+
+        // 2. Statistical Logic
         const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
         const getVariance = (arr, mean) => arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
 
         function runAnalysis() {
-            // jStat 로드 확인
             if (typeof jStat === 'undefined') {
                 alert("Statistical library is still loading. Please try again in a second.");
                 return;
@@ -246,17 +421,16 @@
             const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
             const diff = m1 - m2;
 
-            // 1. F-Test (등분산 검정)
+            // 1. F-Test
             let f_stat, df1_f, df2_f;
             if (v1 > v2) { f_stat = v1 / v2; df1_f = n1 - 1; df2_f = n2 - 1; } 
             else         { f_stat = v2 / v1; df1_f = n2 - 1; df2_f = n1 - 1; }
             
-            // 분산이 완전히 0인 경우 예외 처리
             let p_f = 1; 
             if (v1 !== 0 && v2 !== 0) {
                 p_f = 2 * (1 - jStat.centralF.cdf(f_stat, df1_f, df2_f));
             } else if (v1 !== v2) {
-                p_f = 0; // 한쪽만 0이면 분산 차이 극심함
+                p_f = 0; 
             }
 
             const isEqualVariance = p_f >= 0.05;
@@ -264,20 +438,20 @@
             const fTestRes = document.getElementById('f-test-result');
             
             if (isEqualVariance) {
-                fTestBox.style.background = '#ecfdf5';
-                fTestBox.style.borderLeft = '4px solid #10b981';
-                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (≥ 0.05). Variances are <strong>equal</strong>.<br>👉 <strong>Student's t-test</strong> is recommended.`;
-                document.getElementById('row-student').style.background = '#f0fdf4'; // 초록 하이라이트
+                fTestBox.style.background = '#f0fdf4'; // emerald-50
+                fTestBox.style.borderColor = '#10b981'; // emerald-500
+                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (≥ 0.05). Variances are <strong class="text-on-surface">equal</strong>.<br>👉 <strong class="text-on-surface">Student's t-test</strong> is recommended.`;
+                document.getElementById('row-student').style.background = '#f0fdf4';
                 document.getElementById('row-welch').style.background = 'transparent';
             } else {
-                fTestBox.style.background = '#fffbeb';
-                fTestBox.style.borderLeft = '4px solid #f59e0b';
-                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (< 0.05). Variances are <strong>significantly different</strong>.<br>👉 <strong>Welch's t-test</strong> is highly recommended.`;
-                document.getElementById('row-welch').style.background = '#fffbeb'; // 노랑 하이라이트
+                fTestBox.style.background = '#fffbeb'; // amber-50
+                fTestBox.style.borderColor = '#f59e0b'; // amber-500
+                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (< 0.05). Variances are <strong class="text-on-surface">significantly different</strong>.<br>👉 <strong class="text-on-surface">Welch's t-test</strong> is highly recommended.`;
+                document.getElementById('row-welch').style.background = '#fffbeb';
                 document.getElementById('row-student').style.background = 'transparent';
             }
 
-            // 2. Student's t-test (등분산 가정)
+            // 2. Student's t-test
             const v_pooled = ((n1 - 1)*v1 + (n2 - 1)*v2) / (n1 + n2 - 2);
             const se_student = Math.sqrt(v_pooled * (1/n1 + 1/n2));
             const t_student = diff / se_student;
@@ -287,7 +461,7 @@
             const ci_low_student = diff - (t_crit_student * se_student);
             const ci_hi_student = diff + (t_crit_student * se_student);
 
-            // 3. Welch's t-test (이분산 가정)
+            // 3. Welch's t-test
             const se_welch = Math.sqrt((v1 / n1) + (v2 / n2));
             const t_welch = diff / se_welch;
             const num = Math.pow((v1/n1) + (v2/n2), 2);
@@ -298,7 +472,7 @@
             const ci_low_welch = diff - (t_crit_welch * se_welch);
             const ci_hi_welch = diff + (t_crit_welch * se_welch);
 
-            // 4. Cohen's d (Effect Size) - Pooled SD 기준
+            // 4. Cohen's d
             const cohens_d = Math.abs(diff) / Math.sqrt(v_pooled);
 
             // HTML에 값 채우기 (Descriptive)
@@ -309,56 +483,26 @@
             document.getElementById('se-a').innerText = se1.toFixed(3);
             document.getElementById('se-b').innerText = se2.toFixed(3);
 
-            // HTML에 값 채우기 (Student)
-            const formatP = (p) => p < 0.05 ? `<span style="color:#dc3545">${p.toFixed(4)} *</span>` : p.toFixed(4);
+            // Output Formatting
+            // Tailwind's text-error (#ba1a1a) for significance highlight
+            const formatP = (p) => p < 0.05 ? `<span style="color:#ba1a1a">${p.toFixed(4)} *</span>` : p.toFixed(4);
             
             document.getElementById('t-student').innerText = t_student.toFixed(3);
             document.getElementById('df-student').innerText = df_student.toFixed(1);
             document.getElementById('p-student').innerHTML = formatP(p_student);
             document.getElementById('ci-student').innerText = `[${ci_low_student.toFixed(3)} , ${ci_hi_student.toFixed(3)}]`;
 
-            // HTML에 값 채우기 (Welch)
             document.getElementById('t-welch').innerText = t_welch.toFixed(3);
             document.getElementById('df-welch').innerText = df_welch.toFixed(1);
             document.getElementById('p-welch').innerHTML = formatP(p_welch);
             document.getElementById('ci-welch').innerText = `[${ci_low_welch.toFixed(3)} , ${ci_hi_welch.toFixed(3)}]`;
 
-            // HTML에 값 채우기 (Extras)
             document.getElementById('mean-diff').innerText = diff.toFixed(3);
             document.getElementById('effect-size').innerText = cohens_d.toFixed(3);
 
             // 결과창 보이기
             document.getElementById('result-area').style.display = 'block';
         }
-    </script>
-
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-                    authDomain: "scientisttoolkit.firebaseapp.com",
-                    projectId: "scientisttoolkit",
-                    storageBucket: "scientisttoolkit.firebasestorage.app",
-                    messagingSenderId: "611412737478",
-                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-                    measurementId: "G-5K0XVX0TFM"
-                };
-                if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                    const db = firebase.firestore();
-                    const countSpan = document.getElementById('visitor-count');
-                    const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
-                    const docRef = db.collection('visitors').doc(dateStr);
-                    if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                        docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true }).then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-                    }
-                    docRef.onSnapshot((doc) => {
-                        if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
-                    });
-                }
-            }, 500); 
-        });
     </script>
 </body>
 </html>

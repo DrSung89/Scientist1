@@ -1,196 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
     <title>Survival Analysis Calculator (Kaplan-Meier) | Scientist's Toolkit</title>
-    
     <meta name="description" content="Generate Kaplan-Meier survival curves, calculate Median Survival Time, and perform Log-Rank tests for multiple groups with SAS time conversion.">
-    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
-    
-    <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/survival-calculator/">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Survival Analysis (Kaplan-Meier) | Scientist's Toolkit">
+    <meta property="og:description" content="Generate survival curves, calculate Median Survival Time, and perform Log-Rank tests for multiple groups.">
+    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
+    <meta property="og:url" content="https://scientisttoolkit.xyz/survival-calculator/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+              "warning": "#d97706"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
     <style>
-        /* CSS로 기본 여백 강제 제어 */
-        .sas-result-item { margin-bottom: 2px; font-size: 0.95rem; color: #333; }
-        .group-container { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 15px; }
-        .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 테이블 스타일 */
-        .km-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .km-table th { background: #f1f1f1; padding: 6px 10px; text-align: left; border-bottom: 1px solid #ccc; }
-        .km-table td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+        /* 테이블/인풋 스핀 버튼 숨김 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        /* main.js에서 동적 생성되는 요소들을 위한 Tailwind 호환 CSS */
+        .sas-result-item { margin-bottom: 4px; font-size: 0.95rem; color: #414754; font-family: 'Inter', sans-serif; }
+        .group-container { background: #f8f9fa; padding: 20px; border-radius: 0.5rem; border: 1px solid #e1e3e4; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; color: #191c1d; font-size: 1.1rem; }
+        .group-header input { border: 1px solid #c1c6d7; border-radius: 4px; padding: 4px 8px; font-size: 0.9rem; }
         
-        /* 결과창 기본 스타일 (JS가 덮어씌움) */
-        #os-result { display: none; background: white; border: 1px solid #eee; border-radius: 8px; }
-        .stat-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 10px; }
-        .stat-table th { background: #f1f1f1; padding: 6px 10px; text-align: left; border-bottom: 1px solid #ccc; }
-       .stat-table td { padding: 6px 10px; border-bottom: 1px solid #eee; }
-       .stat-sig { color: #dc3545; font-weight: bold; } /* 유의함 (빨강) */
-       .stat-ns { color: #28a745; } /* 유의하지 않음 (초록) */
-       
-       /* FAQ 전용 스타일 */
-       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
-       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
-       .faq-item p { margin: 0; color: #555; }
+        .km-table, .stat-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; border-radius: 8px; overflow: hidden; border: 1px solid #e1e3e4; margin-bottom: 15px; background: #ffffff; }
+        .km-table th, .stat-table th { background: #f1f5f9; padding: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: #191c1d; border-bottom: 1px solid #e1e3e4; }
+        .km-table td, .stat-table td { padding: 10px 12px; border-bottom: 1px solid #e1e3e4; color: #414754; font-family: 'Inter', sans-serif; }
+        .km-table tr:hover, .stat-table tr:hover { background-color: #f8f9fa; }
+        
+        #os-result { display: none; background: #ffffff; border: 1px solid #e1e3e4; border-radius: 0.5rem; padding: 24px; margin-top: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-sig { color: #ba1a1a; font-weight: bold; } /* 유의함 (빨강) */
+        .stat-ns { color: #059669; font-weight: bold; } /* 유의하지 않음 (초록) */
+        
+        /* 텍스트 에어리어 스타일 강제 지정 */
+        textarea { width: 100%; padding: 12px; border: 1px solid #c1c6d7; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #414754; outline: none; }
+        textarea:focus { border-color: #0059bb; box-shadow: 0 0 0 2px rgba(0, 89, 187, 0.2); }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; min-height: 1.2em;">Loading...</p>
-    </header>
-        
-    <nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn active">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../hed-calculator/">HED</a>
+                    <a class="text-primary" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../hed-calculator/">HED</a>
+            <a class="text-primary whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
     </nav>
 
-    <main>
-        <section class="calculator" style="display:block; margin-bottom: 30px;">
-            <h2>⏱️ SAS Time Unit Converter</h2>
-            <p>1 Month = 30.4375 days (FDA & SAS Standard)</p>
-            
-            <div class="input-group">
-                <label>Input Value</label>
-                <input type="number" id="time-input" placeholder="e.g. 52">
-                <select id="time-unit">
-                    <option value="days">Days</option>
-                    <option value="weeks" selected>Weeks</option>
-                    <option value="months">Months (SAS)</option>
-                    <option value="years">Years</option>
-                </select>
-            </div>
+    <div class="pt-24 lg:pt-20 max-w-screen-2xl mx-auto px-6 relative z-10 text-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9274620489745017"
+             data-ad-slot="6554136062" 
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
 
-            <div class="result" id="convert-result" style="text-align: left; padding: 10px 15px !important; min-height: 0 !important;">
-                <div style="color:#888; font-style:italic; font-size: 0.9rem;">Result will appear here...</div>
+    <main class="relative flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Time-to-Event Analytics</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Survival Analysis (Kaplan-Meier)</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Generate survival curves, calculate Median Survival Time, and perform Log-Rank tests for multiple groups.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 mb-10 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                <h2 class="text-2xl font-headline font-bold text-primary mb-2 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                    <span class="material-symbols-outlined">schedule</span> SAS Time Unit Converter
+                </h2>
+                <p class="text-sm text-on-surface-variant font-light mb-6">1 Month = 30.4375 days (FDA & SAS Standard)</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <div class="flex flex-1">
+                        <input type="number" id="time-input" placeholder="e.g. 52" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                        <select id="time-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer w-40">
+                            <option value="days">Days</option>
+                            <option value="weeks" selected>Weeks</option>
+                            <option value="months">Months (SAS)</option>
+                            <option value="years">Years</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="convert-result" class="bg-surface-bright p-4 rounded border border-outline-variant/30 text-sm font-medium text-on-surface empty:hidden">
+                    <div style="color:#888; font-style:italic; font-weight: normal;">Result will appear here...</div>
+                </div>
             </div>
         </section>
 
-        <section class="calculator" style="display:block;">
-            <h2>📉 Kaplan-Meier Survival Analysis</h2>
-            <p>Compare up to 4 groups. Generate Median Survival Time, Log-Rank P-value & Plot.</p>
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                <h2 class="text-2xl font-headline font-bold text-primary mb-2 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                    <span class="material-symbols-outlined">timeline</span> Kaplan-Meier Analysis
+                </h2>
+                <p class="text-sm text-on-surface-variant font-light mb-6">Compare up to 4 groups. Generate Median Survival Time, Log-Rank P-value & Plot.</p>
 
-            <div class="input-group" style="margin-bottom: 15px;">
-                <label>Number of Groups</label>
-                <select id="num-groups">
-                    <option value="1">1 Group</option>
-                    <option value="2" selected>2 Groups (e.g. Control vs Treatment)</option>
-                    <option value="3">3 Groups</option>
-                    <option value="4">4 Groups</option>
-                </select>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block font-headline text-sm font-bold text-on-surface mb-2">Number of Groups</label>
+                        <select id="num-groups" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface cursor-pointer">
+                            <option value="1">1 Group</option>
+                            <option value="2" selected>2 Groups (e.g. Control vs Treatment)</option>
+                            <option value="3">3 Groups</option>
+                            <option value="4">4 Groups</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-headline text-sm font-bold text-on-surface mb-2">X-Axis Label</label>
+                        <input type="text" id="xaxis-label" value="Time (Days)" placeholder="e.g. Time (Months)" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                    </div>
+                </div>
+
+                <div id="groups-wrapper"></div>
+
+                <button id="calc-os-btn" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg mt-8">
+                    <span class="material-symbols-outlined">analytics</span> Run Analysis & Draw Plot
+                </button>
+
+                <div id="os-result"></div>
             </div>
-
-            <div class="input-group">
-                <label>X-Axis Label</label>
-                <input type="text" id="xaxis-label" value="Time (Days)" placeholder="e.g. Time (Months)">
-            </div>
-            
-            <div id="groups-wrapper"></div>
-
-            <button id="calc-os-btn" class="action-btn" style="margin-top: 15px; width: 100%;">Run Analysis & Draw Plot</button>
-
-            <div id="os-result"></div>
         </section>
-        
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">📘 Comprehensive Guide to Kaplan-Meier Survival Analysis</h2>
-            <p>
-                In clinical trials, oncology research, and longitudinal animal studies, researchers frequently measure <strong>"time-to-event"</strong> data. This could be the time until death (Overall Survival), the time until a tumor doubles in volume (Progression-Free Survival), or the time until a disease relapses. The <strong>Kaplan-Meier (KM) Estimator</strong> is the non-parametric statistical gold standard for analyzing this type of incomplete data.
-            </p>
-            
-            <div style="background: #fdfdfe; border-left: 4px solid #007bff; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: #007bff;">📝 Crucial Step: Data Coding (0 vs 1)</h3>
-                <p style="margin-bottom: 10px;">The power of survival analysis lies in its ability to handle incomplete observation periods. Accurate status coding is strictly required.</p>
-                <ul style="list-style-type: none; padding-left: 0;">
-                    <li style="margin-bottom: 10px;">
-                        <strong>🔴 Event (Code 1):</strong> 
-                        The specific event of interest actually occurred (e.g., the subject died, or the tumor reached the experimental endpoint). The survival probability curve <em>will visually drop</em> at this exact time point.
-                    </li>
-                    <li>
-                        <strong>⚪ Censored (Code 0):</strong> 
-                        The subject did NOT experience the event during the observation. This happens if the subject dropped out, was lost to follow-up, or the study simply ended while they were still alive. The curve <em>does not drop</em> here, but the denominator (number of subjects "at risk") decreases for all future calculations.
-                    </li>
-                </ul>
+
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu_book</span> Comprehensive Guide to Kaplan-Meier
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-10">
+                    In clinical trials, oncology research, and longitudinal animal studies, researchers frequently measure <strong>"time-to-event"</strong> data. This could be the time until death (Overall Survival), the time until a tumor doubles in volume (Progression-Free Survival), or the time until a disease relapses. The <strong>Kaplan-Meier (KM) Estimator</strong> is the non-parametric statistical gold standard for analyzing this type of incomplete data.
+                </p>
+
+                <div class="space-y-10">
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-on-surface mb-4">📝 Crucial Step: Data Coding (0 vs 1)</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                            The power of survival analysis lies in its ability to handle incomplete observation periods. Accurate status coding is strictly required in the input boxes above.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-error shadow-sm">
+                                <h4 class="font-headline font-bold text-error mb-2 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">radio_button_checked</span> Event (Code 1)
+                                </h4>
+                                <p class="text-sm font-light text-on-surface-variant leading-relaxed">
+                                    The specific event of interest actually occurred (e.g., the subject died, or the tumor reached the experimental endpoint). The survival probability curve <em>will visually drop</em> at this exact time point.
+                                </p>
+                            </div>
+                            <div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-outline shadow-sm">
+                                <h4 class="font-headline font-bold text-outline mb-2 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">radio_button_unchecked</span> Censored (Code 0)
+                                </h4>
+                                <p class="text-sm font-light text-on-surface-variant leading-relaxed">
+                                    The subject did NOT experience the event during the observation. This happens if the subject dropped out, was lost to follow-up, or the study ended while they were alive. The curve <em>does not drop</em> here, but the denominator (number of subjects "at risk") decreases for future calculations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-on-surface mb-4">📉 How to Interpret the Kaplan-Meier Plot</h3>
+                        
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4 mt-4">
+                            The generated visual plot illustrates the probability of surviving (or avoiding the specific event) as time progresses.
+                        </p>
+                        <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
+                            <li><strong class="font-medium text-on-surface">The Y-Axis:</strong> Represents the cumulative survival probability, ranging from 0.0 to 1.0 (or 0% to 100%). At Time = 0, the probability is always 1.0.</li>
+                            <li><strong class="font-medium text-on-surface">The Vertical Steps:</strong> A drop in the line indicates that one or more events (Code 1) occurred. The magnitude of the drop is dynamically calculated based on how many subjects are currently remaining in the risk pool.</li>
+                            <li><strong class="font-medium text-on-surface">The Horizontal Lines & Ticks:</strong> Flat periods represent time passing without events. Small vertical ticks on the line indicate points where a subject was censored (Code 0).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500 shadow-sm">
+                        <h3 class="font-headline font-bold text-amber-900 mb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined">timer</span> Clinical Significance of "Median Survival Time"
+                        </h3>
+                        <p class="text-sm leading-relaxed text-amber-800 font-light mb-4">
+                            Instead of using a simple mathematical mean, survival studies rely on the <strong>Median Survival Time</strong>. This represents the precise time point at which the survival probability curve crosses the 0.5 (50%) threshold—meaning exactly half of the cohort has experienced the event.
+                        </p>
+                        <div class="bg-white/60 p-3 rounded text-sm text-amber-950 font-medium">
+                            <strong>"Not Reached (NR)":</strong> If a novel drug is highly efficacious, more than 50% of the subjects might survive until the end of the study. In this scenario, the curve never drops to 0.5, and the median survival is scientifically reported as "Not Reached."
+                        </div>
+                    </div>
+
+                    <div class="bg-sky-50 p-6 rounded-lg border-l-4 border-sky-500 shadow-sm">
+                        <h3 class="font-headline font-bold text-sky-900 mb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined">analytics</span> The Log-Rank Test (Statistical Validation)
+                        </h3>
+                        <p class="text-sm leading-relaxed text-sky-800 font-light">
+                            While the KM plot provides an intuitive visual representation of the data, you cannot claim a drug is effective just by looking at a graph. Our calculator automatically performs the <strong>Log-Rank Test (Mantel-Cox test)</strong>. This hypothesis test generates a Chi-Square statistic and a precise <strong>P-value</strong>, determining if the survival curves of different groups (e.g., Control vs. Treatment) are statistically significantly different from one another.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-6">
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why can't I just calculate the average survival time and use a T-Test?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">A standard T-test or ANOVA cannot handle "censored" data. If a mouse is still alive at the end of a 100-day study, its true survival time is unknown (it is >100 days). Averaging it as exactly 100 days artificially lowers the true mean and severely biases your results. The Kaplan-Meier method mathematically accounts for this missing information.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why use the SAS conversion rate (30.4375) for months?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">In rigorous clinical and preclinical reporting (including FDA submissions), dividing days by exactly 30 or 31 is inaccurate over multi-year studies due to leap years. The SAS standard normalizes a month as exactly <code>365.25 days / 12 months = 30.4375 days</code>. Our built-in converter ensures your timelines meet this publication standard.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What does "Right-Censoring" mean?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">Right-censoring is the most common type of censoring in biological survival analysis. It simply means that the true time of the event occurs somewhere to the "right" of your data timeline (in the future, after your observation period has already ended).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <h3 style="color:#2c3e50;">📉 How to Interpret the Kaplan-Meier Plot</h3>
-            <p>
-                The generated visual plot illustrates the probability of surviving (or avoiding the specific event) as time progresses.
-            </p>
-            
-            <ul>
-                <li><strong>The Y-Axis:</strong> Represents the cumulative survival probability, ranging from 0.0 to 1.0 (or 0% to 100%). At Time = 0, the probability is always 1.0.</li>
-                <li><strong>The Vertical Steps:</strong> A drop in the line indicates that one or more events (Code 1) occurred. The magnitude of the drop is dynamically calculated based on how many subjects are currently remaining in the risk pool.</li>
-                <li><strong>The Horizontal Lines:</strong> Flat periods represent time passing without any events occurring.</li>
-            </ul>
-
-            <h3 style="color:#2c3e50;">⏱️ Clinical Significance of "Median Survival Time"</h3>
-            <p>
-                Instead of using a simple mathematical mean, survival studies rely on the <strong>Median Survival Time</strong>. This represents the precise time point at which the survival probability curve crosses the 0.5 (50%) threshold—meaning exactly half of the cohort has experienced the event.
-            </p>
-            <ul style="background: #fff3cd; padding: 15px 15px 15px 35px; border-radius: 8px; color: #856404; margin-bottom: 30px;">
-                <li>
-                    <strong>"Not Reached (NR)":</strong> If a novel drug is highly efficacious, more than 50% of the subjects might survive until the end of the study. In this scenario, the curve never drops to 0.5, and the median survival is scientifically reported as "Not Reached."
-                </li>
-            </ul>
-
-            <h3 style="color:#2c3e50;">📊 The Log-Rank Test (Statistical Validation)</h3>
-            <p>
-                While the KM plot provides an intuitive visual representation of the data, you cannot claim a drug is effective just by looking at a graph. Our calculator automatically performs the <strong>Log-Rank Test (Mantel-Cox test)</strong>. This hypothesis test generates a Chi-Square statistic and a precise <strong>P-value</strong>, determining if the survival curves of different groups (e.g., Control vs. Treatment) are statistically significantly different from one another.
-            </p>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div class="faq-item">
-                <h4>Why can't I just calculate the average survival time and use a T-Test?</h4>
-                <p>A standard T-test or ANOVA cannot handle "censored" data. If a mouse is still alive at the end of a 100-day study, its true survival time is unknown (it is >100 days). Averaging it as exactly 100 days artificially lowers the true mean and severely biases your results. The Kaplan-Meier method mathematically accounts for this missing information.</p>
-            </div>
-            
-            <div class="faq-item">
-                <h4>Why use the SAS conversion rate (30.4375) for months?</h4>
-                <p>In rigorous clinical and preclinical reporting (including FDA submissions), dividing days by exactly 30 or 31 is inaccurate over multi-year studies due to leap years. The SAS standard standardizes a month as exactly <code>365.25 days / 12 months = 30.4375 days</code>. Our built-in converter ensures your timelines meet this publication standard.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>What does "Right-Censoring" mean?</h4>
-                <p>Right-censoring is the most common type of censoring in biological survival analysis. It simply means that the true time of the event occurs somewhere to the "right" of your data timeline (in the future, after your observation period has already ended).</p>
-            </div>
-
         </section>
-        </main>
 
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
     </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Dynamic Quote
+            const quotes = [
+                "Cheering for your dedication and hard work today. 🧪", 
+                "Behind every data point, there is a researcher’s effort. 📊",
+                "Science is a journey of resilience. Keep going. 🚀",
+                "Your failed experiment is just a stepping stone to discovery. 💡",
+                "Rest is also part of the experiment. Don't burn out. ☕",
+                "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                "Believe in your hypothesis, but trust your data. 📉"
+            ];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+    </script>
     <script src="main.js?v=20260210_final"></script>
 </body>
 </html>

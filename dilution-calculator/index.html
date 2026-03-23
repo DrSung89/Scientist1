@@ -1,45 +1,304 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
     <title>Dilution Calculator (C1V1 = C2V2) | Scientist's Toolkit</title>
     <meta name="description" content="Quick and accurate liquid dilution calculator using the C1V1=C2V2 formula. Calculate stock volume or final concentration for laboratory experiments.">
-    
-    <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/dilution-calculator/">
-    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Dilution Calculator (C1V1=C2V2) | Scientist's Toolkit">
+    <meta property="og:description" content="Quick and accurate liquid dilution calculator. Calculate stock volume or final concentration for laboratory experiments.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/dilution-calculator/">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] // $ ... $ 를 인라인 수식으로 인식하도록 설정
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
     <style>
-       /* FAQ 전용 스타일 */
-       .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
-       .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
-       .faq-item p { margin: 0; color: #555; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 테이블/인풋 스핀 버튼 숨김 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-    <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-    
-    <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-        Loading inspiration... 🧪
-    </p>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-primary" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-primary whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
+    </nav>
+
+    <div class="pt-24 lg:pt-20 max-w-screen-2xl mx-auto px-6 relative z-10 text-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9274620489745017"
+             data-ad-slot="6554136062" 
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <main class="relative flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Chemical Stoichiometry</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Dilution Calculator</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Enter 3 known values to calculate the 4th unknown variable using the $C_1V_1 = C_2V_2$ formula.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    
+                    <div>
+                        <label for="m1" class="block font-headline text-sm font-bold text-on-surface mb-2">Stock Conc. (C₁)</label>
+                        <div class="flex">
+                            <input type="number" id="m1" placeholder="Leave empty to calculate" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                            <select id="m1-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer">
+                                <option value="M">M</option>
+                                <option value="mM">mM</option>
+                                <option value="uM">µM</option>
+                                <option value="nM">nM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="v1" class="block font-headline text-sm font-bold text-on-surface mb-2">Stock Vol. (V₁)</label>
+                        <div class="flex">
+                            <input type="number" id="v1" placeholder="Leave empty to calculate" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                            <select id="v1-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer">
+                                <option value="L">L</option>
+                                <option value="mL" selected>mL</option>
+                                <option value="uL">µL</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="m2" class="block font-headline text-sm font-bold text-on-surface mb-2 mt-2 md:mt-0">Target Conc. (C₂)</label>
+                        <div class="flex">
+                            <input type="number" id="m2" placeholder="Leave empty to calculate" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                            <select id="m2-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer">
+                                <option value="M">M</option>
+                                <option value="mM" selected>mM</option>
+                                <option value="uM">µM</option>
+                                <option value="nM">nM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="v2" class="block font-headline text-sm font-bold text-on-surface mb-2 mt-2 md:mt-0">Target Vol. (V₂)</label>
+                        <div class="flex">
+                            <input type="number" id="v2" placeholder="Leave empty to calculate" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
+                            <select id="v2-unit" class="p-3 bg-surface-container-highest border border-l-0 border-outline-variant/50 rounded-r-lg font-body text-sm font-bold text-on-surface focus:outline-none cursor-pointer">
+                                <option value="L">L</option>
+                                <option value="mL" selected>mL</option>
+                                <option value="uL">µL</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button id="calculate-dilution" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg mb-6">
+                    <span class="material-symbols-outlined">science</span> Calculate
+                </button>
+
+                <div id="dilution-result" class="bg-primary-fixed/30 border border-primary-fixed p-6 rounded-lg shadow-sm text-center text-xl text-primary font-headline font-bold" style="display:none;">
+                    </div>
+
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu_book</span> The Complete Guide to Laboratory Dilutions
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-8">
+                    Dilution is the fundamental laboratory process of decreasing the concentration of a solute in a solution, typically by mixing it with an inert solvent (such as distilled water, PBS, or cell culture media). The core scientific principle behind dilution is the <strong class="text-on-surface font-medium">Conservation of Mass</strong>: adding more solvent increases the total volume and decreases the overall concentration, but the absolute number of solute molecules remains strictly constant.
+                </p>
+
+                <div class="space-y-12">
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">The Universal Equation: $C_1V_1 = C_2V_2$</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                            Whether you are preparing a drug treatment, diluting antibodies for Western blotting, or making standard curves for an ELISA, this formula is your primary tool. (Note: Often written as $M_1V_1 = M_2V_2$ when dealing with Molarity).
+                        </p>
+                        
+                        <div class="bg-surface-container-lowest p-8 rounded-lg border-l-4 border-success shadow-sm flex flex-col items-center justify-center">
+                            <div class="text-3xl mb-6 font-serif text-on-surface">
+                                $$ C_1 \times V_1 = C_2 \times V_2 $$
+                            </div>
+                            <ul class="w-full max-w-sm list-none text-sm text-on-surface-variant font-light space-y-3">
+                                <li><strong class="text-on-surface font-medium">C₁ (or M₁):</strong> Initial Concentration of the Stock Solution</li>
+                                <li><strong class="text-on-surface font-medium">V₁:</strong> Volume of the Stock Solution required</li>
+                                <li><strong class="text-on-surface font-medium">C₂ (or M₂):</strong> Desired Final Concentration</li>
+                                <li><strong class="text-on-surface font-medium">V₂:</strong> Final Total Volume of the working solution</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500 shadow-sm">
+                        <h3 class="font-headline font-bold text-lg mb-2 text-amber-900 flex items-center gap-2">
+                            <span class="material-symbols-outlined">warning</span> Critical Benchwork Tip: V₂ vs. Added Solvent
+                        </h3>
+                        <p class="text-sm leading-relaxed text-amber-800 font-light">
+                            A very common mistake among junior researchers is confusing the Final Volume ($V_2$) with the amount of solvent (e.g., water) to add. <br><br>
+                            If you calculate that you need $V_1 = 10 \text{ mL}$ of stock to make a $V_2 = 100 \text{ mL}$ final solution, you <strong>DO NOT</strong> add 100 mL of water to the 10 mL of stock. You must add exactly <strong>90 mL</strong> of solvent ($V_2 - V_1$) to reach the final 100 mL target. Our calculator automatically displays the precise amount of solvent to add to prevent this error.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">Advanced Technique: Serial Dilutions</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                            When you need to achieve a highly dilute concentration (e.g., a 1:1,000,000 dilution for microbiological colony counting), attempting to do it in a single step using the $C_1V_1$ formula might require pipetting an impossibly small volume, like 0.001 µL. Pipetting errors at this scale are massive. 
+                        </p>
+                        <p class="text-on-surface-variant font-light leading-relaxed">
+                            Instead, researchers perform a <strong>Serial Dilution</strong>—a step-wise dilution of a substance in solution. You might perform a 1:100 dilution first, and then take that new solution and perform another 1:100 dilution from it, safely and accurately achieving your final target concentration without relying on micro-volumes.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-6">
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What is the difference between C₁V₁ = C₂V₂ and M₁V₁ = M₂V₂?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">They are exactly the same formula. M stands for Molarity (a specific type of concentration), while C stands for Concentration (a more general term). You can use this formula for any unit of concentration (e.g., mg/mL, %, or X-fold) as long as you keep the units consistent on both sides of the equation.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I mix different units in the calculator?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">Yes! Our smart calculator automatically converts and normalizes units behind the scenes. For instance, you can input your stock concentration in Molarity (M) and your target concentration in micro-Molarity (µM), and the tool will compute the correct volume flawlessly.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">How do I calculate a dilution factor (e.g., a 1:10 dilution)?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">A dilution factor represents the ratio of the stock volume ($V_1$) to the total final volume ($V_2$). For a 1:10 dilution, you would mix 1 part of your stock solution with 9 parts of your solvent, resulting in a total of 10 parts.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // 1. Firebase Init & Visitor Counter
         document.addEventListener("DOMContentLoaded", function() {
+            // Quote
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -49,149 +308,38 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
         });
     </script>
-</header>
-    
-<nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn active">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
-    </nav>
-
-    <main>
-        <section id="dilution-calculator" class="calculator active" style="display:block;">
-            <h2>🧪 Dilution Calculator</h2>
-            <p>Enter 3 values to calculate the 4th. (M₁V₁ = M₂V₂)</p>
-            
-            <div class="dilution-grid" style="display: grid; gap: 15px; margin-bottom: 20px;">
-                <div class="input-group" style="margin-bottom:0;">
-                    <label for="m1" style="width:140px;">Stock Conc. (M₁)</label>
-                    <input type="number" id="m1" placeholder="Input...">
-                    <select id="m1-unit">
-                        <option value="M">M</option>
-                        <option value="mM">mM</option>
-                        <option value="uM">µM</option>
-                        <option value="nM">nM</option>
-                    </select>
-                </div>
-
-                <div class="input-group" style="margin-bottom:0;">
-                    <label for="v1" style="width:140px;">Stock Vol. (V₁)</label>
-                    <input type="number" id="v1" placeholder="Input...">
-                    <select id="v1-unit">
-                        <option value="L">L</option>
-                        <option value="mL" selected>mL</option>
-                        <option value="uL">µL</option>
-                    </select>
-                </div>
-                
-                <div class="input-group" style="margin-bottom:0;">
-                    <label for="m2" style="width:140px;">Target Conc. (M₂)</label>
-                    <input type="number" id="m2" placeholder="Input...">
-                    <select id="m2-unit">
-                        <option value="M">M</option>
-                        <option value="mM" selected>mM</option>
-                        <option value="uM">µM</option>
-                        <option value="nM">nM</option>
-                    </select>
-                </div>
-
-                <div class="input-group" style="margin-bottom:0;">
-                    <label for="v2" style="width:140px;">Target Vol. (V₂)</label>
-                    <input type="number" id="v2" placeholder="Input...">
-                    <select id="v2-unit">
-                        <option value="L">L</option>
-                        <option value="mL" selected>mL</option>
-                        <option value="uL">µL</option>
-                    </select>
-                </div>
-            </div>
-
-            <button id="calculate-dilution" class="action-btn" style="width: 100%;">Calculate</button>
-            
-            <div id="dilution-result" class="result" style="line-height: 1.4; padding: 12px; margin-top: 15px; font-weight: bold; color: #2c3e50;"></div>
-        </section>
-
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">💧 The Complete Guide to Laboratory Dilutions</h2>
-            <p>
-                Dilution is the fundamental laboratory process of decreasing the concentration of a solute in a solution, typically by mixing it with an inert solvent (such as distilled water, PBS, or cell culture media). The core scientific principle behind dilution is the <strong>Conservation of Mass</strong>: adding more solvent increases the total volume and decreases the overall concentration, but the absolute number of solute molecules remains strictly constant.
-            </p>
-
-            <h3 style="color:#007bff; margin-top: 25px;">The Universal Equation: M₁V₁ = M₂V₂</h3>
-            <p>Whether you are preparing a drug treatment, diluting antibodies for Western blotting, or making standard curves for an ELISA, this formula is your primary tool.</p>
-
-            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                <div style="font-size: 1.5rem; margin-bottom: 10px;">$$ M_1 V_1 = M_2 V_2 $$</div>
-                <ul style="text-align: left; max-width: 400px; margin: 0; padding-left: 20px;">
-                    <li style="margin-bottom: 5px;"><strong>M₁ (or C₁):</strong> Initial Concentration of the concentrated Stock Solution</li>
-                    <li style="margin-bottom: 5px;"><strong>V₁:</strong> Volume of the Stock Solution required</li>
-                    <li style="margin-bottom: 5px;"><strong>M₂ (or C₂):</strong> Desired Final Concentration of the working solution</li>
-                    <li><strong>V₂:</strong> Final Total Volume of the working solution</li>
-                </ul>
-            </div>
-
-            <div style="background: #fdfdfe; border-left: 4px solid #f59e0b; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: #d97706;">⚠️ Critical Benchwork Tip: V₂ vs. Added Solvent</h3>
-                <p style="margin-bottom: 0;">
-                    A very common mistake among junior researchers is confusing the Final Volume ($V_2$) with the amount of solvent (e.g., water) to add. <br><br>
-                    If you calculate that you need $V_1 = 10 mL$ of stock to make a $V_2 = 100 mL$ final solution, you <strong>DO NOT</strong> add 100 mL of water to the 10 mL of stock. You must add exactly <strong>90 mL</strong> of solvent ($V_2 - V_1$) to reach the final 100 mL target. Our calculator automatically displays the precise amount of solvent to add to prevent this error.
-                </p>
-            </div>
-
-            <h3 style="color:#007bff; margin-top: 25px;">Advanced Technique: Serial Dilutions</h3>
-            <p>
-                When you need to achieve a highly dilute concentration (e.g., a 1:1,000,000 dilution for microbiological colony counting), attempting to do it in a single step using the $M_1V_1$ formula might require pipetting an impossibly small volume, like 0.001 µL. Pipetting errors at this scale are massive. 
-            </p>
-            <p>
-                Instead, researchers perform a <strong>Serial Dilution</strong>—a step-wise dilution of a substance in solution. You might perform a 1:100 dilution first, and then take that new solution and perform another 1:100 dilution from it, safely and accurately achieving your final target concentration without relying on micro-volumes.
-            </p>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div class="faq-item">
-                <h4>What is the difference between C₁V₁ = C₂V₂ and M₁V₁ = M₂V₂?</h4>
-                <p>They are exactly the same formula. M stands for Molarity (a specific type of concentration), while C stands for Concentration (a more general term). You can use this formula for any unit of concentration (e.g., mg/mL, %, or X-fold) as long as you keep the units consistent on both sides of the equation.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>Can I mix different units in the calculator?</h4>
-                <p>Yes! Our smart calculator automatically converts and normalizes units behind the scenes. For instance, you can input your stock concentration in Molarity (M) and your target concentration in micro-Molarity (µM), and the tool will compute the correct volume flawlessly.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>How do I calculate a dilution factor (e.g., a 1:10 dilution)?</h4>
-                <p>A dilution factor represents the ratio of the stock volume ($V_1$) to the total final volume ($V_2$). For a 1:10 dilution, you would mix 1 part of your stock solution with 9 parts of your solvent, resulting in a total of 10 parts.</p>
-            </div>
-
-        </section>
-        </main>
-
-<footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-<br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-<br>
-           © 2026 Scientist's Toolkit
-    </footer>
-
     <script src="../assets/main.js"></script>
 </body>
 </html>

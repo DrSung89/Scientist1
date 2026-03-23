@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi-Square Test Calculator (2x2) | Scientist's Toolkit</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
+    <title>Chi-Square Test Calculator (2x2) | Scientist's Toolkit</title>
     <meta name="description" content="Analyze 2x2 contingency tables. Calculate Chi-square, P-value, and Cramér's V with expected count validation.">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/chi-square-calculator/">
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="Chi-Square Calculator (2x2) | Scientist's Toolkit">
@@ -13,46 +14,285 @@
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/chi-square-calculator/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Chi-Square Calculator | Scientist's Toolkit">
-    <meta name="twitter:description" content="Analyze categorical data with Chi-square test and Cramér's V effect size.">
-    <meta name="twitter:image" content="https://scientisttoolkit.xyz/og-image.png">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/chi-square-calculator/">
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']] // $ ... $ 를 인라인 수식으로 인식하도록 설정
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "success": "#059669",
+              "success-container": "#d1fae5",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
     <style>
-        .chi-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size:0.9em; }
-        .chi-table th, .chi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .chi-table input { width: 90%; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius:4px;}
-        .expected { font-size: 0.8em; color: #888; display: block; margin-top: 2px; }
-        /* FAQ 전용 스타일 */
-        .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
-        .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
-        .faq-item p { margin: 0; color: #555; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 테이블 기본 숨김 스핀 박스 제거 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-    <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-    
-    <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-        Loading inspiration... 🧪
-    </p>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-primary" href="../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-primary whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
+    </nav>
+
+    <main class="relative pt-24 lg:pt-16 flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-12 md:py-16 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Statistical Module</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Chi-Square Test (2x2)</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Analyze 2x2 contingency tables. Automatically calculates Pearson's Chi-square, P-value, and Cramér's V effect size.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                
+                <div class="overflow-x-auto mb-8">
+                    <table class="w-full text-center border-collapse border border-outline-variant/30 rounded-lg overflow-hidden">
+                        <thead class="bg-surface-container-low font-headline text-sm font-bold text-on-surface">
+                            <tr>
+                                <th class="border border-outline-variant/30 p-4 w-1/3">Group</th>
+                                <th class="border border-outline-variant/30 p-4 w-1/3">Event (+)</th>
+                                <th class="border border-outline-variant/30 p-4 w-1/3">No Event (-)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm font-body">
+                            <tr class="hover:bg-surface-bright transition-colors">
+                                <td class="border border-outline-variant/30 p-4 font-bold text-on-surface bg-surface-container-lowest">Experimental</td>
+                                <td class="border border-outline-variant/30 p-4">
+                                    <input type="number" id="a" placeholder="Observed count" class="w-full p-2 bg-surface border border-outline-variant/50 rounded text-center focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all mb-1">
+                                    <span id="exp-a" class="block text-xs text-outline font-medium">Exp: -</span>
+                                </td>
+                                <td class="border border-outline-variant/30 p-4">
+                                    <input type="number" id="b" placeholder="Observed count" class="w-full p-2 bg-surface border border-outline-variant/50 rounded text-center focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all mb-1">
+                                    <span id="exp-b" class="block text-xs text-outline font-medium">Exp: -</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-surface-bright transition-colors">
+                                <td class="border border-outline-variant/30 p-4 font-bold text-on-surface bg-surface-container-lowest">Control</td>
+                                <td class="border border-outline-variant/30 p-4">
+                                    <input type="number" id="c" placeholder="Observed count" class="w-full p-2 bg-surface border border-outline-variant/50 rounded text-center focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all mb-1">
+                                    <span id="exp-c" class="block text-xs text-outline font-medium">Exp: -</span>
+                                </td>
+                                <td class="border border-outline-variant/30 p-4">
+                                    <input type="number" id="d" placeholder="Observed count" class="w-full p-2 bg-surface border border-outline-variant/50 rounded text-center focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all mb-1">
+                                    <span id="exp-d" class="block text-xs text-outline font-medium">Exp: -</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button onclick="calcChi()" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg mb-8">
+                    <span class="material-symbols-outlined">calculate</span> Calculate Statistics
+                </button>
+
+                <div id="result-area" style="display:none;" class="bg-surface-bright border border-outline-variant/30 p-6 rounded-lg shadow-sm">
+                    <h3 class="font-headline font-bold text-xl text-on-surface flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-3">
+                        <span class="material-symbols-outlined text-primary">assessment</span> Statistical Report
+                    </h3>
+                    
+                    <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/20 mb-6">
+                        <div class="text-on-surface font-headline text-lg mb-2">
+                            P-value = <strong id="p-val" class="text-3xl tracking-tight text-primary ml-2"></strong>
+                        </div>
+                        <div id="sig-msg" class="font-bold text-sm tracking-wide uppercase mt-4 mb-2"></div>
+                        
+                        <hr class="border-t border-outline-variant/30 my-6">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-medium text-on-surface-variant">
+                            <div class="bg-surface p-3 rounded border border-outline-variant/20 flex justify-between">
+                                <span>Chi-square (χ²):</span> <strong id="chi-stat" class="text-on-surface"></strong>
+                            </div>
+                            <div class="bg-surface p-3 rounded border border-outline-variant/20 flex justify-between">
+                                <span>Degrees of Freedom (df):</span> <strong class="text-on-surface">1</strong>
+                            </div>
+                            <div class="sm:col-span-2 bg-primary-fixed/30 p-3 rounded border border-primary-fixed flex justify-between">
+                                <span>Cramér's V (Effect Size):</span> <strong id="cramers-v" class="text-primary text-base"></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="warning-msg" style="display:none;" class="bg-error-container text-on-error-container p-4 rounded border-l-4 border-error text-sm font-light leading-relaxed">
+                        <strong class="font-bold flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-[18px]">warning</span> Statistical Warning:</strong> 
+                        One or more of your calculated "Expected Counts" is less than 5. The Chi-square approximation may be inaccurate. It is highly recommended to use <strong>Fisher's Exact Test</strong> for this dataset instead.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu_book</span> The Complete Guide to the Chi-Square Test
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-8">
+                    In biological, clinical, and epidemiological research, you often need to analyze categorical (nominal) data rather than continuous numerical data. While a T-Test is perfect for comparing averages (e.g., tumor weights), the <strong>Pearson's Chi-Square Test (χ²)</strong> is the absolute gold standard for comparing frequencies or counts across different groups.
+                </p>
+
+                <div class="space-y-12">
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">1. The Core Principle: Observed vs. Expected</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                            The Chi-Square test determines whether there is a significant association between two categorical variables (e.g., "Treatment Type" and "Cure Status"). The test mathematically calculates what the frequencies in each cell of your 2x2 table <em>would be</em> if the two variables were completely independent (the <strong>Expected Frequency</strong>). It then compares these to your actual experimental data (the <strong>Observed Frequency</strong>).
+                        </p>
+                        
+                        <div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-amber-500 shadow-sm">
+                            <div class="text-center text-xl md:text-2xl mb-4 font-serif text-on-surface">
+                                $$ \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i} $$
+                            </div>
+                            <p class="font-bold text-sm text-on-surface mb-2">Where:</p>
+                            <ul class="list-disc pl-5 text-sm text-on-surface-variant font-light space-y-1">
+                                <li><strong>$O_i$</strong> = Observed frequency in each cell</li>
+                                <li><strong>$E_i$</strong> = Expected frequency in each cell</li>
+                            </ul>
+                        </div>
+                        <p class="text-on-surface-variant font-light leading-relaxed mt-6">
+                            If the Observed counts deviate significantly from the Expected counts, the resulting large $\chi^2$ value will yield a small P-value (< 0.05), allowing you to reject the null hypothesis.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">2. Moving Beyond the P-Value: Cramér's V</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                            Modern statistical reporting requires more than just a P-value. A P-value only tells you if a relationship exists, but <strong>Cramér's V</strong> (an effect size measurement for nominal data) tells you <em>how strong</em> that relationship is.
+                        </p>
+                        <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 space-y-3 text-sm font-medium">
+                            <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> <span class="text-on-surface-variant"><strong>0.1 to 0.3:</strong> Weak Association</span></div>
+                            <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-amber-500"></span> <span class="text-on-surface-variant"><strong>0.3 to 0.5:</strong> Moderate Association</span></div>
+                            <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-error"></span> <span class="text-on-surface-variant"><strong>> 0.5:</strong> Strong Association</span></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-6">
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why did I get a warning about "Expected counts < 5"?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">This is a fundamental limitation of the Pearson Chi-Square test. The mathematical distribution it relies on becomes highly inaccurate if any single cell's expected frequency drops below 5. This usually happens when your overall sample size is very small, or if one of the outcomes is extremely rare. In these cases, you must report the P-value from <strong>Fisher's Exact Test</strong> instead.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use percentages instead of raw counts?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed"><strong class="text-error">Absolutely not.</strong> The Chi-Square test is highly sensitive to sample size. Entering "50" and "50" (representing 50%) will give you a completely different and invalid P-value compared to entering the true raw counts of "500" and "500". Always input raw integer frequencies.</p>
+                            </div>
+                            <div class="border-b border-outline-variant/30 pb-4">
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">When should I use a Chi-Square test vs. an ANOVA?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">You use a Chi-Square test when your dependent outcome is <em>categorical</em> (e.g., Dead/Alive, Positive/Negative, Mutated/Wild-type). You use an ANOVA (or T-test) when your dependent outcome is <em>continuous numerical data</em> (e.g., Blood pressure, Cell count, Enzyme activity level).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // 1. Firebase Init & Visitor Counter
         document.addEventListener("DOMContentLoaded", function() {
+            // Quote
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -62,156 +302,44 @@
                 "Small steps in the lab lead to giant leaps for knowledge. 👣",
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
-            document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
         });
-    </script>
-</header>
-    <nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn active">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
-    </nav>
 
-    <main>
-        <section class="calculator active">
-            <h2>🎲 Chi-Square Test (2x2)</h2>
-            <p>Analyzes independence between two categorical variables.<br>Includes Expected Counts and Cramér's V.</p>
+        // 2. Chi-Square Logic
+        function chiSquareCDF(x, df) {
+            if (typeof jStat !== 'undefined') return jStat.chisquare.cdf(x, df);
+            return 1 - Math.exp(-x / 2); // Fallback
+        }
 
-            <table class="chi-table">
-                <tr style="background:#f8f9fa;">
-                    <th>Group</th>
-                    <th>Event (+)</th>
-                    <th>No Event (-)</th>
-                </tr>
-                <tr>
-                    <td><strong>Experimental</strong></td>
-                    <td>
-                        <input type="number" id="a" placeholder="Observed">
-                        <span id="exp-a" class="expected">Exp: -</span>
-                    </td>
-                    <td>
-                        <input type="number" id="b" placeholder="Observed">
-                        <span id="exp-b" class="expected">Exp: -</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Control</strong></td>
-                    <td>
-                        <input type="number" id="c" placeholder="Observed">
-                        <span id="exp-c" class="expected">Exp: -</span>
-                    </td>
-                    <td>
-                        <input type="number" id="d" placeholder="Observed">
-                        <span id="exp-d" class="expected">Exp: -</span>
-                    </td>
-                </tr>
-            </table>
-
-            <div style="text-align:center; margin-top:15px;">
-                <button onclick="calcChi()" class="action-btn" style="width: 100%;">Calculate Statistics</button>
-            </div>
-
-            <div id="result-area" class="result-box" style="display:none; margin-top: 20px;">
-                <h3>📊 Statistical Report</h3>
-                <div style="padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px;">
-                    <div style="font-size: 1.2rem; margin-bottom: 10px;">
-                        P-value = <strong id="p-val" style="font-size: 1.4rem;"></strong>
-                    </div>
-                    <div id="sig-msg" style="margin-bottom: 10px; font-weight: bold;"></div>
-
-                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; color: #555;">
-                        <div>Chi-square (χ²): <strong id="chi-stat" style="color:#333;"></strong></div>
-                        <div>df: <strong style="color:#333;">1</strong></div>
-                        <div style="grid-column: span 2;">
-                            Cramér's V (Effect Size): <strong id="cramers-v" style="color:#007bff;"></strong>
-                        </div>
-                    </div>
-                </div>
-                <p id="warning-msg" style="color:#b91c1c; background: #fee2e2; padding: 10px; border-radius: 4px; font-size:0.85rem; display:none; margin-top:15px;">
-                    <strong>⚠️ Statistical Warning:</strong> One or more of your calculated "Expected Counts" is less than 5. The Chi-square approximation may be inaccurate. It is highly recommended to use <strong>Fisher's Exact Test</strong> for this dataset instead.
-                </p>
-            </div>
-        </section>
-
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">🎲 The Complete Guide to the Chi-Square Test for Independence</h2>
-            <p>
-                In biological, clinical, and epidemiological research, you often need to analyze categorical (nominal) data rather than continuous numerical data. While a T-Test is perfect for comparing averages (e.g., tumor weights), the <strong>Pearson's Chi-Square Test (χ²)</strong> is the absolute gold standard for comparing frequencies or counts across different groups.
-            </p>
-
-            <h3 style="color:#007bff; margin-top: 25px;">1. The Core Principle: Observed vs. Expected</h3>
-            <p>
-                The Chi-Square test determines whether there is a significant association between two categorical variables (e.g., "Treatment Type" and "Cure Status"). The test mathematically calculates what the frequencies in each cell of your 2x2 table <em>would be</em> if the two variables were completely independent (the <strong>Expected Frequency</strong>). It then compares these to your actual experimental data (the <strong>Observed Frequency</strong>).
-            </p>
-            
-            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #fd7e14; margin: 15px 0;">
-                <div style="text-align: center; margin-bottom: 10px; font-size: 1.2rem;">
-                    $$ \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i} $$
-                </div>
-                <p style="margin: 0 0 5px 0; font-weight: bold;">Where:</p>
-                <ul style="margin: 0; padding-left: 20px;">
-                    <li style="margin-bottom: 3px;"><strong>O_i</strong> = Observed frequency in each cell</li>
-                    <li><strong>E_i</strong> = Expected frequency in each cell</li>
-                </ul>
-            </div>
-            <p>If the Observed counts deviate significantly from the Expected counts, the resulting large $\chi^2$ value will yield a small P-value (< 0.05), allowing you to reject the null hypothesis.</p>
-
-            <h3 style="color:#007bff; margin-top: 25px;">2. Moving Beyond the P-Value: Cramér's V</h3>
-            <p>
-                Modern statistical reporting requires more than just a P-value. A P-value only tells you if a relationship exists, but <strong>Cramér's V</strong> (an effect size measurement for nominal data) tells you <em>how strong</em> that relationship is. 
-            </p>
-            <ul style="list-style-type: none; padding: 0;">
-                <li>🟢 <strong>0.1 to 0.3:</strong> Weak Association</li>
-                <li>🟡 <strong>0.3 to 0.5:</strong> Moderate Association</li>
-                <li>🔴 <strong>> 0.5:</strong> Strong Association</li>
-            </ul>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div class="faq-item">
-                <h4>Why did I get a warning about "Expected counts < 5"?</h4>
-                <p>This is a fundamental limitation of the Pearson Chi-Square test. The mathematical distribution it relies on becomes highly inaccurate if any single cell's expected frequency drops below 5. This usually happens when your overall sample size is very small, or if one of the outcomes is extremely rare. In these cases, you must report the P-value from <strong>Fisher's Exact Test</strong> instead, which calculates exact probabilities rather than approximations.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>Can I use percentages instead of raw counts?</h4>
-                <p><strong>Absolutely not.</strong> The Chi-Square test is highly sensitive to sample size. Entering "50" and "50" (representing 50%) will give you a completely different and invalid P-value compared to entering the true raw counts of "500" and "500". Always input raw integer frequencies.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>When should I use a Chi-Square test vs. an ANOVA?</h4>
-                <p>You use a Chi-Square test when your dependent outcome is categorical (e.g., Dead/Alive, Positive/Negative, Mutated/Wild-type). You use an ANOVA (or T-test) when your dependent outcome is continuous numerical data (e.g., Blood pressure, Cell count, Enzyme activity level).</p>
-            </div>
-
-        </section>
-        </main>
-
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
-    </footer>
-
-    <script>
         function calcChi() {
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
@@ -235,11 +363,11 @@
             document.getElementById('exp-c').innerText = `Exp: ${ec.toFixed(1)}`;
             document.getElementById('exp-d').innerText = `Exp: ${ed.toFixed(1)}`;
 
-            // Check Low Frequency Assumption (< 5)
+            // Check Low Frequency (< 5)
             const lowFreq = [ea, eb, ec, ed].some(v => v < 5);
             document.getElementById('warning-msg').style.display = lowFreq ? 'block' : 'none';
 
-            // Chi-Square Statistic (Pearson)
+            // Chi-Square Statistic
             const calcSq = (obs, exp) => Math.pow(obs - exp, 2) / exp;
             const chiSq = calcSq(a, ea) + calcSq(b, eb) + calcSq(c, ec) + calcSq(d, ed);
 
@@ -247,67 +375,24 @@
             const cramersV = Math.sqrt(chiSq / total);
 
             // P-value (df=1 for 2x2 table)
-            const pVal = 1 - jStat.chisquare.cdf(chiSq, 1);
+            let pVal = 1 - chiSquareCDF(chiSq, 1);
+            if(pVal < 0) pVal = 0; // Floating point fix
 
             // Output Formatting
             document.getElementById('p-val').innerText = pVal.toFixed(5);
-            document.getElementById('sig-msg').innerHTML = pVal < 0.05 
-                ? "<span style='color:#dc3545'>Significant Association Detected 🔴</span>" 
-                : "<span style='color:#28a745'>No Significant Association (Retain Null) 🟢</span>";
+            
+            const sigMsg = document.getElementById('sig-msg');
+            if (pVal < 0.05) {
+                sigMsg.innerHTML = '<span class="text-error flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">emergency</span> Significant Association Detected</span>';
+            } else {
+                sigMsg.innerHTML = '<span class="text-success flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">check_circle</span> No Significant Association (Retain Null)</span>';
+            }
             
             document.getElementById('chi-stat').innerText = chiSq.toFixed(3);
             document.getElementById('cramers-v').innerText = cramersV.toFixed(3);
             
             document.getElementById('result-area').style.display = 'block';
         }
-    </script>
-
-    <script>
-        // 1. Firebase 설정
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-            authDomain: "scientisttoolkit.firebaseapp.com",
-            projectId: "scientisttoolkit",
-            storageBucket: "scientisttoolkit.firebasestorage.app",
-            messagingSenderId: "611412737478",
-            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-            measurementId: "G-5K0XVX0TFM"
-        };
-
-        // 2. Firebase 초기화
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        // 3. 카운팅 실행 및 표시함수
-        function updateVisitorCount() {
-            if (typeof firebase === 'undefined') return;
-
-            const db = firebase.firestore();
-            const countSpan = document.getElementById('visitor-count'); 
-
-            const today = new Date();
-            const offset = today.getTimezoneOffset() * 60000;
-            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
-            const docRef = db.collection('visitors').doc(dateStr);
-
-            // 카운트 증가
-            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-            }
-
-            // 화면에 표시 (Snapshot)
-            docRef.onSnapshot((doc) => {
-                if (doc.exists && countSpan) {
-                    const count = doc.data().count;
-                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-                }
-            });
-        }
-        
-        // 페이지 로드 후 실행
-        document.addEventListener('DOMContentLoaded', updateVisitorCount);
     </script>
 </body>
 </html>

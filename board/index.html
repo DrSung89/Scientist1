@@ -1,202 +1,322 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
     <title>Community Board | Scientist's Toolkit</title> 
     <meta name="description" content="Join the Scientist's Toolkit community. Ask statistical questions, share laboratory protocols, or report bugs to improve our research calculators.">
-    <link rel="stylesheet" href="../assets/style.css">
     <link rel="canonical" href="https://scientisttoolkit.xyz/board/">
     <link rel="icon" type="image/png" href="/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed": "#d8e2ff",
+              "on-primary-fixed-variant": "#004493",
+              "surface-container-low": "#f3f4f5",
+              "surface-container": "#edeeef",
+              "on-surface-variant": "#414754",
+              "primary": "#0059bb",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8f9fa",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "outline-variant": "#c1c6d7",
+              "surface-container-highest": "#e1e3e4",
+              "surface": "#f8f9fa",
+              "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            },
+          },
+        },
+      }
+    </script>
     <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* board.js 동적 생성 요소를 위한 Tailwind 맞춤형 CSS */
         .post-item {
-            border-bottom: 1px solid #eee;
-            background: #fff;
-            margin-bottom: 5px;
-            border-radius: 5px;
+            background: #ffffff;
+            margin-bottom: 12px;
+            border-radius: 0.5rem;
             overflow: hidden;
+            border: 1px solid #e1e3e4;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: border-color 0.2s;
         }
+        .post-item:hover { border-color: #c1c6d7; }
         .post-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 16px 20px;
             cursor: pointer;
             transition: background 0.2s;
         }
-        .post-header:hover {
-            background-color: #f8f9fa;
-        }
+        .post-header:hover { background-color: #f8f9fa; }
         .post-title {
             font-weight: 600;
-            color: #333;
-            font-size: 1rem;
+            color: #191c1d;
+            font-size: 1.05rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
         .post-meta {
             font-size: 0.85rem;
-            color: #888;
+            color: #717786;
             text-align: right;
             min-width: 120px;
+            font-family: 'Inter', sans-serif;
         }
         .post-content {
-            display: none; /* 숨김 기본 */
-            padding: 5px 20px;
-            background-color: #fcfcfc;
-            border-top: 1px dashed #eee;
-            color: #555;
-            line-height: 1.4;
-            font-size: 0.9rem;
+            display: none; /* 기본 숨김 */
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-top: 1px dashed #e1e3e4;
+            color: #414754;
+            line-height: 1.7;
+            font-size: 0.95rem;
             white-space: pre-wrap;
+            font-family: 'Inter', sans-serif;
         }
-        .post-content.show {
-            display: block; /* 클릭 시 보임 */
-        }
+        .post-content.show { display: block; }
         .delete-btn {
-            background: #ff4d4d;
-            color: white;
+            background: #ba1a1a;
+            color: #ffffff;
             border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
         }
-        /* FAQ 전용 스타일 */
-        .faq-item { margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
-        .faq-item h4 { margin: 0 0 10px 0; color: #333; font-size: 1.1rem; }
-        .faq-item p { margin: 0; color: #555; line-height: 1.6; }
+        .delete-btn:hover { opacity: 0.9; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
-    
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡",
-                    "Rest is also part of the experiment. Don't burn out. ☕",
-                    "Small steps in the lab lead to giant leaps for knowledge. 👣",
-                    "Believe in your hypothesis, but trust your data. 📉"
-                ];
-                const randomIndex = Math.floor(Math.random() * quotes.length);
-                document.getElementById("quote-display").innerText = quotes[randomIndex];
-            });
-        </script>
-    </header>
-        
-    <nav>
-        <a href="../" class="nav-btn">Home</a>
-        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../board/" class="nav-btn active">Board</a>
-        <a href="../help/" class="nav-btn">Help & Info</a>
-        <a href="../articles/" class="nav-btn">Articles</a>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
+
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+            <div class="flex items-center gap-8">
+                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center gap-6 font-headline tracking-tight font-bold text-sm">
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../board/" class="text-sm font-headline font-bold text-primary transition-colors">Board</a>
+                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                    <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
+                </a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
+        </div>
     </nav>
-    <main>
-        <section class="calculator active" style="display:block;">
-            <h2>📢 Researcher's Community Board</h2>
-            <p>A collaborative space to share ideas, report bugs, ask statistical questions, or exchange laboratory protocols.</p>
 
-            <div class="board-container">
-                <div class="write-box">
-                    <h3>✍️ Write a Post</h3>
-                    <div class="form-row">
-                        <input type="text" id="writer-name" placeholder="Nickname (e.g. LabRat01)" maxlength="20">
+    <main class="relative pt-24 lg:pt-16 flex-grow">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+
+        <section class="relative px-6 py-12 md:py-16 max-w-screen-md mx-auto z-10 text-center">
+            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Collaboration Protocol</span>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Researcher's Community Board</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">A collaborative space to share ideas, report bugs, ask statistical questions, or exchange laboratory protocols.</p>
+            <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Loading inspiration... 🧪</p>
+        </section>
+
+        <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
+            
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30 mb-12">
+                <h3 class="text-2xl font-headline font-bold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                    <span class="material-symbols-outlined">edit_document</span> Write a Post
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <input type="text" id="writer-name" placeholder="Nickname (e.g. LabRat01)" maxlength="20" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
                     </div>
-                    <div class="form-row">
-                        <input type="text" id="post-title" placeholder="Title (e.g. Question, Protocol Name, or Bug Report)" maxlength="100">
+                    <div>
+                        <input type="text" id="post-title" placeholder="Title (e.g. Question, Protocol Name, or Bug Report)" maxlength="100" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
                     </div>
-                    <div class="form-row">
-                        <input type="password" id="post-password" placeholder="Password (Required for deletion)" maxlength="20">
+                    <div>
+                        <input type="password" id="post-password" placeholder="Password (Required for deletion)" maxlength="20" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
                     </div>
-                    <div class="form-row">
-                        <textarea id="post-content" rows="6" placeholder="Content..."></textarea>
+                    <div>
+                        <textarea id="post-content" rows="6" placeholder="Write your content here..." class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface resize-y"></textarea>
                     </div>
-                    <button id="save-btn" class="action-btn">Post to Board</button>
+                    <button id="save-btn" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-xl">send</span> Post to Board
+                    </button>
                 </div>
+            </div>
 
-                <div class="list-box">
-                    <h3>Recent Posts</h3>
-                    <div id="post-list">
-                        <div class="loading-msg">Loading posts...</div>
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
+                <h3 class="text-2xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+                    <span class="material-symbols-outlined text-outline">forum</span> Recent Posts
+                </h3>
+                
+                <div id="post-list" class="min-h-[200px]">
+                    <div class="text-center text-on-surface-variant py-10 font-light flex flex-col items-center gap-2">
+                        <span class="material-symbols-outlined animate-spin text-outline">sync</span>
+                        Loading posts...
                     </div>
-                    
-                    <div class="pagination-area" style="text-align: center; margin-top: 20px;">
-                        <button id="prev-btn" class="action-btn" style="background:#6c757d; display:none;">&lt; Prev</button>
-                        <span id="page-num" style="margin: 0 15px; font-weight:bold; color:#555;">Page 1</span>
-                        <button id="next-btn" class="action-btn" style="background:#6c757d; display:none;">Next &gt;</button>
-                    </div>
+                </div>
+                
+                <div class="flex justify-center items-center gap-4 md:gap-6 mt-8 pt-6 border-t border-outline-variant/30">
+                    <button id="prev-btn" style="display:none;" class="px-5 py-2 bg-surface-container-high hover:bg-surface-dim text-on-surface font-bold rounded-lg transition-colors text-sm font-headline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span> Prev
+                    </button>
+                    <span id="page-num" class="font-headline font-bold text-primary tracking-wide">Page 1</span>
+                    <button id="next-btn" style="display:none;" class="px-5 py-2 bg-surface-container-high hover:bg-surface-dim text-on-surface font-bold rounded-lg transition-colors text-sm font-headline flex items-center gap-1">
+                        Next <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <section class="content-guide" style="max-width: 800px; margin: 40px auto; text-align: left; line-height: 1.7; color: #444;">
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h2 style="color:#2c3e50;">🤝 Community Guidelines & Purpose</h2>
-            <p>
-                The Scientist's Toolkit Community Board is designed to foster collaboration and knowledge-sharing among researchers, graduate students, and principal investigators globally. Science thrives on open communication, whether you are troubleshooting a failed Western blot, selecting the right statistical model (such as Welch's T-Test vs. Student's T-Test), or requesting a new feature for our web calculators.
-            </p>
-
-            <h3 style="color:#007bff; margin-top: 25px;">What to Post Here:</h3>
-            <ul style="list-style-type: disc; padding-left: 20px; margin-bottom: 30px;">
-                <li style="margin-bottom: 8px;"><strong>Statistical Methodology Questions:</strong> Not sure if your data requires an IQR outlier removal method or a Grubb's test? Ask the community for guidance.</li>
-                <li style="margin-bottom: 8px;"><strong>Calculator Feature Requests:</strong> If your research requires a specific equation (e.g., specific pediatric HED formulas or one-way ANOVA), let us know so we can build it.</li>
-                <li style="margin-bottom: 8px;"><strong>Bug Reports:</strong> Found an unexpected P-value or a UI glitch? Please report it here with the numbers you inputted so we can quickly patch the system.</li>
-                <li><strong>Protocol Sharing:</strong> Share your optimized buffer recipes, molarity tips, or assay troubleshooting techniques.</li>
-            </ul>
-
-            <div style="background: #fdfdfe; border-left: 4px solid #dc3545; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: #dc3545;">⚠️ Privacy & Data Protection Warning</h3>
-                <p style="margin-bottom: 0;">
-                    Please remember that this is a public forum. <strong>Do not post sensitive, unpublished raw data, proprietary chemical structures, or patient-identifiable information (PII)</strong>. If you are asking a statistical question, please use dummy variables or generalized descriptions (e.g., "Group A vs Group B") to protect the integrity of your upcoming publications.
+        <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
+            <div class="max-w-screen-md mx-auto">
+                <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">handshake</span> Community Guidelines & Purpose
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-8">
+                    The Scientist's Toolkit Community Board is designed to foster collaboration and knowledge-sharing among researchers, graduate students, and principal investigators globally. Science thrives on open communication, whether you are troubleshooting a failed Western blot, selecting the right statistical model (such as Welch's T-Test vs. Student's T-Test), or requesting a new feature for our web calculators.
                 </p>
+
+                <h3 class="text-xl font-headline font-bold text-primary mb-4">What to Post Here:</h3>
+                <ul class="space-y-3 text-on-surface-variant font-light leading-relaxed mb-10 list-disc pl-5">
+                    <li><strong class="font-medium text-on-surface">Statistical Methodology Questions:</strong> Not sure if your data requires an IQR outlier removal method or a Grubb's test? Ask the community for guidance.</li>
+                    <li><strong class="font-medium text-on-surface">Calculator Feature Requests:</strong> If your research requires a specific equation (e.g., specific pediatric HED formulas or one-way ANOVA), let us know so we can build it.</li>
+                    <li><strong class="font-medium text-on-surface">Bug Reports:</strong> Found an unexpected P-value or a UI glitch? Please report it here with the numbers you inputted so we can quickly patch the system.</li>
+                    <li><strong class="font-medium text-on-surface">Protocol Sharing:</strong> Share your optimized buffer recipes, molarity tips, or assay troubleshooting techniques.</li>
+                </ul>
+
+                <div class="bg-error-container text-on-error-container p-6 rounded-lg border-l-4 border-error shadow-sm mb-12">
+                    <h3 class="font-headline font-bold text-lg mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined">warning</span> Privacy & Data Protection Warning
+                    </h3>
+                    <p class="text-sm leading-relaxed font-light">
+                        Please remember that this is a public forum. <strong class="font-medium">Do not post sensitive, unpublished raw data, proprietary chemical structures, or patient-identifiable information (PII)</strong>. If you are asking a statistical question, please use dummy variables or generalized descriptions (e.g., "Group A vs Group B") to protect the integrity of your upcoming publications.
+                    </p>
+                </div>
+
+                <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
+                <div class="space-y-6">
+                    <div class="border-b border-outline-variant/30 pb-4">
+                        <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Do I need an account to post?</h4>
+                        <p class="text-on-surface-variant font-light leading-relaxed">No. The Scientist's Toolkit board operates anonymously to reduce friction. You simply need to provide a nickname and a secure password. The password is required solely so that you can edit or delete your own post later if you make a mistake.</p>
+                    </div>
+                    <div class="border-b border-outline-variant/30 pb-4">
+                        <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Who answers the questions posted here?</h4>
+                        <p class="text-on-surface-variant font-light leading-relaxed">Questions are answered by the community, which includes peer researchers and occasionally the Ph.D. developer of the Scientist's Toolkit. While we strive for accuracy, please verify all critical statistical advice with your institution's principal investigator or biostatistician before manuscript submission.</p>
+                    </div>
+                </div>
             </div>
-
-            <hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
-
-            <h3 style="color:#2c3e50;">Frequently Asked Questions (FAQ)</h3>
-            
-            <div class="faq-item">
-                <h4>Do I need an account to post?</h4>
-                <p>No. The Scientist's Toolkit board operates anonymously to reduce friction. You simply need to provide a nickname and a secure password. The password is required solely so that you can edit or delete your own post later if you make a mistake.</p>
-            </div>
-
-            <div class="faq-item">
-                <h4>Who answers the questions posted here?</h4>
-                <p>Questions are answered by the community, which includes peer researchers and occasionally the Ph.D. developer of the Scientist's Toolkit. While we strive for accuracy, please verify all critical statistical advice with your institution's principal investigator or biostatistician before manuscript submission.</p>
-            </div>
-
         </section>
-        </main>
 
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
+    </main>
+
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
+            <div class="text-center md:text-left">
+                <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Dynamic Quote
+            const quotes = [
+                "Cheering for your dedication and hard work today. 🧪", 
+                "Behind every data point, there is a researcher’s effort. 📊",
+                "Science is a journey of resilience. Keep going. 🚀",
+                "Your failed experiment is just a stepping stone to discovery. 💡",
+                "Rest is also part of the experiment. Don't burn out. ☕",
+                "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                "Believe in your hypothesis, but trust your data. 📉"
+            ];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) {
+                quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            }
+
+            // Firebase Init & Visitor Counter
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { 
+                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+    </script>
     <script src="board.js"></script>
 </body>
 </html>

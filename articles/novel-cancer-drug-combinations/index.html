@@ -1,128 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluating Contribution of Effect in Novel Cancer Drug Combinations | Scientist's Toolkit</title>
-    <meta name="description" content="A comprehensive review of the FDA draft guidance on determining the contribution of individual drugs in novel oncology combination regimens.">
-    <link rel="stylesheet" href="../../assets/style.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
+    <title>Novel Cancer Drug Combinations | Scientist's Toolkit</title>
     <link rel="canonical" href="https://scientisttoolkit.xyz/articles/novel-cancer-drug-combinations/">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0059bb",
+              "surface": "#f8f9fa",
+              "on-surface": "#191c1d",
+              "outline-variant": "#c1c6d7"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        sup a { text-decoration: none; color: #2563eb; font-weight: bold; }
-        sup a:hover { text-decoration: underline; }
+        .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
     </style>
 </head>
-<body>
-    <header style="text-align: center; padding-bottom: 20px;">
-        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
-        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
-            Loading inspiration... 🧪
-        </p>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const quotes = [
-                    "Cheering for your dedication and hard work today. 🧪", 
-                    "Behind every data point, there is a researcher’s effort. 📊",
-                    "Science is a journey of resilience. Keep going. 🚀",
-                    "Your failed experiment is just a stepping stone to discovery. 💡"
-                ];
-                document.getElementById("quote-display").innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            });
-        </script>
-    </header>
+<body class="bg-surface font-body text-slate-800 flex flex-col min-h-screen">
     
-    <nav>
-        <a href="../../" class="nav-btn">Home</a>
-        <a href="../../molarity-calculator/" class="nav-btn">Molarity</a>
-        <a href="../../dilution-calculator/" class="nav-btn">Dilution</a>
-        <a href="../../outlier-detector/" class="nav-btn">Outlier</a>
-        <a href="../../hed-calculator/" class="nav-btn">HED</a>
-        <a href="../../protein-calculator/" class="nav-btn">Protein (WB)</a>
-        <a href="../../t-test-calculator/" class="nav-btn">T-Test</a>
-        <a href="../../chi-square-calculator/" class="nav-btn">Chi-Square</a>
-        <a href="../../survival-calculator/" class="nav-btn">Survival</a>
-        <a href="../../board/" class="nav-btn">Board</a>
-        <a href="../../help/" class="nav-btn">Help & Info</a>
-        <a href="../../articles/" class="nav-btn active">Articles</a>
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm px-6 py-4 flex justify-between">
+        <a href="../../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+        <a href="../" class="font-bold text-sm text-slate-500 hover:text-primary transition-colors">← Back to Articles</a>
     </nav>
 
-    <main class="content-guide" style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #334155; text-align: left;">
-        <article>
-            <header style="margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-                <time datetime="2025-07-01" style="color: #64748b; font-weight: bold;">July 2025</time>
-                <h1 style="color: #0f172a; font-size: 2.2rem; margin: 10px 0;">Evaluating Contribution of Effect in Novel Cancer Drug Combinations</h1>
-                <p style="color: #475569; font-size: 1.1rem;">Reviewing the FDA draft guidance on clinical trial designs for combination therapies in oncology.</p>
+    <main class="relative pt-28 pb-20 flex-grow max-w-screen-md mx-auto w-full px-6 z-10">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+        
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/30 relative z-10">
+            <header class="mb-10 border-b border-outline-variant/30 pb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Clinical Trial Design</span>
+                    <time class="text-sm text-slate-500 font-medium">July 2025</time>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">Evaluating Contribution of Effect in Novel Cancer Drug Combinations</h1>
+                <p class="text-lg text-slate-600 font-light leading-relaxed">Insights into the FDA guidance on demonstrating the individual contribution of drugs in combination therapies to avoid unnecessary toxicity.</p>
             </header>
 
-            <section>
-                <h2 style="color: #1e40af;">1. The Rationale for Combination Therapies</h2>
-                <p>Combination therapy in oncology is an important treatment modality designed to target multiple therapeutic pathways to improve treatment response, minimize adverse events, or both.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When pursuing a novel combination, a marketing application must demonstrate both the safety and effectiveness of the novel combination, as well as provide evidence to demonstrate that the individual components contribute to the treatment effect.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
+            <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
+                
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Co-Development Challenge</h2>
+                <p>The landscape of oncology treatment has rapidly shifted from monotherapies to rational drug combinations, particularly involving immunotherapies and targeted biologics. However, combining multiple investigational agents introduces complex regulatory and clinical challenges. The FDA's stringent "Contribution of Effect" requirement dictates that a sponsor must demonstrate that each drug in the combination provides a clinically meaningful contribution to the overall efficacy profile.</p>
 
-                <h2 style="color: #1e40af;">2. Factorial Clinical Trial Designs</h2>
-                <p>To definitively prove the contribution of each drug, a factorial design randomized trial is highly recommended.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> Traditional evaluation of novel combinations is accomplished using a multi-arm, randomized trial that includes a combination arm, the monotherapy arms, and a standard-of-care arm.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-                <p>When analyzing time-to-event endpoints from these multi-arm clinical trials, investigators can utilize tools like our <a href="../../survival-calculator/" style="color: #2563eb; font-weight: bold;">Kaplan-Meier Survival Calculator</a> to compute overall survival curves and Log-Rank P-values.</p>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. Trial Design Strategies: Add-on vs. Factorial Designs</h2>
+                <p>To isolate the efficacy of individual components, the FDA guidance strongly recommends specific clinical trial designs. The most common is the "add-on" design (A+B vs. A alone), assuming drug A is the established standard of care. When co-developing two completely novel investigational drugs, a more rigorous factorial design (A+B vs. A vs. B) is often required to rule out the possibility that one of the drugs is merely adding toxicity without therapeutic benefit.</p>
 
-                <h2 style="color: #1e40af;">3. Using External Data Sources</h2>
-                <p>In some cases, the conventional approach employing a standard factorial design may be infeasible.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> When appropriate, sponsors can use external data, such as prospectively collected patient-level data (e.g., registry data) or Real-World Data (RWD) sources, to supplement or replace single-agent arms.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-                <p>When assessing whether an external data source is fit for purpose, sponsors should consider data provenance, extent of missing data, knowledge of the disease's natural history, and the availability of patient-level data.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span> The guidance emphasizes that summary-level evidence from published studies should generally be considered only for hypothesis generating.<sup><a href="#ref1">[1]</a></sup><span style="display:none;"></span></p>
-            </section>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. Pharmacological Rationale and Biomarkers</h2>
+                <p>Empirical evidence of synergy or additivity must be established early. The guidance emphasizes that strong mechanistic rationale—often supported by validated biomarkers—is required before initiating late-stage trials. Understanding drug-drug interactions (DDI) and overlapping toxicity profiles is essential for determining the optimal dose and schedule of the combined regimen.</p>
+                
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-primary my-8">
+                    <p class="text-sm text-blue-900 m-0"><strong>Toolkit Tip:</strong> When comparing categorical response rates (e.g., Objective Response Rate, ORR) between an "A+B combination" arm and an "A alone" arm, use our <a href="../../chi-square-calculator/" class="font-bold underline">Chi-Square Calculator</a> to determine statistical significance and Cramér's V effect size.</p>
+                </div>
 
-            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                <h3 id="references" style="font-size: 1.2rem; color: #1e40af;">References</h3>
-                <ol style="font-size: 0.9rem; color: #475569; padding-left: 20px; line-height: 1.6;">
-                    <li id="ref1">U.S. Food and Drug Administration. (2025). <em>Development of Cancer Drugs for Use in Novel Combination – Determining the Contribution of the Individual Drugs' Effects</em>.</li>
-                </ol>
             </div>
         </article>
     </main>
-
-    <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9rem; border-top: 1px solid #eee;">
-        <span id="visitor-count">Today's Visitors: Loading...</span>
-        <br><br>
-        <a href="../../about/" style="color: #666; text-decoration: none; margin-right: 15px;">About</a>
-        <a href="../../privacy/" style="color: #666; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
-        <a href="mailto:scientisttoolkit@gmail.com" style="color: #666; text-decoration: none;">Contact</a>
-        <br><br>
-        © 2026 Scientist's Toolkit
-    </footer>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-            authDomain: "scientisttoolkit.firebaseapp.com",
-            projectId: "scientisttoolkit",
-            storageBucket: "scientisttoolkit.firebasestorage.app",
-            messagingSenderId: "611412737478",
-            appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-            measurementId: "G-5K0XVX0TFM"
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        function updateVisitorCount() {
-            if (typeof firebase === 'undefined') return;
-            const db = firebase.firestore();
-            const countSpan = document.getElementById('visitor-count'); 
-            const today = new Date();
-            const offset = today.getTimezoneOffset() * 60000;
-            const dateStr = (new Date(today - offset)).toISOString().split('T')[0];
-            const docRef = db.collection('visitors').doc(dateStr);
-            if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-                docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-                .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-            }
-            docRef.onSnapshot((doc) => {
-                if (doc.exists && countSpan) {
-                    const count = doc.data().count;
-                    countSpan.innerHTML = `Today's Visitors: <strong>${count.toLocaleString()}</strong>`;
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', updateVisitorCount);
-    </script>
 </body>
 </html>
