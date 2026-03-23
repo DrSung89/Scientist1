@@ -308,3 +308,158 @@ document.addEventListener('DOMContentLoaded', () => {
         else rd.innerHTML=`Final Vol: ${smartFormat((m1*m1U*v1*v1U)/(m2*m2U),'L','vol')}`;
     });
 });
+// ====================================================
+    // 4. Protein Quantification & Western Prep Calculator
+    // ====================================================
+    const pbtn = document.getElementById('calculate-protein');
+    if (pbtn) pbtn.addEventListener('click', () => {
+        const mode = document.querySelector('input[name="prot-mode"]:checked').value;
+        const sampleRaw = document.getElementById('prot-sample-od').value;
+        const samples = sampleRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
+        
+        const tMass = parseFloat(document.getElementById('prot-target-mass').value);
+        const tVol = parseFloat(document.getElementById('prot-total-vol').value);
+        const dyeX = parseFloat(document.getElementById('prot-dye-x').value);
+        const resDiv = document.getElementById('protein-result');
+
+        if (samples.length === 0 || isNaN(tVol) || isNaN(dyeX)) {
+            resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Please input Sample O.D., Total Volume, and Dye concentration.</span>";
+            resDiv.style.display = 'block';
+            return;
+        }
+
+        const dyeVol = tVol / dyeX;
+        const maxSampleVol = tVol - dyeVol;
+        let html = '';
+
+        // [Mode 1] Standard Curve 사용 시
+        if (mode === 'std') {
+            const concRaw = document.getElementById('prot-std-conc').value;
+            const odRaw = document.getElementById('prot-std-od').value;
+            const concs = concRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
+            const ods = odRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
+
+            if (concs.length !== ods.length || concs.length < 2) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Standard Concentrations and O.D.s must have the same number of values (minimum 2).</span>";
+                resDiv.style.display = 'block';
+                return;
+            }
+            if (isNaN(tMass)) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Target Mass is required for Standard Curve mode.</span>";
+                resDiv.style.display = 'block';
+                return;
+            }
+
+            // 선형 회귀 (Linear Regression: Y = aX + b) => X(Conc), Y(O.D.)
+            const n = concs.length;
+            const sumX = concs.reduce((a, b) => a + b, 0);
+            const sumY = ods.reduce((a, b) => a + b, 0);
+            const sumXY = concs.reduce((a, c, i) => a + c * ods[i], 0);
+            const sumXX = concs.reduce((a, c) => a + c * c, 0);
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            // R-squared 계산
+            const meanY = sumY / n;
+            const ssTot = ods.reduce((a, c) => a + Math.pow(c - meanY, 2), 0);
+            const ssRes = ods.reduce((a, c, i) => a + Math.pow(c - (slope * concs[i] + intercept), 2), 0);
+            const r2 = 1 - (ssRes / ssTot);
+
+            const r2Color = r2 >= 0.95 ? '#065f46' : '#b91c1c';
+            const r2Warning = r2 < 0.95 ? '<br><span style="color:#b91c1c; font-size:0.85em;">⚠️ R² < 0.95: Curve is sub-optimal. Check your pipetting.</span>' : '';
+
+            html += `<div style="margin-bottom:15px; padding:15px; background:#f8fafc; border-left:4px solid #3b82f6; border-radius:4px;">
+                        <strong style="color:#1e40af;">Standard Curve Equation:</strong><br>
+                        O.D. = ${slope.toFixed(4)} × Conc + ${intercept.toFixed(4)} <br>
+                        <strong style="color:${r2Color};">R² = ${r2.toFixed(4)}</strong> ${r2Warning}
+                     </div>`;
+
+            html += `<table class="chi-table" style="background:#fff;">
+                        <tr style="background:#f1f5f9;">
+                            <th>Sample</th><th>O.D.</th><th>Conc.<br><span style="font-size:0.8em;color:#666;">(µg/µL)</span></th>
+                            <th style="color:#2563eb;">Sample<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th style="color:#059669;">Buffer<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th style="color:#d97706;">${dyeX}X Dye<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th>Total<br><span style="font-size:0.8em;">(µL)</span></th>
+                        </tr>`;
+
+            samples.forEach((od, i) => {
+                const conc = (od - intercept) / slope;
+                const reqVol = tMass / conc;
+                let bufVol = maxSampleVol - reqVol;
+                let warnMsg = '';
+                let finalSampleVol = reqVol;
+
+                if (reqVol > maxSampleVol) {
+                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
+                    finalSampleVol = maxSampleVol; // 넣을 수 있는 최대치까지만 표기
+                    bufVol = 0;
+                } else if (reqVol < 0 || conc < 0) {
+                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
+                    finalSampleVol = 0;
+                    bufVol = maxSampleVol;
+                }
+
+                html += `<tr>
+                    <td><strong>#${i + 1}</strong></td>
+                    <td>${od}</td>
+                    <td>${Math.max(0, conc).toFixed(2)}</td>
+                    <td style="color:#2563eb; font-weight:bold;">${finalSampleVol.toFixed(2)} ${warnMsg}</td>
+                    <td style="color:#059669;">${bufVol.toFixed(2)}</td>
+                    <td style="color:#d97706;">${dyeVol.toFixed(2)}</td>
+                    <td><strong>${tVol}</strong></td>
+                </tr>`;
+            });
+            html += `</table>`;
+
+        // [Mode 2] Relative Quantification (No Standard)
+        } else {
+            const blankOD = parseFloat(document.getElementById('prot-blank-od').value) || 0;
+            const netODs = samples.map(od => od - blankOD);
+            const minNetOD = Math.min(...netODs);
+
+            if (minNetOD <= 0) {
+                 resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 A sample has Net O.D. ≤ 0. Please check your Blank O.D. or Sample O.D. values.</span>";
+                 resDiv.style.display = 'block';
+                 return;
+            }
+
+            html += `<div style="margin-bottom:15px; padding:15px; background:#fffbeb; border-left:4px solid #f59e0b; border-radius:4px;">
+                        <strong style="color:#b45309;">Relative Quantification Mode:</strong><br>
+                        Reference O.D. (Most dilute sample) = <strong>${minNetOD.toFixed(4)}</strong><br>
+                        <span style="font-size:0.85em; color:#666; display:block; margin-top:5px;">* The most dilute sample is assigned the maximum possible volume (${maxSampleVol} µL). Other samples are scaled inversely to equalize the total protein amount across all lanes.</span>
+                     </div>`;
+
+            html += `<table class="chi-table" style="background:#fff;">
+                        <tr style="background:#f1f5f9;">
+                            <th>Sample</th><th>Net O.D.<br><span style="font-size:0.8em;color:#666;">(Raw-Blank)</span></th><th>Ratio</th>
+                            <th style="color:#2563eb;">Sample<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th style="color:#059669;">Buffer<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th style="color:#d97706;">${dyeX}X Dye<br><span style="font-size:0.8em;">(µL)</span></th>
+                            <th>Total<br><span style="font-size:0.8em;">(µL)</span></th>
+                        </tr>`;
+
+            netODs.forEach((net, i) => {
+                const ratio = net / minNetOD;
+                const reqVol = maxSampleVol / ratio; // 농도가 진할수록(비율이 높을수록) 적게 넣음
+                const bufVol = maxSampleVol - reqVol;
+
+                let ratioText = ratio === 1 ? `<span style="color:#b45309; font-weight:bold;">1.00x (Ref)</span>` : `${ratio.toFixed(2)}x`;
+
+                html += `<tr>
+                    <td><strong>#${i + 1}</strong></td>
+                    <td>${net.toFixed(3)}</td>
+                    <td>${ratioText}</td>
+                    <td style="color:#2563eb; font-weight:bold;">${reqVol.toFixed(2)}</td>
+                    <td style="color:#059669;">${bufVol.toFixed(2)}</td>
+                    <td style="color:#d97706;">${dyeVol.toFixed(2)}</td>
+                    <td><strong>${tVol}</strong></td>
+                </tr>`;
+            });
+            html += `</table>`;
+        }
+
+        resDiv.innerHTML = html;
+        resDiv.style.display = 'block';
+    });

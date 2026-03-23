@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Quantification & Western Prep | Scientist's Toolkit</title>
+    <meta name="description" content="Calculate protein concentrations from standard curves and generate Western Blot loading recipes instantly.">
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/protein-calculator/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        .chi-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size:0.9em; }
+        .chi-table th, .chi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .input-textarea { width: 100%; height: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: monospace; }
+        .mode-selector { display: flex; gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+        .mode-selector label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    </style>
+</head>
+<body>
+    <header style="text-align: center; padding-bottom: 20px;">
+        <h1 style="margin-bottom: 5px;">Scientist's Toolkit</h1>
+        <p id="quote-display" style="font-size: 0.95rem; color: #6c757d; margin-top: 0; font-weight: 400; font-family: sans-serif; min-height: 1.2em;">
+            Loading inspiration... 🧪
+        </p>
+    </header>
+    
+    <nav>
+        <a href="../" class="nav-btn">Home</a>
+        <a href="../molarity-calculator/" class="nav-btn">Molarity</a>
+        <a href="../dilution-calculator/" class="nav-btn">Dilution</a>
+        <a href="../outlier-detector/" class="nav-btn">Outlier</a>
+        <a href="../hed-calculator/" class="nav-btn">HED</a>
+        <a href="../protein-calculator/" class="nav-btn active">Protein (WB)</a>
+        <a href="../t-test-calculator/" class="nav-btn">T-Test</a>
+        <a href="../chi-square-calculator/" class="nav-btn">Chi-Square</a>
+        <a href="../survival-calculator/" class="nav-btn">Survival</a>
+        <a href="../board/" class="nav-btn">Board</a>
+        <a href="../help/" class="nav-btn">Help & Info</a>
+        <a href="../articles/" class="nav-btn">Articles</a>
+    </nav>
+
+    <main style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+        <section class="calculator active" style="display:block;">
+            <h2>🧪 Protein Quantification & Western Prep</h2>
+            <p style="color: #666; margin-bottom: 25px;">Generate linear regression from your assay (BCA/Bradford) and calculate the exact volumes of Sample, Buffer, and Dye needed for loading.</p>
+
+            <div class="mode-selector">
+                <label><input type="radio" name="prot-mode" value="std" checked> Use Standard Curve</label>
+                <label><input type="radio" name="prot-mode" value="rel"> Relative Quant (No Standard)</label>
+            </div>
+
+            <div id="std-inputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Standard Conc. (µg/µL or µg/mL)</label>
+                    <textarea id="prot-std-conc" class="input-textarea" placeholder="e.g., 0, 0.125, 0.25, 0.5, 1, 2"></textarea>
+                </div>
+                <div>
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Standard O.D. (Absorbance)</label>
+                    <textarea id="prot-std-od" class="input-textarea" placeholder="e.g., 0.05, 0.18, 0.32, 0.55, 1.05, 2.10"></textarea>
+                </div>
+            </div>
+
+            <div id="rel-inputs" style="display: none; margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Blank O.D. (Background to subtract)</label>
+                <input type="number" id="prot-blank-od" value="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Sample O.D. Values</label>
+                <textarea id="prot-sample-od" class="input-textarea" placeholder="e.g., 0.45, 0.62, 0.88, 1.2, 0.31"></textarea>
+                <span style="font-size: 0.8em; color: #888;">*Separate values with commas, spaces, or new lines.</span>
+            </div>
+
+            <div style="background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #d1d5db; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #1e3a8a; font-size: 1.1rem;">Western Blot Loading Parameters</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-size:0.9em;">Target Mass (µg)</label>
+                        <input type="number" id="prot-target-mass" value="30" style="width: 100%; padding: 6px;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.9em;">Total Volume (µL)</label>
+                        <input type="number" id="prot-total-vol" value="20" style="width: 100%; padding: 6px;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.9em;">Sample Dye (X)</label>
+                        <select id="prot-dye-x" style="width: 100%; padding: 6px;">
+                            <option value="4">4X</option>
+                            <option value="5" selected>5X</option>
+                            <option value="6">6X</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button id="calculate-protein" class="action-btn" style="width: 100%;">Calculate Loading Recipe</button>
+
+            <div id="protein-result" class="result-box" style="display:none; margin-top: 25px;"></div>
+        </section>
+    </main>
+
+    <script src="../assets/main.js"></script>
+    <script>
+        // Radio 버튼 토글에 따른 입력창 변경
+        document.querySelectorAll('input[name="prot-mode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'std') {
+                    document.getElementById('std-inputs').style.display = 'grid';
+                    document.getElementById('rel-inputs').style.display = 'none';
+                    document.getElementById('prot-target-mass').disabled = false;
+                } else {
+                    document.getElementById('std-inputs').style.display = 'none';
+                    document.getElementById('rel-inputs').style.display = 'block';
+                    document.getElementById('prot-target-mass').disabled = true; // Relative에서는 질량 계산 불가
+                }
+            });
+        });
+    </script>
+</body>
+</html>
