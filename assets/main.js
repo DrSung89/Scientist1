@@ -295,19 +295,38 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hed-result').innerHTML=txt;
     });
 
-    // Dilution Calculator
+// Dilution Calculator
     const db=document.getElementById('calculate-dilution');
     if(db) db.addEventListener('click',()=>{
-        const m1=parseFloat(document.getElementById('m1').value), v1=parseFloat(document.getElementById('v1').value), m2=parseFloat(document.getElementById('m2').value), v2=parseFloat(document.getElementById('v2').value), rd=document.getElementById('dilution-result');
+        const m1=parseFloat(document.getElementById('m1').value), 
+              v1=parseFloat(document.getElementById('v1').value), 
+              m2=parseFloat(document.getElementById('m2').value), 
+              v2=parseFloat(document.getElementById('v2').value), 
+              rd=document.getElementById('dilution-result');
+
+        // [여기에 추가됨] 결과창의 숨김 설정을 해제합니다.
+        rd.classList.remove('hidden');
+        rd.style.display = 'block';
+
         const f={'M':1,'mM':1e-3,'uM':1e-6,'nM':1e-9,'L':1,'mL':1e-3,'uL':1e-6};
-        const m1U=f[document.getElementById('m1-unit').value], v1U=f[document.getElementById('v1-unit').value], m2U=f[document.getElementById('m2-unit').value], v2U=f[document.getElementById('v2-unit').value];
-        if([m1,v1,m2,v2].filter(x=>isNaN(x)).length!==1){rd.innerHTML="<span style='color:red'>Empty 1 field.</span>";return;}
+        const m1U=f[document.getElementById('m1-unit').value], 
+              v1U=f[document.getElementById('v1-unit').value], 
+              m2U=f[document.getElementById('m2-unit').value], 
+              v2U=f[document.getElementById('v2-unit').value];
+
+        if([m1,v1,m2,v2].filter(x=>isNaN(x)).length!==1){
+            rd.innerHTML="<span style='color:red'>Empty 1 field.</span>";
+            return;
+        }
+
         if(isNaN(m1)) rd.innerHTML=`Stock Conc: ${smartFormat((m2*m2U*v2*v2U)/(v1*v1U),'M','conc')}`;
-        else if(isNaN(v1)){const val=(m2*m2U*v2*v2U)/(m1*m1U); rd.innerHTML=`Stock Vol: ${smartFormat(val,'L','vol')}<br><span style='font-size:0.9em;color:#666'>(Add + ${((v2*v2U-val)/v1U).toFixed(3)} Solvent)</span>`;}
+        else if(isNaN(v1)){
+            const val=(m2*m2U*v2*v2U)/(m1*m1U); 
+            rd.innerHTML=`Stock Vol: ${smartFormat(val,'L','vol')}<br><span style='font-size:0.9em;color:#666'>(Add + ${((v2*v2U-val)/v1U).toFixed(3)} Solvent)</span>`;
+        }
         else if(isNaN(m2)) rd.innerHTML=`Final Conc: ${smartFormat((m1*m1U*v1*v1U)/(v2*v2U),'M','conc')}`;
         else rd.innerHTML=`Final Vol: ${smartFormat((m1*m1U*v1*v1U)/(m2*m2U),'L','vol')}`;
     });
-});
 // ====================================================
     // 4. Protein Quantification & Western Prep Calculator
     // ====================================================

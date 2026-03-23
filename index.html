@@ -19,9 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
     <script>
-        MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
-        };
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
@@ -36,7 +34,6 @@
           extend: {
             colors: {
               "surface-container-lowest": "#ffffff",
-              "surface-container-high": "#e7e8e9",
               "primary-fixed": "#d8e2ff",
               "on-primary-fixed-variant": "#004493",
               "surface-container-low": "#f3f4f5",
@@ -48,16 +45,12 @@
               "background": "#f8f9fa",
               "on-background": "#191c1d",
               "outline-variant": "#c1c6d7",
-              "surface-container-highest": "#e1e3e4",
-              "surface": "#f8f9fa",
               "outline": "#717786",
               "on-surface": "#191c1d",
-              "surface-variant": "#e1e3e4"
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a"
             },
-            fontFamily: {
-              "headline": ["Space Grotesk"],
-              "body": ["Inter"]
-            },
+            fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] },
           },
         },
       }
@@ -65,28 +58,27 @@
     <style>
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
-        /* Hide scrollbar for nav */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
 
-<nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
             <div class="flex items-center gap-8">
                 <a href="./" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
                 <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
-                    <a class="text-primary" href="../">Home</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../hed-calculator/">HED</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
+                    <a class="text-primary" href="./">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="articles/">Articles</a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -97,7 +89,7 @@
             </div>
         </div>
         <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
-            <a class="text-slate-500 whitespace-nowrap" href="./">Home</a>
+            <a class="text-primary whitespace-nowrap" href="./">Home</a>
             <a class="text-slate-500 whitespace-nowrap" href="molarity-calculator/">Molarity</a>
             <a class="text-slate-500 whitespace-nowrap" href="dilution-calculator/">Dilution</a>
             <a class="text-slate-500 whitespace-nowrap" href="protein-calculator/">Protein</a>
@@ -110,18 +102,18 @@
         </div>
     </nav>
 
-    <main class="relative pt-24 lg:pt-16">
+    <main class="relative pt-24 lg:pt-16 flex-grow">
         <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
 
-        <section class="relative px-6 py-16 md:py-24 max-w-screen-2xl mx-auto z-10">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-                <div class="md:col-span-8">
+        <section class="relative px-6 py-16 md:py-24 max-w-screen-xl mx-auto z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-8">
                     <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-6 rounded-sm">Toolkit Version 3.0</span>
-                    <h1 class="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-[1.0] mb-6">
+                    <h1 class="text-5xl md:text-8xl font-headline font-bold text-on-surface tracking-tighter leading-[0.9] mb-8">
                         Precision <br/>Research <br/><span class="text-primary">Instrumentation.</span>
                     </h1>
-                    <p class="text-lg md:text-xl text-on-surface-variant max-w-2xl font-light leading-relaxed mb-4">
-                        Essential calculators and statistical tools for biological research. Free, browser-based, and designed to reinforce the empirical integrity of your dataset.
+                    <p class="text-xl md:text-2xl text-on-surface-variant max-w-3xl font-light leading-relaxed mb-6">
+                        A definitive digital repository for rigorous statistical methodology and laboratory computations. Engineered for peer-reviewed accuracy and empirical consistency.
                     </p>
                     <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3">
                         Loading inspiration... 🧪
@@ -130,179 +122,129 @@
             </div>
         </section>
 
-        <section class="px-6 py-8 max-w-screen-2xl mx-auto z-10 relative">
+        <section class="px-6 py-8 max-w-screen-xl mx-auto z-10 relative">
+            <h2 class="text-sm font-headline font-bold tracking-widest uppercase text-outline mb-6">Primary Modules</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 <a href="protein-calculator/" class="md:col-span-2 md:row-span-2 bg-surface-container-lowest p-8 flex flex-col justify-between group cursor-pointer hover:bg-surface transition-colors border-b-2 border-transparent hover:border-primary shadow-sm rounded-lg">
                     <div>
                         <span class="material-symbols-outlined text-4xl text-primary mb-6" data-icon="biotech">biotech</span>
-                        <h3 class="text-3xl font-headline font-bold tracking-tight mb-4">Protein (Western Blot)</h3>
-                        <p class="text-on-surface-variant leading-relaxed">Advanced linear regression for BCA/Bradford standard curves. Instantly calculate exact volumes for Sample, Buffer, and Dye.</p>
+                        <h3 class="text-4xl font-headline font-bold tracking-tight mb-4 leading-tight">Protein <br/>(Western Prep)</h3>
+                        <p class="text-on-surface-variant leading-relaxed text-lg">Advanced linear regression for BSA/Bradford standard curves. Instantly calculate exact volumes for Sample, Buffer, and Dye with 1:1:1 normalization.</p>
                     </div>
-                    <div class="mt-8 flex justify-between items-end">
-                        <span class="text-[10px] font-bold tracking-widest uppercase text-outline">New Module</span>
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="arrow_forward">arrow_forward</span>
+                    <div class="mt-12 flex justify-between items-end">
+                        <span class="text-[10px] font-bold tracking-widest uppercase bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded">New Technical Node</span>
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-all group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
                     </div>
                 </a>
 
                 <a href="outlier-detector/" class="md:col-span-2 bg-surface-container-lowest p-8 flex flex-col justify-between group cursor-pointer hover:bg-surface transition-colors border-b-2 border-transparent hover:border-primary shadow-sm rounded-lg">
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="material-symbols-outlined text-4xl text-primary" data-icon="troubleshoot">troubleshoot</span>
+                        <span class="text-[9px] font-bold tracking-widest uppercase bg-primary/10 text-primary px-2 py-0.5 rounded">Popular</span>
+                    </div>
                     <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="material-symbols-outlined text-3xl text-primary" data-icon="troubleshoot">troubleshoot</span>
-                            <span class="text-[9px] font-bold tracking-widest uppercase bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded">Popular</span>
-                        </div>
                         <h3 class="text-2xl font-headline font-bold tracking-tight mb-2">Outlier Detector</h3>
-                        <p class="text-sm text-on-surface-variant leading-relaxed">Automated D'Agostino-Pearson normality testing. Intelligently routes to Grubb's Test or IQR depending on data distribution.</p>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Automated D'Agostino-Pearson normality testing. Intelligently routes to Grubb's Test or Robust IQR method.</p>
                     </div>
                 </a>
 
                 <a href="molarity-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="science">science</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">Molarity</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">Compute required mass or volume for solutions.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">Molarity</h4>
                 </a>
-
                 <a href="dilution-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="water_drop">water_drop</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">Dilution</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">C₁V₁ = C₂V₂ solvers with multiple units.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">Dilution</h4>
                 </a>
-
                 <a href="t-test-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="stacked_line_chart">stacked_line_chart</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">T-Test</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">Student's & Welch's tests for group means.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">T-Test</h4>
                 </a>
-
                 <a href="survival-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="timeline">timeline</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">Survival (KM)</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">Kaplan-Meier estimates & Log-Rank p-values.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">Survival (KM)</h4>
                 </a>
-
                 <a href="chi-square-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="grid_4x4">grid_4x4</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">Chi-Square</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">2x2 contingency analysis with Cramér's V.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">Chi-Square</h4>
                 </a>
-
                 <a href="hed-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="cruelty_free">cruelty_free</span>
-                    <div>
-                        <h4 class="font-headline font-bold text-lg">HED Scale</h4>
-                        <p class="text-xs text-on-surface-variant mt-1">FDA standard interspecies dose translation.</p>
-                    </div>
+                    <h4 class="font-headline font-bold text-lg">HED Scale</h4>
                 </a>
-
             </div>
         </section>
 
-        <div class="max-w-screen-2xl mx-auto px-6 py-8 relative z-10 text-center">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-9274620489745017"
-                 data-ad-slot="6554136062" 
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
+        <section class="px-6 py-16 max-w-screen-xl mx-auto z-10 relative">
+            <div class="flex justify-between items-end mb-8 border-b border-outline-variant/30 pb-4">
+                <h2 class="text-3xl font-headline font-bold tracking-tight text-on-surface">Scientific Insights</h2>
+                <a href="articles/" class="text-sm font-bold text-primary hover:underline">View All Articles &rarr;</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a href="articles/drosophila-brain-model/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Neuroscience</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">A Drosophila Computational Brain Model: Sensorimotor Processing</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">How modeling the entire connectome of a fruit fly brain predicts complex behaviors.</p>
+                    </div>
+                </a>
+                <a href="articles/frogs-deep-learning/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Deep Learning</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">FROGS: Revolutionizing Drug Target Prediction with Deep Learning</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">Applying word-embedding technology to gene signatures for enhanced pharmacological predictions.</p>
+                    </div>
+                </a>
+                <a href="articles/bracanalysis-cdx-lynparza/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Precision Oncology</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">BRACAnalysis CDx: Companion Diagnostics for Lynparza</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">Expert review of the FDA-approved diagnostic tool for targeting HRD via synthetic lethality.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
 
-        <section class="bg-surface-container-low mt-12 px-6 py-20 relative overflow-hidden">
-            <div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 relative z-10">
-                <div class="md:col-span-5">
+        <section class="bg-surface-container-low px-6 py-20 relative overflow-hidden">
+            <div class="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                <div class="lg:col-span-5">
                     <h2 class="text-4xl md:text-5xl font-headline font-bold tracking-tighter mb-8 leading-tight">Why Statistical <br/>Rigor Matters</h2>
-                    <div class="space-y-6 text-on-surface-variant leading-relaxed font-light">
-                        <p>In biological research, pharmacology, and translational science, reproducibility is the absolute cornerstone of scientific advancement. Achieving "statistical significance" is not just a mandatory requirement for journal publication; it is the fundamental mathematical validation that your experimental results are genuine.</p>
-                        <p>Scientist's Toolkit was engineered by a Ph.D. researcher to bridge the gap between basic spreadsheet software and complex statistical environments. All calculations are performed strictly client-side within your browser, ensuring complete confidentiality for your pre-published research.</p>
+                    <div class="space-y-6 text-on-surface-variant leading-relaxed font-light text-lg">
+                        <p>In the empirical domain, the threshold between discovery and noise is governed by mathematical discipline. Achieving "statistical significance" is not just a mandatory requirement for journal publication; it is the fundamental mathematical validation that your experimental results are genuine.</p>
+                        <p>Our algorithms follow standard, peer-reviewed methodology to ensure that your findings are ready for rigorous scientific review.</p>
                     </div>
                 </div>
-                
-                <div class="md:col-span-7">
+                <div class="lg:col-span-7">
                     <div class="bg-surface-container-lowest p-1 rounded-lg shadow-sm border border-outline-variant/30 overflow-hidden">
-                        <div class="p-6 border-b border-surface-container flex justify-between items-center bg-surface-bright">
-                            <span class="font-headline font-bold text-sm tracking-tight uppercase">Understanding P-Values</span>
-                            <span class="text-[10px] text-outline font-bold tracking-widest">ASTERISK NOTATION</span>
+                        <div class="p-6 border-b border-surface-container flex justify-between items-center bg-surface-bright text-[10px] font-bold tracking-widest uppercase text-outline">
+                            Comprehensive Statistical Guide
+                            <span>TABLE ID: STAT_GUIDE_01</span>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="bg-surface-container-low text-[10px] font-bold uppercase tracking-widest text-outline">
-                                    <tr>
-                                        <th class="px-6 py-4 border-b border-surface-container">P-value Range</th>
-                                        <th class="px-6 py-4 border-b border-surface-container">Symbol</th>
-                                        <th class="px-6 py-4 border-b border-surface-container">Interpretation</th>
-                                    </tr>
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead class="bg-surface-container-low font-headline font-bold text-outline text-[10px] uppercase tracking-widest">
+                                    <tr><th class="px-6 py-4">Methodology</th><th class="px-6 py-4">Data Type</th><th class="px-6 py-4">Primary Metric</th><th class="px-6 py-4">Confidence</th></tr>
                                 </thead>
-                                <tbody class="text-sm font-medium text-on-surface-variant">
-                                    <tr class="hover:bg-surface-bright transition-colors">
-                                        <td class="px-6 py-4 border-b border-surface-container font-bold text-on-surface">P > 0.05</td>
-                                        <td class="px-6 py-4 border-b border-surface-container">ns</td>
-                                        <td class="px-6 py-4 border-b border-surface-container font-light">Not Significant. Difference could easily occur by random chance.</td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-bright transition-colors">
-                                        <td class="px-6 py-4 border-b border-surface-container font-bold text-on-surface">P ≤ 0.05</td>
-                                        <td class="px-6 py-4 border-b border-surface-container text-primary text-lg">*</td>
-                                        <td class="px-6 py-4 border-b border-surface-container font-light">Significant. Standard baseline threshold for academic publication.</td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-bright transition-colors">
-                                        <td class="px-6 py-4 border-b border-surface-container font-bold text-on-surface">P ≤ 0.01</td>
-                                        <td class="px-6 py-4 border-b border-surface-container text-primary text-lg">**</td>
-                                        <td class="px-6 py-4 border-b border-surface-container font-light">Very Significant. High confidence in the experimental result.</td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-bright transition-colors">
-                                        <td class="px-6 py-4 border-b border-surface-container font-bold text-on-surface">P ≤ 0.001</td>
-                                        <td class="px-6 py-4 border-b border-surface-container text-primary text-lg">***</td>
-                                        <td class="px-6 py-4 border-b border-surface-container font-light">Highly Significant. Extremely strong evidence against the null.</td>
-                                    </tr>
-                                    <tr class="bg-surface-container-low">
-                                        <td colspan="3" class="px-6 py-4 text-xs font-light">
-                                            <strong>💡 Statistical Pro Tip:</strong> Never evaluate data relying solely on P-values. Always report the Effect Size and 95% Confidence Intervals (CI). Our tools automatically provide these metrics.
-                                        </td>
-                                    </tr>
+                                <tbody class="font-medium text-on-surface-variant">
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Student's T-Test</td><td class="px-6 py-5 font-light">Interval/Ratio</td><td class="px-6 py-5 font-light">p-value</td><td class="px-6 py-5 font-light">95% / 99%</td></tr>
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Kaplan-Meier</td><td class="px-6 py-5 font-light">Time-to-Event</td><td class="px-6 py-5 font-light">Median Survival</td><td class="px-6 py-5 font-light">Log-Rank Test</td></tr>
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Pearson Chi-Square</td><td class="px-6 py-5 font-light">Categorical</td><td class="px-6 py-5 font-light">χ² Value</td><td class="px-6 py-5 font-light">Cramér's V</td></tr>
+                                    <tr class="bg-surface-container-low"><td colspan="4" class="px-6 py-4 text-xs font-light italic">💡 Statistical Pro Tip: Always report Effect Size and 95% Confidence Intervals (CI).</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="absolute -bottom-16 -right-16 text-[24rem] font-headline font-bold text-outline-variant/10 select-none pointer-events-none tracking-tighter">Σ</div>
-        </section>
-
-        <section class="px-6 py-20 max-w-screen-md mx-auto z-10 relative">
-            <h2 class="text-3xl font-headline font-bold text-center mb-12">Frequently Asked Questions</h2>
-            
-            <div class="space-y-8">
-                <div class="border-b border-outline-variant/30 pb-6">
-                    <h4 class="font-headline font-bold text-lg mb-2">Are these calculators suitable for peer-reviewed publications?</h4>
-                    <p class="text-on-surface-variant font-light leading-relaxed">Yes. The mathematical algorithms and statistical libraries (such as jStat) powering the Scientist's Toolkit are based on standard, universally accepted formulas used in professional software.</p>
-                </div>
-                <div class="border-b border-outline-variant/30 pb-6">
-                    <h4 class="font-headline font-bold text-lg mb-2">Is my research data stored on your servers?</h4>
-                    <p class="text-on-surface-variant font-light leading-relaxed">No. All calculations are performed strictly client-side within your own web browser using JavaScript. We do not collect, store, or transmit your raw experimental data.</p>
-                </div>
-                <div class="border-b border-outline-variant/30 pb-6">
-                    <h4 class="font-headline font-bold text-lg mb-2">Why is Welch's T-Test recommended over Student's T-Test?</h4>
-                    <p class="text-on-surface-variant font-light leading-relaxed">Student's T-Test assumes that both groups have equal variance. In real-world biology, treated groups often have larger variances. Welch's T-Test adjusts the degrees of freedom to account for unequal variances, reducing Type I errors.</p>
-                </div>
-            </div>
+            <div class="absolute -bottom-16 -right-16 text-[24rem] font-headline font-bold text-outline-variant/10 select-none pointer-events-none tracking-tighter italic">Σ</div>
         </section>
 
     </main>
 
-    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
-            <div class="text-center md:text-left">
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0 text-center md:text-left">
+            <div>
                 <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
                 <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
             </div>
@@ -316,7 +258,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Dynamic Quote Array
             const quotes = [
                 "Cheering for your dedication and hard work today. 🧪", 
                 "Behind every data point, there is a researcher’s effort. 📊",
@@ -327,11 +268,8 @@
                 "Believe in your hypothesis, but trust your data. 📉"
             ];
             const quoteDisplay = document.getElementById("quote-display");
-            if (quoteDisplay) {
-                quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            }
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
-            // Firebase Init
             try {
                 const firebaseConfig = {
                     apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
@@ -353,14 +291,11 @@
                             docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
                                   .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
                         }
-                        docRef.onSnapshot((doc) => { 
-                            if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; 
-                        });
+                        docRef.onSnapshot((doc) => { if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; });
                     }
                 }
             } catch (e) {}
         });
     </script>
-    <script src="assets/main.js"></script>
 </body>
 </html>
