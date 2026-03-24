@@ -64,23 +64,27 @@
 </head>
 <body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
 
-    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
-        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+<nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        
+        <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+            
             <div class="flex items-center gap-8">
                 <a href="./" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                
                 <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
                     <a class="text-primary" href="./">Home</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="molarity-calculator/">Molarity</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="dilution-calculator/">Dilution</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="protein-calculator/">Protein</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="outlier-detector/">Outlier</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="t-test-calculator/">T-Test</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="chi-square-calculator/">Chi-Square</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="hed-calculator/">HED</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="survival-calculator/">Survival</a>
-                    <a class="text-slate-500 hover:text-slate-900" href="articles/">Articles</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="articles/">Articles</a>
                 </div>
             </div>
+
             <div class="flex items-center gap-4">
                 <a href="board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
                 <a href="help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
@@ -88,6 +92,7 @@
                 </a>
             </div>
         </div>
+
         <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
             <a class="text-primary whitespace-nowrap" href="./">Home</a>
             <a class="text-slate-500 whitespace-nowrap" href="molarity-calculator/">Molarity</a>
@@ -130,7 +135,7 @@
                     <div>
                         <span class="material-symbols-outlined text-4xl text-primary mb-6" data-icon="biotech">biotech</span>
                         <h3 class="text-4xl font-headline font-bold tracking-tight mb-4 leading-tight">Protein <br/>(Western Blot)</h3>
-                        <p class="text-on-surface-variant leading-relaxed text-lg">Advanced linear regression for BSA/Bradford standard curves. Instantly calculate exact volumes for Sample, Buffer, and Dye with 1:1:1 normalization.</p>
+                        <p class="text-on-surface-variant leading-relaxed text-lg">Advanced linear regression for BSA/Bradford standard curves. Instantly calculate exact volumes for Sample, Buffer, and Dye with normalization.</p>
                     </div>
                     <div class="mt-12 flex justify-between items-end">
                         <span class="text-[10px] font-bold tracking-widest uppercase bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded">New Technical Node</span>

@@ -51,9 +51,12 @@
 <body class="bg-surface font-body text-on-surface flex flex-col min-h-screen">
 
 <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
-        <div class="flex flex-col md:flex-row justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto gap-3 md:gap-0">
+        
+        <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+            
             <div class="flex items-center gap-8">
                 <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                
                 <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
                     <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
                     <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
@@ -67,6 +70,7 @@
                     <a class="text-primary" href="../articles/">Articles</a>
                 </div>
             </div>
+
             <div class="flex items-center gap-4">
                 <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
                 <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
@@ -74,10 +78,11 @@
                 </a>
             </div>
         </div>
+
         <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
             <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
             <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
+            <a class="text-primary whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
             <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
             <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
             <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
