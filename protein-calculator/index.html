@@ -205,29 +205,32 @@
                     <h3 class="font-headline font-bold text-lg text-primary mb-4 flex items-center gap-2">
                         <span class="material-symbols-outlined text-base">science</span> Western Loading Parameters
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block font-body text-xs font-bold text-on-surface-variant mb-1">Target Mass (µg)</label>
-                            <input type="number" id="prot-target-mass" value="30" class="w-full p-2 bg-surface border border-outline-variant/50 rounded focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
-                        </div>
-                        <div>
-                            <label class="block font-body text-xs font-bold text-on-surface-variant mb-1">Total Volume (µL)</label>
-                            <input type="number" id="prot-total-vol" value="20" class="w-full p-2 bg-surface border border-outline-variant/50 rounded focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface">
-                        </div>
-                        <div>
-                            <label class="block font-body text-xs font-bold text-on-surface-variant mb-1">Sample Dye</label>
-                            <select id="prot-dye-x" class="w-full p-2 bg-surface border border-outline-variant/50 rounded font-body text-sm text-on-surface focus:outline-none cursor-pointer">
-                                <option value="2">2X</option>
-                                <option value="3">3X</option>
-                                <option value="4">4X</option>
-                                <option value="5" selected>5X</option>
-                                <option value="6">6X</option>
-                                <option value="7">7X</option>
-                                <option value="8">8X</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 text-left">
+    <div>
+        <label class="block font-headline text-sm font-bold mb-2">Target Mass (µg)</label>
+        <input type="number" id="prot-target-mass" placeholder="e.g., 30" class="w-full p-3 bg-white border border-outline-variant/50 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+    </div>
+    <div>
+        <label class="block font-headline text-sm font-bold mb-2">Total Volume (µL)</label>
+        <input type="number" id="prot-total-vol" placeholder="e.g., 20" class="w-full p-3 bg-white border border-outline-variant/50 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+    </div>
+    <div>
+        <label class="block font-headline text-sm font-bold mb-2">Sample Dye</label>
+        <select id="prot-dye-x" class="w-full p-3 bg-slate-100 border border-outline-variant/50 rounded-lg font-bold">
+            <option value="2">2X</option>
+            <option value="3">3X</option>
+            <option value="4">4X</option>
+            <option value="5" selected>5X</option>
+            <option value="6">6X</option>
+            <option value="7">7X</option>
+            <option value="8">8X</option>
+        </select>
+    </div>
+    <div>
+        <label class="block font-headline text-sm font-bold mb-2">Replicates (Multiplier)</label>
+        <input type="number" id="prot-replicates" value="1" min="1" class="w-full p-3 bg-white border border-outline-variant/50 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+    </div>
+</div>
 
                 <button id="calculate-protein" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
                     <span class="material-symbols-outlined">receipt_long</span> Generate Loading Recipe
