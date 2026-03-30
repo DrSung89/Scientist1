@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Decoding IND Applications: FDA vs. MFDS | Scientist's Toolkit</title>
+    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/ind-cta-requirements-fda-mfds/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = { theme: { extend: { colors: { "primary": "#0059bb", "surface": "#f8f9fa", "outline-variant": "#c1c6d7" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+    </script>
+    <style>.lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; } .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
+</head>
+<body class="bg-surface font-body text-slate-800 flex flex-col min-h-screen">
+    
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+            <div class="flex items-center gap-8">
+                <a href="../../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
+                    <a class="text-slate-500 hover:text-slate-900" href="../../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../survival-calculator/">Survival</a>
+                    <a class="text-primary" href="../">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900">Board</a>
+                <a href="../../help/" class="p-2 hover:bg-slate-200/50 rounded text-slate-500 hover:text-slate-900"><span class="material-symbols-outlined align-middle">help</span></a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../../">Home</a>
+            <a class="text-primary whitespace-nowrap" href="../">Articles</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../../protein-calculator/">Protein</a>
+        </div>
+    </nav>
+
+    <main class="relative pt-28 pb-20 flex-grow max-w-screen-md mx-auto w-full px-6 z-10">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/30 relative z-10">
+            <header class="mb-10 border-b border-outline-variant/30 pb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Regulatory Affairs</span>
+                    <time class="text-sm text-slate-500 font-medium">March 2026</time>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">Decoding IND Applications: The Anatomy of Clinical Trial Approvals</h1>
+                <p class="text-lg text-slate-600 font-light leading-relaxed">A comparative analysis of the core requirements to transition a drug from the bench to human clinical trials, synthesizing guidelines from the US FDA and the Korean MFDS.</p>
+            </header>
+
+            <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
+                
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Foundation of the IND</h2>
+                <p>Before any novel therapeutic can be administered to a human subject, it must successfully pass a rigorous regulatory checkpoint known as an Investigational New Drug (IND) application in the US, or a Clinical Trial Application (CTA) in many other jurisdictions. The US Food and Drug Administration (FDA) codifies these requirements under Title 21 of the Code of Federal Regulations, Part 312 (21 CFR 312)[cite: 1744]. The FDA explicitly states that its primary objective in reviewing an IND is, across all phases, to assure the safety and rights of human subjects[cite: 2016]. While Phase 1 review focuses heavily on safety, the FDA expands its scrutiny in Phases 2 and 3 to ensure the scientific quality of the clinical investigation is adequate to permit an evaluation of both effectiveness and safety[cite: 2016].</p>
+
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. Non-Clinical Data: Toxicology and Pharmacology</h2>
+                <p>A sponsor cannot simply test a chemical in humans based on an educated guess. The FDA mandates that the IND contain adequate information about pharmacological and toxicological studies conducted in laboratory animals or in vitro, providing a basis to conclude that human testing is reasonably safe[cite: 2138]. This submission must include an integrated summary of toxicological effects and a statement declaring whether the studies complied with Good Laboratory Practice (GLP) regulations[cite: 2145, 2151].</p>
+                <p>The Korean Ministry of Food and Drug Safety (MFDS) approaches this with a highly structured, drug-type-specific matrix[cite: 1706]. According to MFDS guidelines, the scope of required non-clinical data varies depending on whether the product is a completely new molecular entity, a new salt, or a new administration route[cite: 1706]. For example, the MFDS dictates precise timing for genotoxicity studies: in vitro mutation and chromosomal aberration tests must be submitted prior to Phase 1[cite: 1720]. If these tests yield positive or pseudo-positive results, in vivo micronucleus test data must also be provided before Phase 1; if negative, the in vivo data can be delayed until Phase 2[cite: 1720, 1721]. Furthermore, if initial repeated-dose toxicity studies adequately evaluated male reproductive organs, the formal male reproductive toxicity study can be deferred until the initiation of Phase 3[cite: 1716].</p>
+
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. Chemistry, Manufacturing, and Controls (CMC)</h2>
+                <p>Demonstrating how a drug is made is just as important as showing what it does. Both the FDA and MFDS require comprehensive Chemistry, Manufacturing, and Control (CMC) data[cite: 1706, 2110]. The FDA requires sufficient information to assure the proper identification, quality, purity, and strength of the investigational drug[cite: 2112].</p>
+                <p>However, regulators acknowledge that drug manufacturing is an iterative process. The FDA specifically notes that manufacturing methods will likely evolve as the investigation progresses from pilot-scale to expanded clinical trials[cite: 2113]. Therefore, in a Phase 1 IND submission, the primary emphasis is placed on the identification and control of the raw materials and the new drug substance, with the understanding that final, locked-down specifications for the drug product are not expected until the end of the investigational process[cite: 2114, 2115].</p>
+
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">4. Clinical Protocols and the Investigator's Brochure</h2>
+                <p>The core of the clinical strategy is defined by the study protocols and the Investigator's Brochure (IB). The FDA requires an IB to be provided to each participating investigator before the study begins[cite: 2698]. The IB serves as a comprehensive manual containing a summary of the drug's pharmacological and toxicological effects, pharmacokinetics, and any previous human experience[cite: 2076, 2082, 2083].</p>
+                <p>When it comes to the clinical protocols themselves, regulatory expectations scale with the phase of development. Under 21 CFR 312, Phase 1 protocols may be less detailed and more flexible than those for later phases[cite: 2087]. A Phase 1 protocol is primarily directed at providing an outline of the investigation—such as estimating the number of patients and describing safety exclusions—specifying in detail only those elements critical to subject safety, like vital signs and blood chemistry monitoring[cite: 2088]. Conversely, Phase 2 and 3 investigations require highly detailed protocols that describe all aspects of the study and incorporate planned alternatives or contingencies for anticipated deviations as the trial progresses[cite: 2090, 2091].</p>
+
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-primary my-8">
+                    <p class="text-sm text-blue-900 m-0"><strong>Toolkit Tip:</strong> When submitting non-clinical pharmacology data for a new drug, determining the correct starting dose for Phase 1 human trials is critical to ensure safety. Use our <a href="../../hed-calculator/" class="font-bold underline">Human Equivalent Dose (HED) Calculator</a> to accurately translate your animal NOAEL (No Observed Adverse Effect Level) data into safe human dosing metrics.</p>
+                </div>
+            </div>
+
+            <footer class="mt-16 pt-8 border-t border-outline-variant/30">
+                <h3 class="text-lg font-headline font-bold text-slate-900 mb-4">References</h3>
+                <ol class="list-decimal pl-5 text-sm text-slate-500 space-y-2">
+                    <li>U.S. Food and Drug Administration. <em>21 CFR Part 312 - Investigational New Drug Application</em>.</li>
+                    <li>Ministry of Food and Drug Safety (MFDS). <em>의약품 임상시험 계획 승인에 관한 규정 [별표 1] 임상시험계획승인을 위한 제출자료의 범위</em>.</li>
+                </ol>
+            </footer>
+        </article>
+    </main>
+</body>
+</html>
