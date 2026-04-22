@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Clinical Trial Sample Size Strategy: Ziftomenib vs Revumenib | Scientist's Toolkit</title>
+    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/clinical-trial-sample-size/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = { theme: { extend: { colors: { "primary": "#0059bb", "surface": "#f8f9fa", "outline-variant": "#c1c6d7" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+    </script>
+    <style>.lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; } .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
+</head>
+<body class="bg-surface font-body text-slate-800 flex flex-col min-h-screen">
+    
+    <nav class="fixed top-0 w-full z-50 bg-slate-50/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+        <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+            <div class="flex items-center gap-8">
+                <a href="../../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
+                    <a class="text-slate-500 hover:text-slate-900" href="../../">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900" href="../../survival-calculator/">Survival</a>
+                    <a class="text-primary" href="../">Articles</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900">Board</a>
+                <a href="../../help/" class="p-2 hover:bg-slate-200/50 rounded text-slate-500 hover:text-slate-900"><span class="material-symbols-outlined align-middle">help</span></a>
+            </div>
+        </div>
+        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
+            <a class="text-slate-500 whitespace-nowrap" href="../../">Home</a>
+            <a class="text-primary whitespace-nowrap" href="../">Articles</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../../molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="../../protein-calculator/">Protein</a>
+        </div>
+    </nav>
+
+    <main class="relative pt-28 pb-20 flex-grow max-w-screen-md mx-auto w-full px-6 z-10">
+        <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/30 relative z-10">
+            <header class="mb-10 border-b border-outline-variant/30 pb-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Biostatistics</span>
+                    <time class="text-sm text-slate-500 font-medium">May 2026</time>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">The Science of Sample Size: Statistical Strategies in Ziftomenib and Revumenib Trials</h1>
+                <p class="text-lg text-slate-600 font-light leading-relaxed">Analyzing how two groundbreaking menin inhibitors utilized different statistical frameworks—Exact Binomial Distribution vs. Simon's Two-Stage Design—to optimize their clinical trial trajectories.</p>
+            </header>
+
+            <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
+                
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Crucial Role of Sample Size in Clinical Oncology</h2>
+                <p>In the development of novel targeted therapies for acute myeloid leukemia (AML), calculating the appropriate sample size is not merely a mathematical exercise; it is a profound strategic decision. Enroll too few patients, and the trial lacks the statistical power to prove efficacy. Enroll too many, and the sponsor wastes invaluable time, resources, and potentially exposes more patients than necessary to an ineffective experimental drug. Recently, the development of two novel menin inhibitors—Ziftomenib and Revumenib—provided a fascinating masterclass in how statistical trial design is tailored to the specific phase and strategic goals of the drug's development.</p>
+
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. Ziftomenib: The Exact Binomial Distribution Approach</h2>
+                <p>Ziftomenib was evaluated in the KOMET-001 trial, specifically focusing on its registration-enabling Phase II portion for patients with relapsed/refractory NPM1-mutated (NPM1-m) AML. Because this portion of the trial was designed as a definitive, single-arm Phase II study aiming for accelerated approval, the researchers required a fixed, robust sample size to confidently demonstrate superiority over historical standards.</p>
+                <p>To achieve this, the statisticians utilized an <strong>Exact Binomial Distribution</strong> test. The historical standard-of-care complete remission (CR/CRh) rate for this heavily pretreated population was a dismal 12%. The trial was designed to test the hypothesis that Ziftomenib could achieve a 25% expected response rate. Using an exact binomial calculation (via EAST software), they determined that enrolling at least 85 patients would provide 89% statistical power to detect this difference, assuming a stringent one-sided alpha level of 0.025. This "fixed-N" approach is highly appropriate when the safety profile and preliminary efficacy are already well-understood from a preceding Phase I study, allowing the sponsor to commit fully to the target enrollment without planned early stopping for futility.</p>
+
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. Revumenib: Simon's Two-Stage Design for Rapid Go/No-Go</h2>
+                <p>In contrast, Revumenib was evaluated in the AUGMENT-101 trial, which was designed as a seamless Phase I/II study treating patients with relapsed/refractory KMT2A-rearranged (KMT2Ar) acute leukemia. Because Phase I and II were integrated, the sponsor needed a flexible statistical mechanism to quickly halt the trial if the drug proved ineffective in Phase II, thereby saving resources and protecting patients.</p>
+                
+                                
+                <p>To solve this, the researchers employed the <strong>minimax version of Simon's Two-Stage Design</strong>. They set a null hypothesis of a 10% CR+CRh rate against an alternative (target) rate of 25%, aiming for 90% power and a 2.5% one-sided significance level. Simon's minimax design split the enrollment into two distinct phases:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Stage 1 (Interim Analysis):</strong> The trial first enrolled 38 efficacy-evaluable adult patients. The rule was strict: if fewer than 5 patients (out of 38) responded, the trial would be immediately terminated for futility.</li>
+                    <li><strong>Stage 2:</strong> If 5 or more patients responded in Stage 1, the trial would get a "Go" decision and continue enrollment until reaching a total of 64 evaluable adult patients to confirm the final efficacy.</li>
+                </ul>
+
+<div class="bg-blue-50 p-8 rounded-xl border border-primary/20 shadow-sm my-10">
+                    <h3 class="text-xl font-headline font-bold text-primary mb-3">💡 Author's Practical Perspective: Strategic Judgment in Trial Design</h3>
+                    <p class="text-slate-700 text-sm md:text-base leading-relaxed">
+                        In clinical trials, there is no single "correct" method for determining sample size; rather, it is a matter of <strong>strategic judgment</strong> based on the specific stage of the drug's pipeline.
+                        <br><br>
+                        <strong>Revumenib</strong> utilized a <strong>Simon's two-stage design (minimax)</strong> because it was a seamless Phase 1/2 study. This approach is a highly efficient "Go/No-go" strategy, allowing the sponsor to perform an interim analysis with a minimal initial cohort (38 patients). It enables rapid termination if the drug lacks efficacy, thereby conserving resources and protecting patients from unnecessary exposure.
+                        <br><br>
+                        Conversely, <strong>Ziftomenib</strong> was positioned for a registration-enabling Phase II trial aimed at definitive FDA approval. Instead of an early-stopping strategy, they employed an <strong>Exact Binomial Distribution</strong> to ensure robust statistical power from the outset, committing to a fixed cohort of 85 patients. As demonstrated here, even for drugs with the same mechanism (Menin inhibitors), the statistical framework must be tailored precisely to the trial's regulatory objectives and clinical phase.
+                    </p>
+                </div>
+            </div>
+
+            <footer class="mt-16 pt-8 border-t border-outline-variant/30">
+                <h3 class="text-lg font-headline font-bold text-slate-900 mb-4">References</h3>
+                <ol class="list-decimal pl-5 text-sm text-slate-500 space-y-2">
+                    <li>Wang, E. S., et al. (2025). Ziftomenib in Relapsed or Refractory NPM1-Mutated AML. <em>Journal of Clinical Oncology</em>.</li>
+                    <li>Issa, G. C., et al. (2024). Menin Inhibition With Revumenib for KMT2A-Rearranged Relapsed or Refractory Acute Leukemia (AUGMENT-101). <em>Journal of Clinical Oncology</em>, 43(1), 75-84.</li>
+                </ol>
+            </footer>
+        </article>
+    </main>
+</body>
+</html>
