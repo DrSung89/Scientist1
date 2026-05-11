@@ -3,17 +3,29 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Articles & Scientific Guides | Scientist's Toolkit</title>
-    <meta name="description" content="In-depth articles, case studies, and reviews of FDA guidelines on pharmacology, drug-drug interactions, and clinical trial designs.">
-    <link rel="canonical" href="https://scientisttoolkit.xyz/articles/">
+    
+    <title>Scientist's Toolkit | Molarity, Statistics & Survival Analysis</title>
+    <meta name="description" content="Free all-in-one web tools for researchers: Molarity & Dilution calculators, HED conversion, Protein Quant, Outlier detection, T-Test, Chi-Square, and Survival Analysis.">
+    <link rel="canonical" href="https://scientisttoolkit.xyz/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Scientist's Toolkit | Molarity, Stats & Survival">
+    <meta property="og:description" content="Calculate Molarity, Dilution, Protein Quant and HED. Perform statistical tests like T-Test, Chi-Square, Outliers, and Kaplan-Meier Survival Analysis instantly.">
+    <meta property="og:url" content="https://scientisttoolkit.xyz/">
+    <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9274620489745017" crossorigin="anonymous"></script>
 
     <script id="tailwind-config">
       tailwind.config = {
@@ -22,7 +34,6 @@
           extend: {
             colors: {
               "surface-container-lowest": "#ffffff",
-              "surface-container-high": "#e7e8e9",
               "primary-fixed": "#d8e2ff",
               "on-primary-fixed-variant": "#004493",
               "surface-container-low": "#f3f4f5",
@@ -35,6 +46,9 @@
               "on-background": "#191c1d",
               "outline-variant": "#c1c6d7",
               "outline": "#717786",
+              "on-surface": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a"
             },
             fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] },
           },
@@ -48,289 +62,299 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen">
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
 
 <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
         
         <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
             
             <div class="flex items-center gap-8">
-                <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
+                <a href="./" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
                 
                 <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../dilution-calculator/">Dilution</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../protein-calculator/">Protein</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../outlier-detector/">Outlier</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../t-test-calculator/">T-Test</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../chi-square-calculator/">Chi-Square</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../hed-calculator/">HED</a>
-                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../survival-calculator/">Survival</a>
-                    <a class="text-primary" href="../articles/">Articles</a>
+                    <a class="text-primary" href="./">Home</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="molarity-calculator/">Molarity</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="dilution-calculator/">Dilution</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="protein-calculator/">Protein</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="outlier-detector/">Outlier</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="t-test-calculator/">T-Test</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="chi-square-calculator/">Chi-Square</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="hed-calculator/">HED</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="survival-calculator/">Survival</a>
+                    <a class="text-slate-500 hover:text-slate-900 transition-colors" href="articles/">Articles</a>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
-                <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
+                <a href="board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
+                <a href="help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
                     <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
                 </a>
             </div>
         </div>
 
         <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
-            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../hed-calculator/">HED</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../survival-calculator/">Survival</a>
-            <a class="text-primary whitespace-nowrap" href="../articles/">Articles</a>
+            <a class="text-primary whitespace-nowrap" href="./">Home</a>
+            <a class="text-slate-500 whitespace-nowrap" href="molarity-calculator/">Molarity</a>
+            <a class="text-slate-500 whitespace-nowrap" href="dilution-calculator/">Dilution</a>
+            <a class="text-slate-500 whitespace-nowrap" href="protein-calculator/">Protein</a>
+            <a class="text-slate-500 whitespace-nowrap" href="outlier-detector/">Outlier</a>
+            <a class="text-slate-500 whitespace-nowrap" href="t-test-calculator/">T-Test</a>
+            <a class="text-slate-500 whitespace-nowrap" href="chi-square-calculator/">Chi-Square</a>
+            <a class="text-slate-500 whitespace-nowrap" href="hed-calculator/">HED</a>
+            <a class="text-slate-500 whitespace-nowrap" href="survival-calculator/">Survival</a>
+            <a class="text-slate-500 whitespace-nowrap" href="articles/">Articles</a>
         </div>
     </nav>
 
-    <main class="relative pt-24 lg:pt-20 flex-grow">
+<main class="relative pt-24 lg:pt-16 flex-grow">
         <div class="fixed inset-0 lab-grid pointer-events-none z-0"></div>
 
-        <section class="relative px-6 py-12 max-w-screen-md mx-auto z-10 text-center">
-            <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Publications</span>
-            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Latest Articles & Reviews</h1>
-            <p class="text-lg text-on-surface-variant font-light leading-relaxed">In-depth articles, case studies, and reviews of FDA guidelines and scientific breakthroughs.</p>
+        <section class="relative px-6 py-16 md:py-24 max-w-screen-xl mx-auto z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-center">
+                
+                <div class="text-left">
+                    <span class="inline-block px-4 py-1.5 bg-primary text-white text-[10px] font-bold tracking-[0.2em] uppercase mb-6 rounded-sm shadow-md shadow-primary/20">
+                        Toolkit Version 3.0
+                    </span>
+                    
+                    <h1 class="text-5xl md:text-6xl xl:text-7xl font-headline font-bold text-slate-900 tracking-tighter leading-[1.1] mb-6">
+                        Precision <br/> Research <br/> <span class="text-primary">Instrumentation.</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-slate-600 font-light leading-relaxed mb-10 max-w-lg">
+                        A definitive digital repository for rigorous statistical methodology and laboratory computations. Engineered for peer-reviewed accuracy and empirical consistency.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 mb-10">
+                        <a href="protein-calculator/" class="bg-primary text-white px-8 py-4 rounded-xl font-headline font-bold hover:bg-blue-800 transition-all duration-300 shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">science</span> Start Calculating
+                        </a>
+                        <a href="articles/" class="bg-blue-50 text-primary border border-primary/20 px-8 py-4 rounded-xl font-headline font-bold hover:bg-blue-100 transition-all duration-300 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">menu_book</span> Read Articles
+                        </a>
+                    </div>
+                    
+                    <div class="border-l-4 border-primary/40 pl-5 py-1">
+                        <p id="quote-display" class="text-sm font-medium text-slate-500 italic">
+                            Loading inspiration... 🧪
+                        </p>
+                    </div>
+                </div>
+
+                <div class="relative hidden lg:block">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary to-blue-300 rounded-[2.5rem] transform rotate-3 opacity-10 scale-105"></div>
+                    <div class="absolute inset-0 bg-gradient-to-bl from-primary to-blue-500 rounded-[2.5rem] transform -rotate-2 opacity-15 scale-105"></div>
+                    
+                    <div class="relative bg-white/90 backdrop-blur-md border border-outline-variant/30 p-8 rounded-3xl shadow-2xl grid grid-cols-2 gap-5">
+                        
+                        <a href="molarity-calculator/" class="group p-6 bg-slate-50 hover:bg-primary rounded-2xl border border-slate-100 hover:border-primary transition-all duration-300">
+                            <div class="w-12 h-12 bg-blue-100 group-hover:bg-white/20 rounded-full flex items-center justify-center mb-4 transition-colors">
+                                <span class="material-symbols-outlined text-primary group-hover:text-white">water_drop</span>
+                            </div>
+                            <h3 class="font-headline font-bold text-slate-900 group-hover:text-white mb-1 text-lg">Molarity</h3>
+                            <p class="text-xs text-slate-500 group-hover:text-blue-100 font-light">Mass & Volume</p>
+                        </a>
+
+                        <a href="t-test-calculator/" class="group p-6 bg-slate-50 hover:bg-primary rounded-2xl border border-slate-100 hover:border-primary transition-all duration-300">
+                            <div class="w-12 h-12 bg-blue-100 group-hover:bg-white/20 rounded-full flex items-center justify-center mb-4 transition-colors">
+                                <span class="material-symbols-outlined text-primary group-hover:text-white">stacked_line_chart</span>
+                            </div>
+                            <h3 class="font-headline font-bold text-slate-900 group-hover:text-white mb-1 text-lg">T-Test</h3>
+                            <p class="text-xs text-slate-500 group-hover:text-blue-100 font-light">Significance</p>
+                        </a>
+
+                        <a href="articles/" class="group p-6 bg-primary rounded-2xl border border-primary transition-all duration-300 col-span-2 flex items-center justify-between overflow-hidden relative">
+                            <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-500"></div>
+                            <div class="relative z-10">
+                                <span class="inline-block px-2 py-1 bg-white/20 text-white text-[10px] font-bold tracking-wider uppercase mb-2 rounded backdrop-blur-sm">New Updates</span>
+                                <h3 class="font-headline font-bold text-white text-xl mb-1">Clinical Trial Strategies</h3>
+                                <p class="text-sm text-blue-100 font-light">Explore FDA guidances & analyses</p>
+                            </div>
+                            <div class="relative z-10 w-10 h-10 bg-white text-primary rounded-full flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform">
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
         </section>
-        <section class="px-6 pb-24 max-w-screen-md mx-auto z-10 relative space-y-6">
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Epidemiology</span>
-                    <span class="text-xs text-outline font-body">• Jan 2025</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="cancer-statistics-2025/" class="before:absolute before:inset-0 relative">Unpacking "Cancer Statistics, 2025": Hidden Crises in Survival and Stage Distribution</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A deep dive into the annual American Cancer Society report, highlighting the unparalleled power of SEER registry data to reveal the fatal paradox of distant-stage diagnoses.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
 
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Clinical Trial Strategy</span>
-                    <span class="text-xs text-outline font-body">• Jun 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="quizartinib-risk-benefit-strategy/" class="before:absolute before:inset-0 relative">Mastering the Risk-Benefit Balance: The Strategic Evolution of Quizartinib</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Explore how developers navigated an FDA rejection due to cardiac toxicity, strategically pivoted their clinical trial design to a frontline combination therapy, and ultimately secured approval for Quizartinib.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
+        <section class="px-6 py-8 max-w-screen-xl mx-auto z-10 relative">
+            <h2 class="text-sm font-headline font-bold tracking-widest uppercase text-outline mb-6">Primary Modules</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <a href="protein-calculator/" class="md:col-span-2 md:row-span-2 bg-surface-container-lowest p-8 flex flex-col justify-between group cursor-pointer hover:bg-surface transition-colors border-b-2 border-transparent hover:border-primary shadow-sm rounded-lg">
+                    <div>
+                        <span class="material-symbols-outlined text-4xl text-primary mb-6" data-icon="biotech">biotech</span>
+                        <h3 class="text-4xl font-headline font-bold tracking-tight mb-4 leading-tight">Protein <br/>(Western Blot)</h3>
+                        <p class="text-on-surface-variant leading-relaxed text-lg">Advanced linear regression for BSA/Bradford standard curves. Instantly calculate exact volumes for Sample, Buffer, and Dye with normalization.</p>
+                    </div>
+                    <div class="mt-12 flex justify-between items-end">
+                        <span class="text-[10px] font-bold tracking-widest uppercase bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded">New Technical Node</span>
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-all group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+                    </div>
+                </a>
 
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Molecular Biology</span>
-                    <span class="text-xs text-outline font-body">• Sep 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="dna-guided-crispr-cas12a-rna-targeting/" class="before:absolute before:inset-0 relative">Rethinking CRISPR: DNA-Guided Cas12a for Programmable RNA Targeting</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A groundbreaking shift in the CRISPR paradigm reveals that Cas effectors can be reprogrammed to use highly stable DNA guides to target and cleave RNA, opening safer avenues for treating genetic diseases like Cystic Fibrosis and SMA.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
+                <a href="outlier-detector/" class="md:col-span-2 bg-surface-container-lowest p-8 flex flex-col justify-between group cursor-pointer hover:bg-surface transition-colors border-b-2 border-transparent hover:border-primary shadow-sm rounded-lg">
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="material-symbols-outlined text-4xl text-primary" data-icon="troubleshoot">troubleshoot</span>
+                        <span class="text-[9px] font-bold tracking-widest uppercase bg-primary/10 text-primary px-2 py-0.5 rounded">Popular</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-headline font-bold tracking-tight mb-2">Outlier Detector</h3>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Automated D'Agostino-Pearson normality testing. Intelligently routes to Grubb's Test or Robust IQR method.</p>
+                    </div>
+                </a>
 
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Computational Biology</span>
-                    <span class="text-xs text-outline font-body">• Aug 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="llm-attention-sinks-biology/" class="before:absolute before:inset-0 relative">The Danger of Context Amnesia: Why LLMs Fail at Biological Complexity</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A mechanistic analysis of the "Repeated Token Divergence" phenomenon exposes a mathematical flaw in LLMs. We explore why "softmax leakage" and context erasure make applying LLMs to highly contextual fields like biology exceptionally dangerous.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Clinical Trial Strategy</span>
-                    <span class="text-xs text-outline font-body">• Jul 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="proof-of-concept-midostaurin/" class="before:absolute before:inset-0 relative">Proof of Concept in First-in-Class Drugs: The Midostaurin Case</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">An analysis of how the first-in-class FLT3 inhibitor, midostaurin, successfully achieved its Proof of Concept (PoC) by utilizing flexible evaluation criteria like 'Blast Response' when stringent modern endpoints would have deemed it a failure.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Clinical Trial Design</span>
-                    <span class="text-xs text-outline font-body">• May 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="clinical-trial-endpoints-gilteritinib/" class="before:absolute before:inset-0 relative">The Dilemma of Primary Endpoints: Lessons from Gilteritinib's Frontline Phase 3 Failure</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">An analysis of why a highly effective targeted therapy combination failed its Phase 3 Overall Survival (OS) endpoint, exploring the critical impact of crossover effects and the strategic importance of choosing between OS, PFS, and EFS.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Biostatistics</span>
-                    <span class="text-xs text-outline font-body">• May 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="clinical-trial-sample-size/" class="before:absolute before:inset-0 relative">The Science of Sample Size: Statistical Strategies in Ziftomenib and Revumenib Trials</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Analyzing how two groundbreaking menin inhibitors utilized different statistical frameworks—Exact Binomial Distribution vs. Simon's Two-Stage Design—to optimize their clinical trial trajectories and Go/No-Go decisions.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-<article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Regulatory Affairs</span>
-                    <span class="text-xs text-outline font-body">• Mar 2026</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="ind-cta-requirements-fda-mfds/" class="before:absolute before:inset-0 relative">Decoding IND Applications: The Anatomy of Clinical Trial Approvals</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A comparative analysis of the core requirements to transition a drug from the bench to human clinical trials, synthesizing FDA and MFDS guidelines.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Neuroscience</span>
-                    <span class="text-xs text-outline font-body">• Oct 2024</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="drosophila-brain-model/" class="before:absolute before:inset-0 relative">A Computational Model of the Drosophila Brain: Unlocking Sensorimotor Processing</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">How researchers mapped the entire connectome of a fruit fly brain into a leaky integrate-and-fire model to predict complex feeding and grooming behaviors.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Computational Biology</span>
-                    <span class="text-xs text-outline font-body">• Feb 2024</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="frogs-deep-learning/" class="before:absolute before:inset-0 relative">FROGS: How Deep Learning from NLP is Revolutionizing Drug Target Prediction</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Applying the 'word2vec' concept to genes. Discover how Functional Representation of Gene Signatures (FROGS) improves compound-target association predictions.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Precision Medicine</span>
-                    <span class="text-xs text-outline font-body">• Aug 2015</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="bracanalysis-cdx-lynparza/" class="before:absolute before:inset-0 relative">BRACAnalysis CDx: Pioneering Companion Diagnostics for PARP Inhibitors</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">An expert review of the first FDA-approved companion diagnostic tool for ovarian cancer, targeting homologous recombination deficiency via synthetic lethality.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Neuroengineering</span>
-                    <span class="text-xs text-outline font-body">• Nov 2016</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="brain-spinal-interface-nature/" class="before:absolute before:inset-0 relative">Bypassing Paralysis: The Dawn of Brain-Spinal Interfaces in Primates</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A review of the groundbreaking Nature paper that demonstrated how humanity's technological advancement can restore locomotion in paralyzed primates.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Behavioral Science</span>
-                    <span class="text-xs text-outline font-body">• Jun 2006</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="empathy-in-mice-science/" class="before:absolute before:inset-0 relative">What Makes Us Human? The Power of Creative Thinking in Proving Empathy in Mice</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Exploring a classic Science paper that elegantly challenged the notion that empathy is a uniquely human trait through a simple, yet profound experimental design.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-            
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Regulatory Policy</span>
-                    <span class="text-xs text-outline font-body">• Dec 2024</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="accelerated-approval-guidance/" class="before:absolute before:inset-0 relative">FDA Accelerated Approval: Endpoints, Confirmatory Trials, and Expedited Withdrawal</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A deep dive into the updated FDA guidance on the accelerated approval pathway for serious conditions.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Clinical Trial Design</span>
-                    <span class="text-xs text-outline font-body">• Jul 2025</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="novel-cancer-drug-combinations/" class="before:absolute before:inset-0 relative">Evaluating Contribution of Effect in Novel Cancer Drug Combinations</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Insights into the FDA guidance on demonstrating the individual contribution of drugs in combination therapies.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Precision Oncology</span>
-                    <span class="text-xs text-outline font-body">• Apr 2020</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="fda-companion-diagnostics/" class="before:absolute before:inset-0 relative">Broader Labeling for In Vitro Companion Diagnostics (CDx)</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">Understanding FDA's push towards precision medicine by allowing broader labeling of companion diagnostic devices.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Pharmacology</span>
-                    <span class="text-xs text-outline font-body">• Aug 2024</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="fda-m12-ddi-guidance/" class="before:absolute before:inset-0 relative">Navigating the ICH M12 Guidance on Drug-Drug Interaction Studies</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">A comprehensive review of the latest FDA/ICH M12 guidelines for in vitro and clinical evaluation of metabolic enzyme- and transporter-mediated DDIs.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
-            <article class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/30 shadow-sm hover:border-primary transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold tracking-widest uppercase text-primary">Clinical Oncology</span>
-                    <span class="text-xs text-outline font-body">• Apr 2024</span>
-                </div>
-                <h3 class="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    <a href="cancer-trial-eligibility/" class="before:absolute before:inset-0 relative">Broadening Eligibility in Cancer Clinical Trials: Washout, Meds, and Performance Status</a>
-                </h3>
-                <p class="text-on-surface-variant font-light leading-relaxed mb-4">An analysis of the FDA's draft guidances on modernizing oncology trial eligibility criteria to improve diversity.</p>
-                <div class="text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">menu_book</span> Read Article</div>
-            </article>
-
+                <a href="molarity-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="science">science</span>
+                    <h4 class="font-headline font-bold text-lg">Molarity</h4>
+                </a>
+                <a href="dilution-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="water_drop">water_drop</span>
+                    <h4 class="font-headline font-bold text-lg">Dilution</h4>
+                </a>
+                <a href="t-test-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="stacked_line_chart">stacked_line_chart</span>
+                    <h4 class="font-headline font-bold text-lg">T-Test</h4>
+                </a>
+                <a href="survival-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="timeline">timeline</span>
+                    <h4 class="font-headline font-bold text-lg">Survival (KM)</h4>
+                </a>
+                <a href="chi-square-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="grid_4x4">grid_4x4</span>
+                    <h4 class="font-headline font-bold text-lg">Chi-Square</h4>
+                </a>
+                <a href="hed-calculator/" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="cruelty_free">cruelty_free</span>
+                    <h4 class="font-headline font-bold text-lg">HED Scale</h4>
+                </a>
+            </div>
         </section>
+
+        <section class="px-6 py-16 max-w-screen-xl mx-auto z-10 relative">
+            <div class="flex justify-between items-end mb-8 border-b border-outline-variant/30 pb-4">
+                <h2 class="text-3xl font-headline font-bold tracking-tight text-on-surface">Scientific Insights</h2>
+                <a href="articles/" class="text-sm font-bold text-primary hover:underline">View All Articles &rarr;</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a href="articles/drosophila-brain-model/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Neuroscience</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">A Drosophila Computational Brain Model: Sensorimotor Processing</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">How modeling the entire connectome of a fruit fly brain predicts complex behaviors.</p>
+                    </div>
+                </a>
+                <a href="articles/frogs-deep-learning/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Deep Learning</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">FROGS: Revolutionizing Drug Target Prediction with Deep Learning</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">Applying word-embedding technology to gene signatures for enhanced pharmacological predictions.</p>
+                    </div>
+                </a>
+                <a href="articles/bracanalysis-cdx-lynparza/" class="group">
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm group-hover:border-primary transition-all h-full flex flex-col">
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-primary mb-2">Precision Oncology</span>
+                        <h3 class="font-headline font-bold text-lg text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">BRACAnalysis CDx: Companion Diagnostics for Lynparza</h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3 font-light leading-relaxed">Expert review of the FDA-approved diagnostic tool for targeting HRD via synthetic lethality.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low px-6 py-20 relative overflow-hidden">
+            <div class="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                <div class="lg:col-span-5">
+                    <h2 class="text-4xl md:text-5xl font-headline font-bold tracking-tighter mb-8 leading-tight">Why Statistical <br/>Rigor Matters</h2>
+                    <div class="space-y-6 text-on-surface-variant leading-relaxed font-light text-lg">
+                        <p>In the empirical domain, the threshold between discovery and noise is governed by mathematical discipline. Achieving "statistical significance" is not just a mandatory requirement for journal publication; it is the fundamental mathematical validation that your experimental results are genuine.</p>
+                        <p>Our algorithms follow standard, peer-reviewed methodology to ensure that your findings are ready for rigorous scientific review.</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-7">
+                    <div class="bg-surface-container-lowest p-1 rounded-lg shadow-sm border border-outline-variant/30 overflow-hidden">
+                        <div class="p-6 border-b border-surface-container flex justify-between items-center bg-surface-bright text-[10px] font-bold tracking-widest uppercase text-outline">
+                            Comprehensive Statistical Guide
+                            <span>TABLE ID: STAT_GUIDE_01</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead class="bg-surface-container-low font-headline font-bold text-outline text-[10px] uppercase tracking-widest">
+                                    <tr><th class="px-6 py-4">Methodology</th><th class="px-6 py-4">Data Type</th><th class="px-6 py-4">Primary Metric</th><th class="px-6 py-4">Confidence</th></tr>
+                                </thead>
+                                <tbody class="font-medium text-on-surface-variant">
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Student's T-Test</td><td class="px-6 py-5 font-light">Interval/Ratio</td><td class="px-6 py-5 font-light">p-value</td><td class="px-6 py-5 font-light">95% / 99%</td></tr>
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Kaplan-Meier</td><td class="px-6 py-5 font-light">Time-to-Event</td><td class="px-6 py-5 font-light">Median Survival</td><td class="px-6 py-5 font-light">Log-Rank Test</td></tr>
+                                    <tr class="hover:bg-surface-bright transition-colors border-b border-surface-container"><td class="px-6 py-5 font-bold text-on-surface">Pearson Chi-Square</td><td class="px-6 py-5 font-light">Categorical</td><td class="px-6 py-5 font-light">χ² Value</td><td class="px-6 py-5 font-light">Cramér's V</td></tr>
+                                    <tr class="bg-surface-container-low"><td colspan="4" class="px-6 py-4 text-xs font-light italic">💡 Statistical Pro Tip: Always report Effect Size and 95% Confidence Intervals (CI).</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -bottom-16 -right-16 text-[24rem] font-headline font-bold text-outline-variant/10 select-none pointer-events-none tracking-tighter italic">Σ</div>
+        </section>
+
     </main>
 
-    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0">
-            <div class="text-center md:text-left">
+    <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-10 max-w-screen-2xl mx-auto gap-6 md:gap-0 text-center md:text-left">
+            <div>
                 <p class="font-body text-xs tracking-wide uppercase text-outline mb-1">© 2026 Scientist's Toolkit. Built for Scientific Excellence.</p>
+                <p id="visitor-count" class="font-body text-[10px] text-outline font-medium">Today's Visitors: Loading...</p>
             </div>
             <div class="flex flex-wrap justify-center gap-6">
-                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../about/">About</a>
-                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="../privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="about/">About</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="privacy/">Privacy Policy</a>
+                <a class="font-body text-xs tracking-wide uppercase text-outline hover:text-primary transition-colors" href="mailto:scientisttoolkit@gmail.com">Contact Support</a>
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const quotes = [
+                "Cheering for your dedication and hard work today. 🧪", 
+                "Behind every data point, there is a researcher’s effort. 📊",
+                "Science is a journey of resilience. Keep going. 🚀",
+                "Your failed experiment is just a stepping stone to discovery. 💡",
+                "Rest is also part of the experiment. Don't burn out. ☕",
+                "Small steps in the lab lead to giant leaps for knowledge. 👣",
+                "Believe in your hypothesis, but trust your data. 📉"
+            ];
+            const quoteDisplay = document.getElementById("quote-display");
+            if (quoteDisplay) quoteDisplay.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+                    authDomain: "scientisttoolkit.firebaseapp.com",
+                    projectId: "scientisttoolkit",
+                    storageBucket: "scientisttoolkit.firebasestorage.app",
+                    messagingSenderId: "611412737478",
+                    appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+                    measurementId: "G-5K0XVX0TFM"
+                };
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const db = firebase.firestore();
+                    const countSpan = document.getElementById('visitor-count');
+                    if (countSpan) {
+                        const dateStr = (new Date(new Date() - new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                        const docRef = db.collection('visitors').doc(dateStr);
+                        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+                            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+                                  .then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true')).catch(()=>{});
+                        }
+                        docRef.onSnapshot((doc) => { if (doc.exists) countSpan.innerHTML = `Today's Visitors: <strong class="text-primary">${doc.data().count.toLocaleString()}</strong>`; });
+                    }
+                }
+            } catch (e) {}
+        });
+    </script>
 </body>
 </html>
