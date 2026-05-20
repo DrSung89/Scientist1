@@ -73,7 +73,20 @@
         .lab-grid { background-image: radial-gradient(circle, #c1c6d7 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+
+        /* 추가할 CSS: 수정 가능한 셀(이름 변경용) 스타일 */
+        .editable-cell { 
+            cursor: text; 
+            border-bottom: 1px dashed #c1c6d7; /* 수정 가능함을 의미하는 점선 */
+            transition: all 0.2s ease-in-out; 
+            min-width: 80px;
+        }
+        .editable-cell:hover, .editable-cell:focus { 
+            background-color: #e7e8e9; 
+            outline: 2px solid #0059bb; 
+            border-radius: 4px;
+        }
+  
         /* 테이블/인풋 스핀 버튼 숨김 */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
@@ -349,7 +362,56 @@
                 }
             } catch (e) {}
         });
-    </script>
     <script src="../assets/main.js"></script>
+    <script>
+        // 1. 엑셀 Export 버튼 클릭 감지
+        document.addEventListener('click', function(e) {
+            // 버튼 자체나 버튼 안의 아이콘을 클릭했을 때 모두 작동하도록 closest 사용
+            const exportBtn = e.target.closest('#export-excel-btn');
+            if (exportBtn) {
+                exportTableToCSV('Protein_Quantification_Results.csv');
+            }
+        });
+
+        // 2. 테이블을 CSV로 변환하여 다운로드하는 핵심 로직
+        function exportTableToCSV(filename) {
+            const table = document.querySelector('#protein-result table');
+            if (!table) return;
+
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll('td, th');
+                
+                for (let j = 0; j < cols.length; j++) {
+                    // 셀의 텍스트를 가져오고, 엑셀에서 데이터가 깨지거나 줄바꿈되지 않도록 처리
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
+                    row.push('"' + data + '"');
+                }
+                csv.push(row.join(','));
+            }
+
+            downloadCSV(csv.join('\n'), filename);
+        }
+
+        // 3. 브라우저에서 파일을 생성하고 다운로드 창을 띄워주는 함수
+        function downloadCSV(csv, filename) {
+            let csvFile;
+            let downloadLink;
+
+            // 엑셀에서 특수문자(µL 등)가 깨지지 않도록 BOM(Byte Order Mark) 추가
+            csvFile = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+
+            downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    </script>
 </body>
 </html>

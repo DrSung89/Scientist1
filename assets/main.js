@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const finalTotDisp = tVol * reps;
 
                 html += `<tr>
-                    <td><strong>#${i + 1}</strong></td>
+                    <td contenteditable="true" class="editable-cell font-bold text-primary" style="outline:none;">Sample ${i + 1}</td>
                     <td>${od}</td>
                     <td>${Math.max(0, conc).toFixed(2)}</td>
                     <td style="color:#2563eb; font-weight:bold;">${finalSampleDisp.toFixed(2)} ${warnMsg}</td>
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const finalTotDisp = tVol * reps;
 
                 html += `<tr>
-                    <td><strong>#${i + 1}</strong></td>
+                    <td contenteditable="true" class="editable-cell font-bold text-primary" style="outline:none;">Sample ${i + 1}</td>
                     <td>${net.toFixed(3)}</td>
                     <td>${ratioText}</td>
                     <td style="color:#2563eb; font-weight:bold;">${finalSampleDisp.toFixed(2)}</td>
@@ -500,8 +500,18 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `</table>`;
         }
 
-        resDiv.innerHTML = html;
-        resDiv.style.display = 'block';
-        if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+          resDiv.innerHTML = html;
+        resDiv.style.display = 'block';
+        if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+
+        // 👇 엑셀 버튼 추가 로직 👇
+        const exportBtnHTML = `
+            <div class="flex justify-end mb-4">
+                <button id="export-excel-btn" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition-colors font-headline font-bold text-sm">
+                    <span class="material-symbols-outlined text-[18px]">table_view</span> Export to Excel
+                </button>
+            </div>
+        `;
+        resDiv.insertAdjacentHTML('afterbegin', exportBtnHTML);
     });
 });
