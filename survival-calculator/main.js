@@ -329,57 +329,72 @@ if(calcBtn) {
         });
     }
 // ==========================================
-    // ★ 새로 추가된 통계 함수 (Log-Rank Test)
+    // ★ 새로 추가된 통계 함수 (Log-Rank Test, HR, OR)
     // ==========================================
     function calculateLogRankStats(groups) {
-        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Log-Rank Test (Statistics)</h4>`;
-        html += `<table class="stat-table"><tr><th>Comparison</th><th>Chi-Square</th><th>P-value</th></tr>`;
+        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Statistical Analysis (vs ${groups[0].name})</h4>`;
+        html += `<div style="overflow-x: auto;">
+                 <table class="stat-table" style="min-width: 600px;">
+                    <tr>
+                        <th>Comparison</th>
+                        <th title="Odds Ratio: End-point probability ignoring time.">Odds Ratio (OR)</th>
+                        <th title="Hazard Ratio: Instantaneous risk over time (Peto's method).">Hazard Ratio (HR)</th>
+                        <th>Chi-Square</th>
+                        <th>P-value</th>
+                    </tr>`;
         
-        const group1 = groups[0]; // 첫 번째 그룹을 Control로 가정
+        const group1 = groups[0]; // Reference (Control) Group
         
-        for(let i=1; i<groups.length; i++) {
+        for(let i = 1; i < groups.length; i++) {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
             const pClass = res.p < 0.05 ? "stat-sig" : "stat-ns";
             const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
             
+            // Format OR & HR (Handle Infinity or NaN scenarios gracefully)
+            const orDisplay = isFinite(res.or) && !isNaN(res.or) ? res.or.toFixed(3) : "N/A*";
+            const hrDisplay = isFinite(res.hr) && !isNaN(res.hr) ? res.hr.toFixed(3) : "N/A*";
+
             html += `<tr>
-                <td>${group1.name} vs ${group2.name}</td>
+                <td style="font-weight: 500;">${group1.name} vs ${group2.name}</td>
+                <td>${orDisplay}</td>
+                <td style="font-weight: bold; color: #0056b3;">${hrDisplay}</td>
                 <td>${res.chisq.toFixed(2)}</td>
                 <td class="${pClass}">${pVal}</td>
             </tr>`;
         }
-        html += `</table>`;
+        html += `</table></div>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;">*HR < 1 indicates lower risk (better survival) in the treatment group compared to the control. Calculated via Peto's approximation.</p>`;
         return html;
     }
 
-function runLogRank(g1, g2) {
-        // 1. Combine all unique time points from both groups where events occurred
+    function runLogRank(g1, g2) {
+        // 1. Log-Rank (Mantel-Cox) and Hazard Ratio (Peto's Approximation)
         let allTimes = new Set([
             ...g1.filter(d => d.status === 1).map(d => d.time), 
             ...g2.filter(d => d.status === 1).map(d => d.time)
         ]);
         let times = Array.from(allTimes).sort((a, b) => a - b);
         
-        let O1 = 0; // Observed events in Group 1
-        let E1 = 0; // Expected events in Group 1
+        let O1 = 0, E1 = 0; // Observed and Expected for Group 1
+        let O2 = 0, E2 = 0; // Observed and Expected for Group 2
         let V = 0;  // Variance
 
         times.forEach(t => {
-            // Risk sets
             let r1 = g1.filter(d => d.time >= t).length;
             let r2 = g2.filter(d => d.time >= t).length;
             let r = r1 + r2;
 
-            // Events
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
             let d2 = g2.filter(d => d.time === t && d.status === 1).length;
             let d = d1 + d2;
 
             if (r > 0 && d > 0) {
                 let e1 = r1 * (d / r);
-                O1 += d1;
-                E1 += e1;
+                let e2 = r2 * (d / r);
+                
+                O1 += d1; E1 += e1;
+                O2 += d2; E2 += e2;
                 
                 if (r > 1) {
                     V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
@@ -387,30 +402,42 @@ function runLogRank(g1, g2) {
             }
         });
 
-        // Calculate Chi-Square
-        // Z = (O - E) / sqrt(V)
-        // ChiSq = Z^2
-        if (V === 0) return { chisq: 0, p: 1.0 }; // 분산이 0이면 계산 불가
+        // Chi-Square Calculation
+        let chisq = 0, p = 1.0;
+        if (V > 0) {
+            let Z = (O1 - E1) / Math.sqrt(V);
+            chisq = Z * Z;
+            p = getChi2Pval(chisq);
+        }
 
-        let Z = (O1 - E1) / Math.sqrt(V);
-        let chisq = Z * Z;
-        
-        // ★ [수정됨] 라이브러리 없이 직접 P-value 계산 함수 호출
-        let p = getChi2Pval(chisq);
-        
-        return { chisq, p };
+        // Hazard Ratio (Peto's method): (O2/E2) / (O1/E1)
+        let hr = NaN;
+        if (E1 > 0 && E2 > 0) {
+            hr = (O2 / E2) / (O1 / E1);
+        }
+
+        // 2. Odds Ratio (OR) Calculation
+        // OR = (Events_G2 * Alive_G1) / (Alive_G2 * Events_G1)
+        let events_g2 = g2.filter(d => d.status === 1).length;
+        let alive_g2 = g2.filter(d => d.status === 0).length;
+        let events_g1 = g1.filter(d => d.status === 1).length;
+        let alive_g1 = g1.filter(d => d.status === 0).length;
+
+        let or = NaN;
+        if (alive_g2 > 0 && events_g1 > 0) {
+            or = (events_g2 * alive_g1) / (alive_g2 * events_g1);
+        }
+
+        return { chisq, p, hr, or };
     }
 
-    // ★ [추가됨] 외부 라이브러리 없이 Chi-Square(df=1) P-value 계산하는 함수
+    // 외부 라이브러리 없이 Chi-Square(df=1) P-value 계산
     function getChi2Pval(x) {
         if (x <= 0 || isNaN(x)) return 1;
-        // Chi-Square(df=1)은 정규분포 Z값의 제곱과 같음 -> P = 2 * (1 - NormalCDF(sqrt(x)))
-        // 근사식을 사용하여 계산
         return 2 * (1 - normalCDF(Math.sqrt(x)));
     }
 
     function normalCDF(x) {
-        // Hasting's approximation for Standard Normal CDF
         var t = 1 / (1 + 0.2316419 * Math.abs(x));
         var d = 0.3989423 * Math.exp(-x * x / 2);
         var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
@@ -442,4 +469,4 @@ function runLogRank(g1, g2) {
             if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
         });
     }
-});
+}); // <-- 전체 DOMContentLoaded 이벤트를 닫는 괄호 (절대 삭제 금지)
