@@ -301,30 +301,26 @@
 
 <div class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500 shadow-sm mt-8">
                         <h3 class="font-headline font-bold text-indigo-900 mb-3 flex items-center gap-2">
-                            <span class="material-symbols-outlined">compare_arrows</span> Hazard Ratio (HR) vs. Odds Ratio (OR): The Time Dimension
+                            <span class="material-symbols-outlined">insights</span> Hazard Ratio (HR) & Log-Rank Interpretation
                         </h3>
                         <p class="text-sm leading-relaxed text-indigo-800 font-light mb-4">
-                            Understanding the distinction between HR and OR is critical for interpreting trial efficacy. While both measure relative risk, they treat the concept of <strong>time</strong> fundamentally differently.
+                            While the KM plot provides a visual trend, our calculator outputs two critical statistical metrics for rigorous reporting:
                         </p>
                         <div class="space-y-4">
                             <div class="bg-white p-4 rounded border border-indigo-100">
-                                <h4 class="font-bold text-indigo-900 text-sm mb-1">Odds Ratio (OR): The "Destination" Metric</h4>
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1">1. Pairwise Log-Rank P-value</h4>
                                 <p class="text-sm font-light text-slate-700 leading-relaxed">
-                                    OR represents the odds of an event occurring in the treatment group compared to the control group by the end of the study. <strong>It completely ignores <em>when</em> the event happened.</strong> It only asks: "Did the subject survive or not?"
+                                    Tests the null hypothesis that there is no difference in survival between the two groups. A P-value < 0.05 generally indicates a statistically significant difference.
                                 </p>
                             </div>
                             <div class="bg-white p-4 rounded border border-indigo-100">
-                                <h4 class="font-bold text-indigo-900 text-sm mb-1">Hazard Ratio (HR): The "Journey" Metric</h4>
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1">2. Hazard Ratio (Peto's Approximation)</h4>
                                 <p class="text-sm font-light text-slate-700 leading-relaxed">
-                                    HR represents the instantaneous risk of the event occurring at any given point in time. It inherently accounts for the <strong>accumulation of time</strong>. A lower HR indicates that the treatment delays the event, even if the final outcome is the same.
+                                    Represents the instantaneous relative risk of the event. 
+                                    <br>• <strong>HR = 1</strong>: No difference.
+                                    <br>• <strong>HR < 1</strong>: The treatment group has a lower risk (better survival) than the control.
+                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, standard for 1-to-1 Log-Rank comparisons.</span>
                                 </p>
-                            </div>
-                            <div class="bg-indigo-900 text-indigo-50 p-4 rounded text-sm font-light leading-relaxed">
-                                <strong class="text-white block mb-1">💡 The "Day 10 vs. Day 90" Paradox (An Example):</strong>
-                                Imagine an oncology study with 10 mice in the Control group and 10 in the Treatment group. By Day 100, all 20 mice have died. However, all Control mice died on Day 10, while all Treatment mice lived until Day 90.
-                                <br><br>
-                                • <strong>Odds Ratio = 1.0 (No Effect):</strong> Because 100% of mice died in both groups, the OR calculates the treatment as useless.<br>
-                                • <strong>Hazard Ratio ≪ 1.0 (Highly Effective):</strong> The HR captures that the treatment successfully delayed death by 80 days. In survival analysis, HR is the clinically relevant metric.
                             </div>
                         </div>
                     </div>

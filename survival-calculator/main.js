@@ -246,7 +246,7 @@ if(calcBtn) {
     }
 
 // statsHtml 인자 추가됨
-    function displayResults(medianResults, datasets, statsHtml) {
+function displayResults(medianResults, datasets, statsHtml) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
@@ -266,20 +266,14 @@ if(calcBtn) {
         });
         medianHtml += `</table>`;
 
-        // ★ statsHtml(통계 표)을 중간에 삽입
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                
                 <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
-                
                 <div style="margin: 0;">${medianHtml}</div>
-                
                 <div style="margin: 0;">${statsHtml || ""}</div>
-
-                <div style="position: relative; height: 300px; width: 100%; margin: 0;">
+                <div style="position: relative; height: 350px; width: 100%; margin: 15px 0;">
                     <canvas id="survivalChart"></canvas>
                 </div>
-                
                 <div style="text-align: right; margin: 0;">
                     <button type="button" onclick="window.downloadChart()" style="
                         background-color: #2c3e50; 
@@ -307,81 +301,94 @@ if(calcBtn) {
         const ctx = document.getElementById('survivalChart').getContext('2d');
         const xInput = document.getElementById('xaxis-label');
         const xLabel = xInput ? xInput.value : "Time";
+        
+        if (typeof Chart === 'undefined') {
+            console.error("Chart.js is not loaded.");
+            return;
+        }
+
         if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
-            type: 'line',
+            type: 'line', // 기본 타입은 선 그래프
             data: { datasets: datasets },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true, 
+                maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
-                layout: { padding: 0 },
+                layout: { padding: { top: 10, right: 10, bottom: 10, left: 10 } },
                 plugins: {
-                    title: { display: true, text: 'Kaplan-Meier Survival Curve', font: { size: 14 }, padding: { top: 0, bottom: 5 } },
-                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' } },
-                    legend: { position: 'top', align: 'end', labels: { boxWidth: 10, padding: 8, font: { size: 11 } } }
+                    title: { display: true, text: 'Kaplan-Meier Survival Curve', font: { size: 16, weight: 'bold' }, padding: { top: 0, bottom: 15 } },
+                    tooltip: { 
+                        callbacks: { 
+                            label: c => {
+                                // Censor 데이터셋인 경우 툴팁 다르게 표시
+                                if(c.dataset.label.includes('(Censored)')) {
+                                    return 'Censored at ' + c.parsed.x;
+                                }
+                                return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%';
+                            }
+                        } 
+                    },
+                    legend: { 
+                        position: 'top', 
+                        align: 'end', 
+                        labels: { 
+                            boxWidth: 12, 
+                            padding: 10, 
+                            font: { size: 12 },
+                            filter: function(item, chart) {
+                                // 범례에서 Censor 마크 항목은 숨겨서 깔끔하게 유지
+                                return !item.text.includes('(Censored)');
+                            }
+                        } 
+                    }
                 },
                 scales: {
-                    x: { type: 'linear', title: { display: true, text: xLabel, font: {weight:'bold', size: 11} }, beginAtZero: true },
-                    y: { title: { display: true, text: 'Survival Prob.', font: {weight:'bold', size: 11} }, min: 0, max: 1.05, beginAtZero: true }
+                    x: { type: 'linear', title: { display: true, text: xLabel, font: {weight:'bold', size: 12} }, beginAtZero: true },
+                    y: { title: { display: true, text: 'Survival Prob.', font: {weight:'bold', size: 12} }, min: 0, max: 1.05, beginAtZero: true }
                 }
             }
         });
     }
-// ==========================================
-    // ★ 업데이트된 통계 함수 (Pairwise Log-Rank, Peto HR, Naïve OR)
+
+    // ==========================================
+    // ★ 업데이트된 통계 함수 (Pairwise Log-Rank, Peto HR)
     // ==========================================
     function calculateLogRankStats(groups) {
-        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
-        html += `<div style="overflow-x: auto;">
-                 <table class="stat-table" style="min-width: 700px;">
-                    <tr>
-                        <th>Comparison</th>
-                        <th title="Naïve Odds Ratio: Early censored dropped.">Naïve OR (95% CI)</th>
-                        <th title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (Peto's Approx.)</th>
-                        <th>Chi-Square</th>
-                        <th>P-value</th>
+        let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
+        html += `<div style="overflow-x: auto; border: 1px solid #e1e3e4; border-radius: 8px;">
+                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem;">
+                    <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e1e3e4;">
+                        <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (95% CI)</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;">P-value</th>
                     </tr>`;
         
-        const group1 = groups[0]; // Reference (Control) Group
-        let orWarning = false;
+        const group1 = groups[0]; 
         
         for(let i = 1; i < groups.length; i++) {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
-            const pClass = res.p < 0.05 ? "stat-sig" : "stat-ns";
+            // 학술적인 색상 적용 (과도한 빨강/초록 지양)
+            const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
             const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
             
-            // Format OR
-            let orDisplay = "N/A";
-            if (res.or === Infinity || res.or === 0) {
-                orDisplay = res.or === Infinity ? "Infinity*" : "0.00*";
-                orWarning = true;
-            } else if (isFinite(res.or) && !isNaN(res.or)) {
-                orDisplay = `${res.or.toFixed(2)} (${res.orLower.toFixed(2)} - ${res.orUpper.toFixed(2)})`;
-            }
-
-            // Format HR
             let hrDisplay = "N/A";
             if (isFinite(res.hr) && !isNaN(res.hr)) {
                 hrDisplay = `${res.hr.toFixed(2)} (${res.hrLower.toFixed(2)} - ${res.hrUpper.toFixed(2)})`;
             }
 
-            html += `<tr>
-                <td style="font-weight: 500;">${group1.name} vs ${group2.name}</td>
-                <td>${orDisplay}</td>
-                <td style="font-weight: bold; color: #0056b3;">${hrDisplay}</td>
-                <td>${res.chisq.toFixed(2)}</td>
-                <td class="${pClass}">${pVal}</td>
+            html += `<tr style="border-bottom: 1px solid #e1e3e4;">
+                <td style="padding: 10px; text-align: left; font-weight: 500;">${group1.name} vs ${group2.name}</td>
+                <td style="padding: 10px; font-weight: bold; color: #0056b3;">${hrDisplay}</td>
+                <td style="padding: 10px; color: #414754;">${res.chisq.toFixed(2)}</td>
+                <td style="padding: 10px; ${pStyle}">${pVal}</td>
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;"><strong>HR:</strong> Calculated via Peto's approximation (not Cox PH). HR < 1 indicates lower risk in the treatment group.</p>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 2px;"><strong>Naïve OR:</strong> For educational contrast only. Early censored subjects are excluded from OR calculation to prevent survivor bias.</p>`;
-        
-        if(orWarning) {
-            html += `<p style="font-size: 0.8rem; color: #b91c1c; margin-top: 2px;"><strong>*OR Error:</strong> Cannot calculate exact odds when a group has 0% or 100% events.</p>`;
-        }
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR < 1 indicates lower risk (better survival) in the treatment group.</p>`;
         
         return html;
     }
@@ -396,7 +403,7 @@ if(calcBtn) {
         let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            // [수정됨] At-risk 집합 오류 수정 (이벤트 발생 후 censoring 처리)
+            // At-risk 집합 (이벤트 발생 후 censoring 처리)
             let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;
@@ -430,30 +437,7 @@ if(calcBtn) {
             hrUpper = Math.exp(Math.log(hr) + 1.96 * seLogHr);
         }
 
-        // ★ Option B: Naïve OR (조기 중도절단 데이터 완전 배제)
-        let maxTimeG1 = Math.max(...g1.map(d => d.time));
-        let maxTimeG2 = Math.max(...g2.map(d => d.time));
-
-        let events_g1 = g1.filter(d => d.status === 1).length;
-        // 생존자는 연구 끝까지 도달해서 Censored된 개체만 인정
-        let alive_g1 = g1.filter(d => d.status === 0 && d.time === maxTimeG1).length; 
-
-        let events_g2 = g2.filter(d => d.status === 1).length;
-        let alive_g2 = g2.filter(d => d.status === 0 && d.time === maxTimeG2).length;
-
-        let or = NaN, orLower = NaN, orUpper = NaN;
-        if (alive_g2 === 0 || events_g1 === 0) {
-            or = Infinity; 
-        } else if (events_g2 === 0 || alive_g1 === 0) {
-            or = 0; 
-        } else {
-            or = (events_g2 * alive_g1) / (alive_g2 * events_g1);
-            let seLogOr = Math.sqrt((1/events_g2) + (1/alive_g1) + (1/alive_g2) + (1/events_g1));
-            orLower = Math.exp(Math.log(or) - 1.96 * seLogOr);
-            orUpper = Math.exp(Math.log(or) + 1.96 * seLogOr);
-        }
-
-        return { chisq, p, hr, hrLower, hrUpper, or, orLower, orUpper };
+        return { chisq, p, hr, hrLower, hrUpper };
     }
 
     function getChi2Pval(x) {
