@@ -6,20 +6,15 @@ window.downloadChart = function() {
     if(!canvas) { alert("Chart not found."); return; }
 
     try {
-        // 흰색 배경 캔버스 생성 (투명 배경 방지)
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         
-        // 흰색 채우기
         tempCtx.fillStyle = '#ffffff';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        
-        // 그래프 그리기
         tempCtx.drawImage(canvas, 0, 0);
         
-        // 다운로드 실행
         const link = document.createElement('a');
         link.download = 'survival-curve.png';
         link.href = tempCanvas.toDataURL('image/png', 1.0);
@@ -45,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if(quoteEl) quoteEl.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
     // ==========================================
-    // 1. SAS Time Converter (간격 최소화)
+    // 1. SAS Time Converter
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -55,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!timeInput || !timeUnit || !convertResult) return;
         const val = parseFloat(timeInput.value);
         
-        // ★ [강제 스타일] 패딩 10px로 고정
         convertResult.style.cssText = "padding: 10px 15px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 10px; display: block;";
 
         if (isNaN(val)) {
@@ -70,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (unit === "months") days = val * 30.4375;
         else if (unit === "years") days = val * 365.25;
 
-        // ★ 내부 간격 최소화
         convertResult.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 3px; margin: 0; padding: 0;">
                 <p style="margin: 0; line-height: 1.3; font-size: 0.95rem;"><strong>Days:</strong> ${days.toFixed(2)}</p>
@@ -156,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return html;
     }
 
-if(calcBtn) {
+    if(calcBtn) {
         calcBtn.addEventListener("click", function() {
             const numGroups = parseInt(numGroupsSelect.value);
             const allDatasets = [];
@@ -164,7 +157,6 @@ if(calcBtn) {
             const groupNames = document.querySelectorAll(".group-name-input");
             const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; 
             
-            // ★ 통계용 데이터 저장 배열 추가
             let groupData = []; 
 
             for (let g = 1; g <= numGroups; g++) {
@@ -183,7 +175,6 @@ if(calcBtn) {
 
                 if (data.length === 0) continue;
 
-                // ★ 통계 분석을 위해 원본 데이터 저장
                 groupData.push({ name: groupName, data: data });
 
                 const kmResult = calculateSingleKM(data);
@@ -200,6 +191,20 @@ if(calcBtn) {
                     pointRadius: 2,
                     pointHoverRadius: 5
                 });
+                
+                if (kmResult.censoredPoints && kmResult.censoredPoints.length > 0) {
+                     allDatasets.push({
+                        label: groupName + ' (Censored)',
+                        data: kmResult.censoredPoints,
+                        type: 'scatter', 
+                        backgroundColor: colors[(g-1) % 4],
+                        borderColor: colors[(g-1) % 4],
+                        pointStyle: 'cross', 
+                        pointRadius: 6,      
+                        pointHoverRadius: 8,
+                        showLine: false      
+                    });
+                }
 
                 medianResults.push({ name: groupName, median: kmResult.median, color: colors[(g-1) % 4] });
             }
@@ -209,13 +214,11 @@ if(calcBtn) {
                 return;
             }
 
-            // ★ 통계 분석 실행 (그룹이 2개 이상일 때만)
             let statsHtml = "";
             if (groupData.length >= 2) {
                 statsHtml = calculateLogRankStats(groupData);
             }
 
-            // 결과 함수에 통계 HTML도 같이 전달
             displayResults(medianResults, allDatasets, statsHtml);
         });
     }
@@ -225,28 +228,44 @@ if(calcBtn) {
         let n = data.length;
         let survivalProb = 1.0;
         let points = [{x: 0, y: 1.0}]; 
+        let censoredPoints = []; 
         let grouped = {};
+        
         data.forEach(d => {
             if (!grouped[d.time]) grouped[d.time] = { event: 0, censor: 0, total: 0 };
             if (d.status === 1) grouped[d.time].event++; else grouped[d.time].censor++;
             grouped[d.time].total++;
         });
+        
         const times = Object.keys(grouped).map(Number).sort((a, b) => a - b);
         let currentN = n;
         let medianTime = "Not Reached";
         let medianFound = false;
+        
         times.forEach(t => {
             const info = grouped[t];
-            if (info.event > 0) survivalProb *= (1 - (info.event / currentN));
+            
+            if (info.event > 0) {
+                survivalProb *= (1 - (info.event / currentN));
+            }
             points.push({ x: t, y: survivalProb });
-            if (!medianFound && survivalProb <= 0.5) { medianTime = t; medianFound = true; }
+            
+            if (info.censor > 0) {
+                 censoredPoints.push({ x: t, y: survivalProb });
+            }
+
+            if (!medianFound && survivalProb <= 0.5) { 
+                medianTime = t; 
+                medianFound = true; 
+            }
+            
             currentN -= info.total;
         });
-        return { median: medianTime, points: points };
+        
+        return { median: medianTime, points: points, censoredPoints: censoredPoints };
     }
 
-// statsHtml 인자 추가됨
-function displayResults(medianResults, datasets, statsHtml) {
+    function displayResults(medianResults, datasets, statsHtml) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
 
@@ -310,7 +329,7 @@ function displayResults(medianResults, datasets, statsHtml) {
         if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
-            type: 'line', // 기본 타입은 선 그래프
+            type: 'line', 
             data: { datasets: datasets },
             options: {
                 responsive: true, 
@@ -322,7 +341,6 @@ function displayResults(medianResults, datasets, statsHtml) {
                     tooltip: { 
                         callbacks: { 
                             label: c => {
-                                // Censor 데이터셋인 경우 툴팁 다르게 표시
                                 if(c.dataset.label.includes('(Censored)')) {
                                     return 'Censored at ' + c.parsed.x;
                                 }
@@ -338,7 +356,6 @@ function displayResults(medianResults, datasets, statsHtml) {
                             padding: 10, 
                             font: { size: 12 },
                             filter: function(item, chart) {
-                                // 범례에서 Censor 마크 항목은 숨겨서 깔끔하게 유지
                                 return !item.text.includes('(Censored)');
                             }
                         } 
@@ -353,7 +370,7 @@ function displayResults(medianResults, datasets, statsHtml) {
     }
 
     // ==========================================
-    // ★ 업데이트된 통계 함수 (Pairwise Log-Rank, Peto HR)
+    // ★ 통계 함수 (Pairwise Log-Rank, Peto HR - OR 완전히 삭제됨)
     // ==========================================
     function calculateLogRankStats(groups) {
         let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
@@ -371,7 +388,6 @@ function displayResults(medianResults, datasets, statsHtml) {
         for(let i = 1; i < groups.length; i++) {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
-            // 학술적인 색상 적용 (과도한 빨강/초록 지양)
             const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
             const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
             
@@ -403,7 +419,6 @@ function displayResults(medianResults, datasets, statsHtml) {
         let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            // At-risk 집합 (이벤트 발생 후 censoring 처리)
             let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;
@@ -428,7 +443,6 @@ function displayResults(medianResults, datasets, statsHtml) {
             p = getChi2Pval(chisq);
         }
 
-        // Peto HR
         let hr = NaN, hrLower = NaN, hrUpper = NaN;
         if (E1 > 0 && E2 > 0 && V > 0) {
             hr = Math.exp((O2 - E2) / V); 
@@ -452,4 +466,4 @@ function displayResults(medianResults, datasets, statsHtml) {
         if (x > 0) return 1 - p;
         return p;
     }
-}); // <-- 전체 DOMContentLoaded 이벤트를 닫는 괄호 (절대 삭제 금지)
+});

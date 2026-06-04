@@ -304,23 +304,29 @@
                             <span class="material-symbols-outlined">insights</span> Hazard Ratio (HR) & Log-Rank Interpretation
                         </h3>
                         <p class="text-sm leading-relaxed text-indigo-800 font-light mb-4">
-                            While the KM plot provides a visual trend, our calculator outputs two critical statistical metrics for rigorous reporting:
+                            While the KM plot provides a visual trend, our calculator outputs two critical statistical metrics for rigorous reporting.
                         </p>
                         <div class="space-y-4">
                             <div class="bg-white p-4 rounded border border-indigo-100">
                                 <h4 class="font-bold text-indigo-900 text-sm mb-1">1. Pairwise Log-Rank P-value</h4>
                                 <p class="text-sm font-light text-slate-700 leading-relaxed">
-                                    Tests the null hypothesis that there is no difference in survival between the two groups. A P-value < 0.05 generally indicates a statistically significant difference.
+                                    Tests the null hypothesis that there is no overall difference in survival between the two groups over the entire study period. A P-value < 0.05 generally indicates a statistically significant difference.
                                 </p>
                             </div>
                             <div class="bg-white p-4 rounded border border-indigo-100">
                                 <h4 class="font-bold text-indigo-900 text-sm mb-1">2. Hazard Ratio (Peto's Approximation)</h4>
                                 <p class="text-sm font-light text-slate-700 leading-relaxed">
-                                    Represents the instantaneous relative risk of the event. 
-                                    <br>• <strong>HR = 1</strong>: No difference.
-                                    <br>• <strong>HR < 1</strong>: The treatment group has a lower risk (better survival) than the control.
-                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, standard for 1-to-1 Log-Rank comparisons.</span>
+                                    Unlike simple event rates, the Hazard Ratio represents the <strong>instantaneous relative risk</strong> of the event occurring at any given point in time. It inherently accounts for the <em>accumulation of time</em>.
+                                    <br><br>
+                                    • <strong>HR = 1</strong>: No difference in risk.<br>
+                                    • <strong>HR < 1</strong>: The treatment group has a lower risk (delays the event better) than the control.
+                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, which is the standard methodology for 1-to-1 Log-Rank comparisons without complex covariate modeling.</span>
                                 </p>
+                            </div>
+                            
+                            <div class="bg-indigo-900 text-indigo-50 p-4 rounded text-sm font-light leading-relaxed">
+                                <strong class="text-white block mb-1">💡 The "Time" Factor in Survival Analysis:</strong>
+                                Imagine all subjects in both the Control and Treatment groups die by the end of a 100-day study. A simple survival rate calculation would show 0% efficacy. However, if the Control group died on Day 10, but the Treatment group survived until Day 90, the <strong>Hazard Ratio</strong> will correctly capture this massive 80-day delay, mathematically proving the treatment's efficacy.
                             </div>
                         </div>
                     </div>
@@ -406,6 +412,5 @@
             } catch (e) {}
         });
     </script>
-    <script src="main.js?v=20260210_final"></script>
 </body>
 </html>
