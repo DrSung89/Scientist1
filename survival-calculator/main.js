@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;" title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (95% CI)</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
-                        <th style="padding: 10px; font-weight: 600; color: #414754;">P-value</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;">P-value (Pairwise Log-rank)</th>
                     </tr>`;
         
         const group1 = groups[0]; 
