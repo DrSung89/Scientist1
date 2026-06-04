@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const groupNames = document.querySelectorAll(".group-name-input");
             const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; 
             
-            // ★ 통계용 데이터 저장 배열 추가
+            // ★ 통계용 데이터 저장 배열
             let groupData = []; 
 
             for (let g = 1; g <= numGroups; g++) {
@@ -176,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 if (data.length === 0) continue;
 
-                // ★ 통계 분석을 위해 원본 데이터 저장
                 groupData.push({ name: groupName, data: data });
 
                 const kmResult = calculateSingleKM(data);
@@ -217,18 +216,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
-            // ★ 통계 분석 실행 (그룹이 2개 이상일 때만)
             let statsHtml = "";
             if (groupData.length >= 2) {
                 statsHtml = calculateLogRankStats(groupData);
             }
 
-            // 결과 함수에 통계 HTML도 같이 전달
             displayResults(medianResults, allDatasets, statsHtml);
         });
     }
 
-    // ★ 리뷰어 지적 반영본 (그래프 깨짐 방지 및 정확한 At-risk 감소)
+    // ★ 그래프 깨짐 방지 및 정확한 At-risk 감소 반영
     function calculateSingleKM(data) {
         data.sort((a, b) => a.time - b.time);
         let n = data.length;
@@ -252,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
         times.forEach(t => {
             const info = grouped[t];
             
-            // ★ Event 발생 시에만 points.push 실행 (그래프 깨짐 방지)
+            // Event 발생 시에만 points.push
             if (info.event > 0) {
                 survivalProb *= (1 - (info.event / currentN));
                 points.push({ x: t, y: survivalProb });
@@ -263,12 +260,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
             
-            // Censor 마크 찍기
+            // Censor 마크
             if (info.censor > 0) {
                  censoredPoints.push({ x: t, y: survivalProb });
             }
 
-            // At-risk 감소 분리 처리
             currentN -= info.event;
             currentN -= info.censor;
         });
@@ -298,30 +294,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                
                 <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
-                
                 <div style="margin: 0;">${medianHtml}</div>
-                
                 <div style="margin: 0;">${statsHtml || ""}</div>
-
                 <div style="position: relative; height: 350px; width: 100%; margin: 15px 0;">
                     <canvas id="survivalChart"></canvas>
                 </div>
-                
                 <div style="text-align: right; margin: 0;">
                     <button type="button" onclick="window.downloadChart()" style="
-                        background-color: #2c3e50; 
-                        color: white; 
-                        border: none; 
-                        padding: 6px 12px; 
-                        border-radius: 4px; 
-                        cursor: pointer; 
-                        font-size: 0.8rem; 
-                        font-weight: 500; 
-                        display: inline-flex; 
-                        align-items: center; 
-                        gap: 5px;
+                        background-color: #2c3e50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;
                     ">
                         <span>📥</span> Download Graph
                     </button>
@@ -430,7 +411,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            // ★ At-risk 집합 오류 수정본
+            // ★ At-risk 집합 오류 수정
             let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;

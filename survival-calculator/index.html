@@ -76,7 +76,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 테이블/인풋 스핀 버튼 숨김 */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -84,7 +83,6 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* main.js에서 동적 생성되는 요소들을 위한 Tailwind 호환 CSS */
         .sas-result-item { margin-bottom: 4px; font-size: 0.95rem; color: #414754; font-family: 'Inter', sans-serif; }
         .group-container { background: #f8f9fa; padding: 20px; border-radius: 0.5rem; border: 1px solid #e1e3e4; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; color: #191c1d; font-size: 1.1rem; }
@@ -96,10 +94,9 @@
         .km-table tr:hover, .stat-table tr:hover { background-color: #f8f9fa; }
         
         #os-result { display: none; background: #ffffff; border: 1px solid #e1e3e4; border-radius: 0.5rem; padding: 24px; margin-top: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-sig { color: #ba1a1a; font-weight: bold; } /* 유의함 (빨강) */
-        .stat-ns { color: #059669; font-weight: bold; } /* 유의하지 않음 (초록) */
+        .stat-sig { color: #ba1a1a; font-weight: bold; } 
+        .stat-ns { color: #059669; font-weight: bold; } 
         
-        /* 텍스트 에어리어 스타일 강제 지정 */
         textarea { width: 100%; padding: 12px; border: 1px solid #c1c6d7; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #414754; outline: none; }
         textarea:focus { border-color: #0059bb; box-shadow: 0 0 0 2px rgba(0, 89, 187, 0.2); }
     </style>
@@ -107,12 +104,9 @@
 <body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col min-h-screen">
 
 <nav class="fixed top-0 w-full z-50 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
-        
         <div class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
-            
             <div class="flex items-center gap-8">
                 <a href="../" class="text-xl font-bold tracking-tighter text-slate-900 font-headline hover:text-primary transition-colors">Scientist's Toolkit</a>
-                
                 <div class="hidden lg:flex items-center lg:gap-3 xl:gap-5 font-headline tracking-tight font-bold text-[13px] xl:text-sm">
                     <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../">Home</a>
                     <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../molarity-calculator/">Molarity</a>
@@ -126,26 +120,12 @@
                     <a class="text-slate-500 hover:text-slate-900 transition-colors" href="../articles/">Articles</a>
                 </div>
             </div>
-
             <div class="flex items-center gap-4">
                 <a href="../board/" class="text-sm font-headline font-bold text-slate-500 hover:text-slate-900 transition-colors">Board</a>
                 <a href="../help/" class="p-2 hover:bg-slate-200/50 transition-colors rounded text-slate-500 hover:text-slate-900">
                     <span class="material-symbols-outlined align-middle" data-icon="help">help</span>
                 </a>
             </div>
-        </div>
-
-        <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-4 px-6 pb-3 text-sm font-headline font-bold">
-            <a class="text-slate-500 whitespace-nowrap" href="../">Home</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../molarity-calculator/">Molarity</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../dilution-calculator/">Dilution</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../protein-calculator/">Protein</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../outlier-detector/">Outlier</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../t-test-calculator/">T-Test</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../chi-square-calculator/">Chi-Square</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../hed-calculator/">HED</a>
-            <a class="text-primary whitespace-nowrap" href="../survival-calculator/">Survival</a>
-            <a class="text-slate-500 whitespace-nowrap" href="../articles/">Articles</a>
         </div>
     </nav>
 
@@ -323,7 +303,6 @@
                                     <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, which is the standard methodology for 1-to-1 Log-Rank comparisons without complex covariate modeling.</span>
                                 </p>
                             </div>
-                            
                             <div class="bg-indigo-900 text-indigo-50 p-4 rounded text-sm font-light leading-relaxed">
                                 <strong class="text-white block mb-1">💡 The "Time" Factor in Survival Analysis:</strong>
                                 Imagine all subjects in both the Control and Treatment groups die by the end of a 100-day study. A simple survival rate calculation would show 0% efficacy. However, if the Control group died on Day 10, but the Treatment group survived until Day 90, the <strong>Hazard Ratio</strong> will correctly capture this massive 80-day delay, mathematically proving the treatment's efficacy.
@@ -413,6 +392,6 @@
         });
     </script>
     
-    <script src="../assets/main.js?v=20260212"></script>
+    <script src="main.js"></script>
 </body>
 </html>
