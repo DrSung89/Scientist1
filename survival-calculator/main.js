@@ -329,21 +329,22 @@ if(calcBtn) {
         });
     }
 // ==========================================
-    // ★ 새로 추가된 통계 함수 (Log-Rank Test, HR, OR)
+    // ★ 새로 추가된 통계 함수 (Log-Rank Test, HR, OR & 95% CI)
     // ==========================================
     function calculateLogRankStats(groups) {
         let html = `<h4 style="margin: 15px 0 5px 0;">📊 Statistical Analysis (vs ${groups[0].name})</h4>`;
         html += `<div style="overflow-x: auto;">
-                 <table class="stat-table" style="min-width: 600px;">
+                 <table class="stat-table" style="min-width: 700px;">
                     <tr>
                         <th>Comparison</th>
-                        <th title="Odds Ratio: End-point probability ignoring time.">Odds Ratio (OR)</th>
-                        <th title="Hazard Ratio: Instantaneous risk over time (Peto's method).">Hazard Ratio (HR)</th>
+                        <th title="Odds Ratio: End-point probability ignoring time.">Odds Ratio (95% CI)</th>
+                        <th title="Hazard Ratio: Instantaneous risk over time (Peto's method).">Hazard Ratio (95% CI)</th>
                         <th>Chi-Square</th>
                         <th>P-value</th>
                     </tr>`;
         
         const group1 = groups[0]; // Reference (Control) Group
+        let orWarning = false;
         
         for(let i = 1; i < groups.length; i++) {
             const group2 = groups[i];
@@ -351,9 +352,20 @@ if(calcBtn) {
             const pClass = res.p < 0.05 ? "stat-sig" : "stat-ns";
             const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
             
-            // Format OR & HR (Handle Infinity or NaN scenarios gracefully)
-            const orDisplay = isFinite(res.or) && !isNaN(res.or) ? res.or.toFixed(3) : "N/A*";
-            const hrDisplay = isFinite(res.hr) && !isNaN(res.hr) ? res.hr.toFixed(3) : "N/A*";
+            // Format OR
+            let orDisplay = "N/A";
+            if (res.or === Infinity || res.or === 0) {
+                orDisplay = res.or === Infinity ? "Infinity*" : "0.00*";
+                orWarning = true;
+            } else if (isFinite(res.or) && !isNaN(res.or)) {
+                orDisplay = `${res.or.toFixed(2)} (${res.orLower.toFixed(2)} - ${res.orUpper.toFixed(2)})`;
+            }
+
+            // Format HR
+            let hrDisplay = "N/A";
+            if (isFinite(res.hr) && !isNaN(res.hr)) {
+                hrDisplay = `${res.hr.toFixed(2)} (${res.hrLower.toFixed(2)} - ${res.hrUpper.toFixed(2)})`;
+            }
 
             html += `<tr>
                 <td style="font-weight: 500;">${group1.name} vs ${group2.name}</td>
@@ -364,7 +376,12 @@ if(calcBtn) {
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;">*HR < 1 indicates lower risk (better survival) in the treatment group compared to the control. Calculated via Peto's approximation.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;"><strong>HR:</strong> Calculated via Peto's approximation. HR < 1 indicates lower risk in the treatment group.</p>`;
+        
+        if(orWarning) {
+            html += `<p style="font-size: 0.8rem; color: #b91c1c; margin-top: 2px;"><strong>*OR Warning:</strong> Cannot calculate exact odds when a group has 0% or 100% events (Division by zero).</p>`;
+        }
+        
         return html;
     }
 
@@ -402,7 +419,7 @@ if(calcBtn) {
             }
         });
 
-        // Chi-Square Calculation
+        // Chi-Square & P-value Calculation
         let chisq = 0, p = 1.0;
         if (V > 0) {
             let Z = (O1 - E1) / Math.sqrt(V);
@@ -410,28 +427,37 @@ if(calcBtn) {
             p = getChi2Pval(chisq);
         }
 
-        // Hazard Ratio (Peto's method): (O2/E2) / (O1/E1)
-        let hr = NaN;
-        if (E1 > 0 && E2 > 0) {
-            hr = (O2 / E2) / (O1 / E1);
+        // Hazard Ratio (Peto's method) & 95% CI
+        let hr = NaN, hrLower = NaN, hrUpper = NaN;
+        if (E1 > 0 && E2 > 0 && V > 0) {
+            hr = Math.exp((O2 - E2) / V); // Peto's HR estimation
+            let seLogHr = Math.sqrt(1 / V);
+            hrLower = Math.exp(Math.log(hr) - 1.96 * seLogHr);
+            hrUpper = Math.exp(Math.log(hr) + 1.96 * seLogHr);
         }
 
-        // 2. Odds Ratio (OR) Calculation
-        // OR = (Events_G2 * Alive_G1) / (Alive_G2 * Events_G1)
+        // 2. Odds Ratio (OR) Calculation & 95% CI
         let events_g2 = g2.filter(d => d.status === 1).length;
         let alive_g2 = g2.filter(d => d.status === 0).length;
         let events_g1 = g1.filter(d => d.status === 1).length;
         let alive_g1 = g1.filter(d => d.status === 0).length;
 
-        let or = NaN;
-        if (alive_g2 > 0 && events_g1 > 0) {
+        let or = NaN, orLower = NaN, orUpper = NaN;
+        
+        if (alive_g2 === 0 || events_g1 === 0) {
+            or = Infinity; // Division by zero scenario
+        } else if (events_g2 === 0 || alive_g1 === 0) {
+            or = 0; // Numerator is zero
+        } else {
             or = (events_g2 * alive_g1) / (alive_g2 * events_g1);
+            let seLogOr = Math.sqrt((1/events_g2) + (1/alive_g1) + (1/alive_g2) + (1/events_g1));
+            orLower = Math.exp(Math.log(or) - 1.96 * seLogOr);
+            orUpper = Math.exp(Math.log(or) + 1.96 * seLogOr);
         }
 
-        return { chisq, p, hr, or };
+        return { chisq, p, hr, hrLower, hrUpper, or, orLower, orUpper };
     }
 
-    // 외부 라이브러리 없이 Chi-Square(df=1) P-value 계산
     function getChi2Pval(x) {
         if (x <= 0 || isNaN(x)) return 1;
         return 2 * (1 - normalCDF(Math.sqrt(x)));
@@ -443,30 +469,5 @@ if(calcBtn) {
         var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
         if (x > 0) return 1 - p;
         return p;
-    }
-
-    // --- Firebase Visitor Count ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-        authDomain: "scientisttoolkit.firebaseapp.com",
-        projectId: "scientisttoolkit",
-        storageBucket: "scientisttoolkit.firebasestorage.app",
-        messagingSenderId: "611412737478",
-        appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-        measurementId: "G-5K0XVX0TFM"
-    };
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const countSpan = document.getElementById('visitor-count');
-        const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
-        const docRef = db.collection('visitors').doc(dateStr);
-        
-        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true }).then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-        }
-        docRef.onSnapshot((doc) => {
-            if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
-        });
     }
 }); // <-- 전체 DOMContentLoaded 이벤트를 닫는 괄호 (절대 삭제 금지)
