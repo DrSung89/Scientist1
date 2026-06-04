@@ -235,7 +235,7 @@
                     <span class="material-symbols-outlined text-primary">menu_book</span> Comprehensive Guide to Kaplan-Meier
                 </h2>
                 <p class="text-on-surface-variant font-light leading-relaxed mb-10">
-                    In clinical trials, oncology research, and longitudinal animal studies, researchers frequently measure <strong>"time-to-event"</strong> data. This could be the time until death (Overall Survival), the time until a tumor doubles in volume (Progression-Free Survival), or the time until a disease relapses. The <strong>Kaplan-Meier (KM) Estimator</strong> is the non-parametric statistical gold standard for analyzing this type of incomplete data.
+                    In clinical trials, oncology research, and longitudinal animal studies, researchers frequently measure <strong>"time-to-event"</strong> data. This could be the time until death (Overall Survival), the time until a tumor doubles in volume (Progression-Free Survival), or the time until a disease relapses. The <strong>Kaplan-Meier (KM) Estimator</strong> is the most widely used non-parametric method for estimating survival functions.
                 </p>
 
                 <div class="space-y-10">
@@ -299,6 +299,38 @@
                         </p>
                     </div>
 
+                    <div class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500 shadow-sm mt-8">
+                        <h3 class="font-headline font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined">insights</span> Hazard Ratio (HR) & Log-Rank Interpretation
+                        </h3>
+                        <p class="text-sm leading-relaxed text-indigo-800 font-light mb-4">
+                            While the KM plot provides a visual trend, our calculator outputs two critical statistical metrics for rigorous reporting.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded border border-indigo-100">
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1">1. Pairwise Log-Rank P-value</h4>
+                                <p class="text-sm font-light text-slate-700 leading-relaxed">
+                                    Tests the null hypothesis that there is no overall difference in survival between the two groups over the entire study period. A P-value < 0.05 generally indicates a statistically significant difference.
+                                </p>
+                            </div>
+                            <div class="bg-white p-4 rounded border border-indigo-100">
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1">2. Hazard Ratio (Peto's Approximation)</h4>
+                                <p class="text-sm font-light text-slate-700 leading-relaxed">
+                                    Unlike simple event rates, the Hazard Ratio represents the <strong>instantaneous relative risk</strong> of the event occurring at any given point in time. It inherently accounts for the <em>accumulation of time</em>.
+                                    <br><br>
+                                    • <strong>HR = 1</strong>: No difference in risk.<br>
+                                    • <strong>HR < 1</strong>: The treatment group has a lower risk (delays the event better) than the control.
+                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, which is the standard methodology for 1-to-1 Log-Rank comparisons without complex covariate modeling.</span>
+                                </p>
+                            </div>
+                            
+                            <div class="bg-indigo-900 text-indigo-50 p-4 rounded text-sm font-light leading-relaxed">
+                                <strong class="text-white block mb-1">💡 The "Time" Factor in Survival Analysis:</strong>
+                                Imagine all subjects in both the Control and Treatment groups die by the end of a 100-day study. A simple survival rate calculation would show 0% efficacy. However, if the Control group died on Day 10, but the Treatment group survived until Day 90, the <strong>Hazard Ratio</strong> will correctly capture this massive 80-day delay, mathematically proving the treatment's efficacy.
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
                         <div class="space-y-6">
@@ -308,7 +340,7 @@
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why use the SAS conversion rate (30.4375) for months?</h4>
-                                <p class="text-on-surface-variant font-light leading-relaxed">In rigorous clinical and preclinical reporting (including FDA submissions), dividing days by exactly 30 or 31 is inaccurate over multi-year studies due to leap years. The SAS standard normalizes a month as exactly <code>365.25 days / 12 months = 30.4375 days</code>. Our built-in converter ensures your timelines meet this publication standard.</p>
+                                <p class="text-on-surface-variant font-light leading-relaxed">For consistency, we apply the widely accepted SAS convention where 1 Month = 30.4375 Days. Dividing days by exactly 30 or 31 is inaccurate over multi-year studies due to leap years. The SAS standard normalizes a month as exactly <code>365.25 days / 12 months = 30.4375 days</code>. Our built-in converter ensures your timelines meet this publication standard.</p>
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What does "Right-Censoring" mean?</h4>
@@ -380,6 +412,7 @@
             } catch (e) {}
         });
     </script>
-    <script src="main.js?v=20260210_final"></script>
+    
+    <script src="../assets/main.js?v=20260212"></script>
 </body>
 </html>

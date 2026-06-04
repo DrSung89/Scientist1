@@ -6,20 +6,15 @@ window.downloadChart = function() {
     if(!canvas) { alert("Chart not found."); return; }
 
     try {
-        // 흰색 배경 캔버스 생성 (투명 배경 방지)
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         
-        // 흰색 채우기
         tempCtx.fillStyle = '#ffffff';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        
-        // 그래프 그리기
         tempCtx.drawImage(canvas, 0, 0);
         
-        // 다운로드 실행
         const link = document.createElement('a');
         link.download = 'survival-curve.png';
         link.href = tempCanvas.toDataURL('image/png', 1.0);
@@ -55,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!timeInput || !timeUnit || !convertResult) return;
         const val = parseFloat(timeInput.value);
         
-        // ★ [강제 스타일] 패딩 10px로 고정
         convertResult.style.cssText = "padding: 10px 15px !important; min-height: 0 !important; background: #f8f9fa; border: 1px solid #eee; border-radius: 5px; margin-top: 10px; display: block;";
 
         if (isNaN(val)) {
@@ -70,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (unit === "months") days = val * 30.4375;
         else if (unit === "years") days = val * 365.25;
 
-        // ★ 내부 간격 최소화
         convertResult.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 3px; margin: 0; padding: 0;">
                 <p style="margin: 0; line-height: 1.3; font-size: 0.95rem;"><strong>Days:</strong> ${days.toFixed(2)}</p>
@@ -156,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return html;
     }
 
-if(calcBtn) {
+    if(calcBtn) {
         calcBtn.addEventListener("click", function() {
             const numGroups = parseInt(numGroupsSelect.value);
             const allDatasets = [];
@@ -200,6 +193,21 @@ if(calcBtn) {
                     pointRadius: 2,
                     pointHoverRadius: 5
                 });
+                
+                // ★ Censor Tick 데이터셋 추가
+                if (kmResult.censoredPoints && kmResult.censoredPoints.length > 0) {
+                     allDatasets.push({
+                        label: groupName + ' (Censored)',
+                        data: kmResult.censoredPoints,
+                        type: 'scatter', 
+                        backgroundColor: colors[(g-1) % 4],
+                        borderColor: colors[(g-1) % 4],
+                        pointStyle: 'cross', 
+                        pointRadius: 6,      
+                        pointHoverRadius: 8,
+                        showLine: false      
+                    });
+                }
 
                 medianResults.push({ name: groupName, median: kmResult.median, color: colors[(g-1) % 4] });
             }
@@ -220,32 +228,54 @@ if(calcBtn) {
         });
     }
 
+    // ★ 리뷰어 지적 반영본 (그래프 깨짐 방지 및 정확한 At-risk 감소)
     function calculateSingleKM(data) {
         data.sort((a, b) => a.time - b.time);
         let n = data.length;
         let survivalProb = 1.0;
         let points = [{x: 0, y: 1.0}]; 
+        let censoredPoints = []; 
         let grouped = {};
+        
         data.forEach(d => {
             if (!grouped[d.time]) grouped[d.time] = { event: 0, censor: 0, total: 0 };
-            if (d.status === 1) grouped[d.time].event++; else grouped[d.time].censor++;
+            if (d.status === 1) grouped[d.time].event++; 
+            else grouped[d.time].censor++;
             grouped[d.time].total++;
         });
+        
         const times = Object.keys(grouped).map(Number).sort((a, b) => a - b);
         let currentN = n;
         let medianTime = "Not Reached";
         let medianFound = false;
+        
         times.forEach(t => {
             const info = grouped[t];
-            if (info.event > 0) survivalProb *= (1 - (info.event / currentN));
-            points.push({ x: t, y: survivalProb });
-            if (!medianFound && survivalProb <= 0.5) { medianTime = t; medianFound = true; }
-            currentN -= info.total;
+            
+            // ★ Event 발생 시에만 points.push 실행 (그래프 깨짐 방지)
+            if (info.event > 0) {
+                survivalProb *= (1 - (info.event / currentN));
+                points.push({ x: t, y: survivalProb });
+                
+                if (!medianFound && survivalProb <= 0.5) { 
+                    medianTime = t; 
+                    medianFound = true; 
+                }
+            }
+            
+            // Censor 마크 찍기
+            if (info.censor > 0) {
+                 censoredPoints.push({ x: t, y: survivalProb });
+            }
+
+            // At-risk 감소 분리 처리
+            currentN -= info.event;
+            currentN -= info.censor;
         });
-        return { median: medianTime, points: points };
+        
+        return { median: medianTime, points: points, censoredPoints: censoredPoints };
     }
 
-// statsHtml 인자 추가됨
     function displayResults(medianResults, datasets, statsHtml) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
@@ -266,7 +296,6 @@ if(calcBtn) {
         });
         medianHtml += `</table>`;
 
-        // ★ statsHtml(통계 표)을 중간에 삽입
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 
@@ -276,7 +305,7 @@ if(calcBtn) {
                 
                 <div style="margin: 0;">${statsHtml || ""}</div>
 
-                <div style="position: relative; height: 300px; width: 100%; margin: 0;">
+                <div style="position: relative; height: 350px; width: 100%; margin: 15px 0;">
                     <canvas id="survivalChart"></canvas>
                 </div>
                 
@@ -307,6 +336,12 @@ if(calcBtn) {
         const ctx = document.getElementById('survivalChart').getContext('2d');
         const xInput = document.getElementById('xaxis-label');
         const xLabel = xInput ? xInput.value : "Time";
+        
+        if (typeof Chart === 'undefined') {
+            console.error("Chart.js is not loaded.");
+            return;
+        }
+
         if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
@@ -315,131 +350,134 @@ if(calcBtn) {
             options: {
                 responsive: true, maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
-                layout: { padding: 0 },
+                layout: { padding: { top: 10, right: 10, bottom: 10, left: 10 } },
                 plugins: {
-                    title: { display: true, text: 'Kaplan-Meier Survival Curve', font: { size: 14 }, padding: { top: 0, bottom: 5 } },
-                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' } },
-                    legend: { position: 'top', align: 'end', labels: { boxWidth: 10, padding: 8, font: { size: 11 } } }
+                    title: { display: true, text: 'Kaplan-Meier Survival Curve', font: { size: 16, weight: 'bold' }, padding: { top: 0, bottom: 15 } },
+                    tooltip: { 
+                        callbacks: { 
+                            label: c => {
+                                if(c.dataset.label.includes('(Censored)')) {
+                                    return 'Censored at ' + c.parsed.x;
+                                }
+                                return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' 
+                            }
+                        } 
+                    },
+                    legend: { 
+                        position: 'top', align: 'end', 
+                        labels: { 
+                            boxWidth: 12, padding: 10, font: { size: 12 },
+                            filter: function(item, chart) {
+                                return !item.text.includes('(Censored)');
+                            }
+                        } 
+                    }
                 },
                 scales: {
-                    x: { type: 'linear', title: { display: true, text: xLabel, font: {weight:'bold', size: 11} }, beginAtZero: true },
-                    y: { title: { display: true, text: 'Survival Prob.', font: {weight:'bold', size: 11} }, min: 0, max: 1.05, beginAtZero: true }
+                    x: { type: 'linear', title: { display: true, text: xLabel, font: {weight:'bold', size: 12} }, beginAtZero: true },
+                    y: { title: { display: true, text: 'Survival Prob.', font: {weight:'bold', size: 12} }, min: 0, max: 1.05, beginAtZero: true }
                 }
             }
         });
     }
-// ==========================================
-    // ★ 새로 추가된 통계 함수 (Log-Rank Test)
+
+    // ==========================================
+    // ★ 새로 추가된 통계 함수 (HR, 95% CI, P-value)
     // ==========================================
     function calculateLogRankStats(groups) {
-        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Log-Rank Test (Statistics)</h4>`;
-        html += `<table class="stat-table"><tr><th>Comparison</th><th>Chi-Square</th><th>P-value</th></tr>`;
+        let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
+        html += `<div style="overflow-x: auto; border: 1px solid #e1e3e4; border-radius: 8px;">
+                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem;">
+                    <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e1e3e4;">
+                        <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (95% CI)</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;">P-value</th>
+                    </tr>`;
         
-        const group1 = groups[0]; // 첫 번째 그룹을 Control로 가정
+        const group1 = groups[0]; 
         
         for(let i=1; i<groups.length; i++) {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
-            const pClass = res.p < 0.05 ? "stat-sig" : "stat-ns";
+            const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
             const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
             
-            html += `<tr>
-                <td>${group1.name} vs ${group2.name}</td>
-                <td>${res.chisq.toFixed(2)}</td>
-                <td class="${pClass}">${pVal}</td>
+            let hrDisplay = "N/A";
+            if (isFinite(res.hr) && !isNaN(res.hr)) {
+                hrDisplay = `${res.hr.toFixed(2)} (${res.hrLower.toFixed(2)} - ${res.hrUpper.toFixed(2)})`;
+            }
+
+            html += `<tr style="border-bottom: 1px solid #e1e3e4;">
+                <td style="padding: 10px; text-align: left; font-weight: 500;">${group1.name} vs ${group2.name}</td>
+                <td style="padding: 10px; font-weight: bold; color: #0056b3;">${hrDisplay}</td>
+                <td style="padding: 10px; color: #414754;">${res.chisq.toFixed(2)}</td>
+                <td style="padding: 10px; ${pStyle}">${pVal}</td>
             </tr>`;
         }
-        html += `</table>`;
+        html += `</table></div>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR < 1 indicates lower risk (better survival) in the treatment group.</p>`;
         return html;
     }
 
-function runLogRank(g1, g2) {
-        // 1. Combine all unique time points from both groups where events occurred
+    function runLogRank(g1, g2) {
         let allTimes = new Set([
             ...g1.filter(d => d.status === 1).map(d => d.time), 
             ...g2.filter(d => d.status === 1).map(d => d.time)
         ]);
         let times = Array.from(allTimes).sort((a, b) => a - b);
         
-        let O1 = 0; // Observed events in Group 1
-        let E1 = 0; // Expected events in Group 1
-        let V = 0;  // Variance
+        let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            // Risk sets
-            let r1 = g1.filter(d => d.time >= t).length;
-            let r2 = g2.filter(d => d.time >= t).length;
+            // ★ At-risk 집합 오류 수정본
+            let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
+            let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;
 
-            // Events
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
             let d2 = g2.filter(d => d.time === t && d.status === 1).length;
             let d = d1 + d2;
 
             if (r > 0 && d > 0) {
                 let e1 = r1 * (d / r);
-                O1 += d1;
-                E1 += e1;
-                
+                let e2 = r2 * (d / r);
+                O1 += d1; E1 += e1;
+                O2 += d2; E2 += e2;
                 if (r > 1) {
                     V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
                 }
             }
         });
 
-        // Calculate Chi-Square
-        // Z = (O - E) / sqrt(V)
-        // ChiSq = Z^2
-        if (V === 0) return { chisq: 0, p: 1.0 }; // 분산이 0이면 계산 불가
+        let chisq = 0, p = 1.0;
+        if (V > 0) {
+            let Z = (O1 - E1) / Math.sqrt(V);
+            chisq = Z * Z;
+            p = getChi2Pval(chisq);
+        }
+        
+        let hr = NaN, hrLower = NaN, hrUpper = NaN;
+        if (E1 > 0 && E2 > 0 && V > 0) {
+            hr = Math.exp((O2 - E2) / V); 
+            let seLogHr = Math.sqrt(1 / V);
+            hrLower = Math.exp(Math.log(hr) - 1.96 * seLogHr);
+            hrUpper = Math.exp(Math.log(hr) + 1.96 * seLogHr);
+        }
 
-        let Z = (O1 - E1) / Math.sqrt(V);
-        let chisq = Z * Z;
-        
-        // ★ [수정됨] 라이브러리 없이 직접 P-value 계산 함수 호출
-        let p = getChi2Pval(chisq);
-        
-        return { chisq, p };
+        return { chisq, p, hr, hrLower, hrUpper };
     }
 
-    // ★ [추가됨] 외부 라이브러리 없이 Chi-Square(df=1) P-value 계산하는 함수
     function getChi2Pval(x) {
         if (x <= 0 || isNaN(x)) return 1;
-        // Chi-Square(df=1)은 정규분포 Z값의 제곱과 같음 -> P = 2 * (1 - NormalCDF(sqrt(x)))
-        // 근사식을 사용하여 계산
         return 2 * (1 - normalCDF(Math.sqrt(x)));
     }
 
     function normalCDF(x) {
-        // Hasting's approximation for Standard Normal CDF
         var t = 1 / (1 + 0.2316419 * Math.abs(x));
         var d = 0.3989423 * Math.exp(-x * x / 2);
         var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
         if (x > 0) return 1 - p;
         return p;
-    }
-
-    // --- Firebase Visitor Count ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
-        authDomain: "scientisttoolkit.firebaseapp.com",
-        projectId: "scientisttoolkit",
-        storageBucket: "scientisttoolkit.firebasestorage.app",
-        messagingSenderId: "611412737478",
-        appId: "1:611412737478:web:e7389b1b03c002f56546c7",
-        measurementId: "G-5K0XVX0TFM"
-    };
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const countSpan = document.getElementById('visitor-count');
-        const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
-        const docRef = db.collection('visitors').doc(dateStr);
-        
-        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
-            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true }).then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
-        }
-        docRef.onSnapshot((doc) => {
-            if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
-        });
     }
 });
