@@ -370,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // ★ 통계 함수 (Pairwise Log-Rank, Peto HR - OR 완전히 삭제됨)
+    // ★ 통계 함수 (OR 완벽하게 삭제, HR 및 P-value 유지)
     // ==========================================
     function calculateLogRankStats(groups) {
         let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
@@ -466,4 +466,29 @@ document.addEventListener("DOMContentLoaded", function() {
         if (x > 0) return 1 - p;
         return p;
     }
-});
+
+    // --- Firebase Visitor Count ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyB4LNbqa_msSQqHigfnlJ5RaxfLNJvg_Jg",
+        authDomain: "scientisttoolkit.firebaseapp.com",
+        projectId: "scientisttoolkit",
+        storageBucket: "scientisttoolkit.firebasestorage.app",
+        messagingSenderId: "611412737478",
+        appId: "1:611412737478:web:e7389b1b03c002f56546c7",
+        measurementId: "G-5K0XVX0TFM"
+    };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const countSpan = document.getElementById('visitor-count');
+        const dateStr = (new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000))).toISOString().split('T')[0];
+        const docRef = db.collection('visitors').doc(dateStr);
+        
+        if (!sessionStorage.getItem(`visited_${dateStr}`)) {
+            docRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true }).then(() => sessionStorage.setItem(`visited_${dateStr}`, 'true'));
+        }
+        docRef.onSnapshot((doc) => {
+            if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
+        });
+    }
+}); // <-- 전체 DOMContentLoaded 이벤트 종료 괄호
