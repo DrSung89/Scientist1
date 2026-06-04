@@ -329,16 +329,16 @@ if(calcBtn) {
         });
     }
 // ==========================================
-    // ★ 새로 추가된 통계 함수 (Log-Rank Test, HR, OR & 95% CI)
+    // ★ 업데이트된 통계 함수 (Pairwise Log-Rank, Peto HR, Naïve OR)
     // ==========================================
     function calculateLogRankStats(groups) {
-        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Statistical Analysis (vs ${groups[0].name})</h4>`;
+        let html = `<h4 style="margin: 15px 0 5px 0;">📊 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
         html += `<div style="overflow-x: auto;">
                  <table class="stat-table" style="min-width: 700px;">
                     <tr>
                         <th>Comparison</th>
-                        <th title="Odds Ratio: End-point probability ignoring time.">Odds Ratio (95% CI)</th>
-                        <th title="Hazard Ratio: Instantaneous risk over time (Peto's method).">Hazard Ratio (95% CI)</th>
+                        <th title="Naïve Odds Ratio: Early censored dropped.">Naïve OR (95% CI)</th>
+                        <th title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (Peto's Approx.)</th>
                         <th>Chi-Square</th>
                         <th>P-value</th>
                     </tr>`;
@@ -376,30 +376,29 @@ if(calcBtn) {
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;"><strong>HR:</strong> Calculated via Peto's approximation. HR < 1 indicates lower risk in the treatment group.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 4px;"><strong>HR:</strong> Calculated via Peto's approximation (not Cox PH). HR < 1 indicates lower risk in the treatment group.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 2px;"><strong>Naïve OR:</strong> For educational contrast only. Early censored subjects are excluded from OR calculation to prevent survivor bias.</p>`;
         
         if(orWarning) {
-            html += `<p style="font-size: 0.8rem; color: #b91c1c; margin-top: 2px;"><strong>*OR Warning:</strong> Cannot calculate exact odds when a group has 0% or 100% events (Division by zero).</p>`;
+            html += `<p style="font-size: 0.8rem; color: #b91c1c; margin-top: 2px;"><strong>*OR Error:</strong> Cannot calculate exact odds when a group has 0% or 100% events.</p>`;
         }
         
         return html;
     }
 
     function runLogRank(g1, g2) {
-        // 1. Log-Rank (Mantel-Cox) and Hazard Ratio (Peto's Approximation)
         let allTimes = new Set([
             ...g1.filter(d => d.status === 1).map(d => d.time), 
             ...g2.filter(d => d.status === 1).map(d => d.time)
         ]);
         let times = Array.from(allTimes).sort((a, b) => a - b);
         
-        let O1 = 0, E1 = 0; // Observed and Expected for Group 1
-        let O2 = 0, E2 = 0; // Observed and Expected for Group 2
-        let V = 0;  // Variance
+        let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            let r1 = g1.filter(d => d.time >= t).length;
-            let r2 = g2.filter(d => d.time >= t).length;
+            // [수정됨] At-risk 집합 오류 수정 (이벤트 발생 후 censoring 처리)
+            let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
+            let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;
 
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
@@ -409,17 +408,12 @@ if(calcBtn) {
             if (r > 0 && d > 0) {
                 let e1 = r1 * (d / r);
                 let e2 = r2 * (d / r);
-                
                 O1 += d1; E1 += e1;
                 O2 += d2; E2 += e2;
-                
-                if (r > 1) {
-                    V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
-                }
+                if (r > 1) V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
             }
         });
 
-        // Chi-Square & P-value Calculation
         let chisq = 0, p = 1.0;
         if (V > 0) {
             let Z = (O1 - E1) / Math.sqrt(V);
@@ -427,27 +421,31 @@ if(calcBtn) {
             p = getChi2Pval(chisq);
         }
 
-        // Hazard Ratio (Peto's method) & 95% CI
+        // Peto HR
         let hr = NaN, hrLower = NaN, hrUpper = NaN;
         if (E1 > 0 && E2 > 0 && V > 0) {
-            hr = Math.exp((O2 - E2) / V); // Peto's HR estimation
+            hr = Math.exp((O2 - E2) / V); 
             let seLogHr = Math.sqrt(1 / V);
             hrLower = Math.exp(Math.log(hr) - 1.96 * seLogHr);
             hrUpper = Math.exp(Math.log(hr) + 1.96 * seLogHr);
         }
 
-        // 2. Odds Ratio (OR) Calculation & 95% CI
-        let events_g2 = g2.filter(d => d.status === 1).length;
-        let alive_g2 = g2.filter(d => d.status === 0).length;
+        // ★ Option B: Naïve OR (조기 중도절단 데이터 완전 배제)
+        let maxTimeG1 = Math.max(...g1.map(d => d.time));
+        let maxTimeG2 = Math.max(...g2.map(d => d.time));
+
         let events_g1 = g1.filter(d => d.status === 1).length;
-        let alive_g1 = g1.filter(d => d.status === 0).length;
+        // 생존자는 연구 끝까지 도달해서 Censored된 개체만 인정
+        let alive_g1 = g1.filter(d => d.status === 0 && d.time === maxTimeG1).length; 
+
+        let events_g2 = g2.filter(d => d.status === 1).length;
+        let alive_g2 = g2.filter(d => d.status === 0 && d.time === maxTimeG2).length;
 
         let or = NaN, orLower = NaN, orUpper = NaN;
-        
         if (alive_g2 === 0 || events_g1 === 0) {
-            or = Infinity; // Division by zero scenario
+            or = Infinity; 
         } else if (events_g2 === 0 || alive_g1 === 0) {
-            or = 0; // Numerator is zero
+            or = 0; 
         } else {
             or = (events_g2 * alive_g1) / (alive_g2 * events_g1);
             let seLogOr = Math.sqrt((1/events_g2) + (1/alive_g1) + (1/alive_g2) + (1/events_g1));
