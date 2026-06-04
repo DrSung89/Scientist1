@@ -13,6 +13,7 @@ window.downloadChart = function() {
         
         tempCtx.fillStyle = '#ffffff';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
         tempCtx.drawImage(canvas, 0, 0);
         
         const link = document.createElement('a');
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if(quoteEl) quoteEl.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
     // ==========================================
-    // 1. SAS Time Converter
+    // 1. SAS Time Converter (간격 최소화)
     // ==========================================
     const timeInput = document.getElementById("time-input");
     const timeUnit = document.getElementById("time-unit");
@@ -157,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const groupNames = document.querySelectorAll(".group-name-input");
             const colors = ['#007bff', '#dc3545', '#28a745', '#fd7e14']; 
             
+            // ★ 통계용 데이터 저장 배열 추가
             let groupData = []; 
 
             for (let g = 1; g <= numGroups; g++) {
@@ -175,6 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 if (data.length === 0) continue;
 
+                // ★ 통계 분석을 위해 원본 데이터 저장
                 groupData.push({ name: groupName, data: data });
 
                 const kmResult = calculateSingleKM(data);
@@ -192,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     pointHoverRadius: 5
                 });
                 
+                // ★ Censor Tick 데이터셋 추가
                 if (kmResult.censoredPoints && kmResult.censoredPoints.length > 0) {
                      allDatasets.push({
                         label: groupName + ' (Censored)',
@@ -214,15 +218,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
+            // ★ 통계 분석 실행 (그룹이 2개 이상일 때만)
             let statsHtml = "";
             if (groupData.length >= 2) {
                 statsHtml = calculateLogRankStats(groupData);
             }
 
+            // 결과 함수에 통계 HTML도 같이 전달
             displayResults(medianResults, allDatasets, statsHtml);
         });
     }
 
+    // ★ 리뷰어 지적 반영본 (그래프 깨짐 방지 및 정확한 At-risk 감소)
     function calculateSingleKM(data) {
         data.sort((a, b) => a.time - b.time);
         let n = data.length;
@@ -233,7 +240,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         data.forEach(d => {
             if (!grouped[d.time]) grouped[d.time] = { event: 0, censor: 0, total: 0 };
-            if (d.status === 1) grouped[d.time].event++; else grouped[d.time].censor++;
+            if (d.status === 1) grouped[d.time].event++; 
+            else grouped[d.time].censor++;
             grouped[d.time].total++;
         });
         
@@ -245,21 +253,25 @@ document.addEventListener("DOMContentLoaded", function() {
         times.forEach(t => {
             const info = grouped[t];
             
+            // ★ Event 발생 시에만 points.push 실행 (그래프 깨짐 방지)
             if (info.event > 0) {
                 survivalProb *= (1 - (info.event / currentN));
+                points.push({ x: t, y: survivalProb });
+                
+                if (!medianFound && survivalProb <= 0.5) { 
+                    medianTime = t; 
+                    medianFound = true; 
+                }
             }
-            points.push({ x: t, y: survivalProb });
             
+            // Censor 마크 찍기
             if (info.censor > 0) {
                  censoredPoints.push({ x: t, y: survivalProb });
             }
 
-            if (!medianFound && survivalProb <= 0.5) { 
-                medianTime = t; 
-                medianFound = true; 
-            }
-            
-            currentN -= info.total;
+            // At-risk 감소 분리 처리
+            currentN -= info.event;
+            currentN -= info.censor;
         });
         
         return { median: medianTime, points: points, censoredPoints: censoredPoints };
@@ -287,12 +299,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
         resultDiv.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
+                
                 <h3 style="margin: 0; font-size: 1.1rem; color: #333; padding: 0;">📊 Analysis Result</h3>
+                
                 <div style="margin: 0;">${medianHtml}</div>
+                
                 <div style="margin: 0;">${statsHtml || ""}</div>
-                <div style="position: relative; height: 350px; width: 100%; margin: 15px 0;">
+
+                <div style="position: relative; height: 300px; width: 100%; margin: 0;">
                     <canvas id="survivalChart"></canvas>
                 </div>
+                
                 <div style="text-align: right; margin: 0;">
                     <button type="button" onclick="window.downloadChart()" style="
                         background-color: #2c3e50; 
@@ -329,11 +346,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
-            type: 'line', 
+            type: 'line',
             data: { datasets: datasets },
             options: {
-                responsive: true, 
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { top: 10, right: 10, bottom: 10, left: 10 } },
                 plugins: {
@@ -344,17 +360,14 @@ document.addEventListener("DOMContentLoaded", function() {
                                 if(c.dataset.label.includes('(Censored)')) {
                                     return 'Censored at ' + c.parsed.x;
                                 }
-                                return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%';
+                                return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' 
                             }
                         } 
                     },
                     legend: { 
-                        position: 'top', 
-                        align: 'end', 
+                        position: 'top', align: 'end', 
                         labels: { 
-                            boxWidth: 12, 
-                            padding: 10, 
-                            font: { size: 12 },
+                            boxWidth: 12, padding: 10, font: { size: 12 },
                             filter: function(item, chart) {
                                 return !item.text.includes('(Censored)');
                             }
@@ -370,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // ★ 통계 함수 (OR 완벽하게 삭제, HR 및 P-value 유지)
+    // ★ 새로 추가된 통계 함수 (HR, 95% CI, P-value)
     // ==========================================
     function calculateLogRankStats(groups) {
         let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
@@ -385,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const group1 = groups[0]; 
         
-        for(let i = 1; i < groups.length; i++) {
+        for(let i=1; i<groups.length; i++) {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
             const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
@@ -405,7 +418,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         html += `</table></div>`;
         html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR < 1 indicates lower risk (better survival) in the treatment group.</p>`;
-        
         return html;
     }
 
@@ -419,6 +431,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
+            // ★ At-risk 집합 오류 수정본
             let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
             let r = r1 + r2;
@@ -432,7 +445,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 let e2 = r2 * (d / r);
                 O1 += d1; E1 += e1;
                 O2 += d2; E2 += e2;
-                if (r > 1) V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
+                if (r > 1) {
+                    V += (r1 * r2 * d * (r - d)) / (r * r * (r - 1));
+                }
             }
         });
 
@@ -442,7 +457,7 @@ document.addEventListener("DOMContentLoaded", function() {
             chisq = Z * Z;
             p = getChi2Pval(chisq);
         }
-
+        
         let hr = NaN, hrLower = NaN, hrUpper = NaN;
         if (E1 > 0 && E2 > 0 && V > 0) {
             hr = Math.exp((O2 - E2) / V); 
@@ -491,4 +506,4 @@ document.addEventListener("DOMContentLoaded", function() {
             if (doc.exists && countSpan) countSpan.innerHTML = `Today's Visitors: <strong>${doc.data().count.toLocaleString()}</strong>`;
         });
     }
-}); // <-- 전체 DOMContentLoaded 이벤트 종료 괄호
+});
