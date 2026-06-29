@@ -364,50 +364,77 @@
         });
     </script><script src="../assets/main.js"></script>
     <script>
-        // 1. 엑셀 Export 버튼 클릭 감지
+        // CSV Export Logic with Standard Data Inclusion
         document.addEventListener('click', function(e) {
-            // 버튼 자체나 버튼 안의 아이콘을 클릭했을 때 모두 작동하도록 closest 사용
             const exportBtn = e.target.closest('#export-excel-btn');
             if (exportBtn) {
                 exportTableToCSV('Protein_Quantification_Results.csv');
             }
         });
 
-        // 2. 테이블을 CSV로 변환하여 다운로드하는 핵심 로직
         function exportTableToCSV(filename) {
             const table = document.querySelector('#protein-result table');
             if (!table) return;
 
             let csv = [];
-            const rows = table.querySelectorAll('tr');
             
+            // ★ Standard 정보 및 수식을 CSV 상단에 추가 ★
+            const mode = document.querySelector('input[name="prot-mode"]:checked').value;
+            
+            if (mode === 'std') {
+                // 결과창에서 방정식과 R^2 값 추출
+                const resultDivs = document.querySelectorAll('#protein-result div');
+                let eqText = "";
+                for (let div of resultDivs) {
+                    if (div.innerText.includes("Standard Curve Equation")) {
+                        // 줄바꿈을 ' | ' 로 변환하여 한 셀에 깔끔하게 들어가도록 처리
+                        eqText = div.innerText.replace(/(\r\n|\n|\r)/gm, " | ");
+                        break;
+                    }
+                }
+                
+                csv.push(['"Standard Information"']);
+                csv.push([`"${eqText}"`]);
+                
+                // 사용자가 입력한 Standard Conc와 O.D. 원본 데이터 기록
+                const concRaw = document.getElementById('prot-std-conc').value;
+                const odRaw = document.getElementById('prot-std-od').value;
+                
+                csv.push(['"Standard Concentrations (µg/µL)"', '"' + concRaw.split(/[\s,]+/).filter(x => x).join(', ') + '"']);
+                csv.push(['"Standard O.D.s"', '"' + odRaw.split(/[\s,]+/).filter(x => x).join(', ') + '"']);
+                csv.push([]); // 테이블과의 구분을 위한 빈 줄
+                
+            } else if (mode === 'rel') {
+                 // Relative 모드일 경우 Blank O.D. 기록
+                 const blankOD = document.getElementById('prot-blank-od').value;
+                 csv.push(['"Relative Quantification Mode"']);
+                 csv.push(['"Blank O.D. Subtracted"', `"${blankOD}"`]);
+                 csv.push([]); // 빈 줄
+            }
+
+            // 계산된 결과 테이블 추출
+            const rows = table.querySelectorAll('tr');
             for (let i = 0; i < rows.length; i++) {
                 let row = [], cols = rows[i].querySelectorAll('td, th');
                 
                 for (let j = 0; j < cols.length; j++) {
-                    // 셀의 텍스트를 가져오고, 엑셀에서 데이터가 깨지거나 줄바꿈되지 않도록 처리
                     let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
                     row.push('"' + data + '"');
                 }
                 csv.push(row.join(','));
             }
 
+            // 다운로드 실행
             downloadCSV(csv.join('\n'), filename);
         }
 
-        // 3. 브라우저에서 파일을 생성하고 다운로드 창을 띄워주는 함수
         function downloadCSV(csv, filename) {
-            let csvFile;
-            let downloadLink;
-
-            // 엑셀에서 특수문자(µL 등)가 깨지지 않도록 BOM(Byte Order Mark) 추가
-            csvFile = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-
-            downloadLink = document.createElement("a");
+            // 한글 및 특수문자(µL 등) 깨짐 방지를 위한 BOM(Byte Order Mark) 추가
+            let csvFile = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            let downloadLink = document.createElement("a");
             downloadLink.download = filename;
             downloadLink.href = window.URL.createObjectURL(csvFile);
             downloadLink.style.display = "none";
-
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
