@@ -38,6 +38,48 @@ vm.runInNewContext(
   logRankContext
 );
 
+test("Kaplan–Meier Greenwood log-log 95% confidence intervals match an independent reference", () => {
+  const result = km.calculateSingleKM([
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 }, { time: 5, status: 0 }
+  ]);
+  const atTime2 = result.points.find(point => point.x === 2);
+  const survival = 3 / 5;
+  const greenwood = 1 / 20 + 1 / 12;
+  const theta = Math.log(-Math.log(survival));
+  const se = Math.sqrt(greenwood) / Math.abs(Math.log(survival));
+  const expectedLower = Math.exp(-Math.exp(theta + 1.96 * se));
+  const expectedUpper = Math.exp(-Math.exp(theta - 1.96 * se));
+  assert.ok(Math.abs(atTime2.y - survival) < 1e-12);
+  assert.ok(Math.abs(atTime2.lower - expectedLower) < 1e-12);
+  assert.ok(Math.abs(atTime2.upper - expectedUpper) < 1e-12);
+  assert.ok(atTime2.lower <= atTime2.y && atTime2.y <= atTime2.upper);
+});
+
+test("Kaplan–Meier confidence intervals handle survival of 1 and 0 at boundaries", () => {
+  const censored = km.calculateSingleKM([{ time: 1, status: 0 }, { time: 2, status: 0 }]);
+  assert.deepEqual(JSON.parse(JSON.stringify(censored.points)), [
+    { x: 0, y: 1, lower: 1, upper: 1 }
+  ]);
+  assert.ok(censored.censoredPoints.every(point => point.lower === 1 && point.upper === 1));
+  const allEvents = km.calculateSingleKM([{ time: 1, status: 1 }, { time: 1, status: 1 }]);
+  const finalPoint = allEvents.points.at(-1);
+  assert.equal(finalPoint.y, 0);
+  assert.equal(finalPoint.lower, 0);
+  assert.equal(finalPoint.upper, 0);
+});
+
+test("Kaplan–Meier confidence intervals remain ordered and contain survival estimates", () => {
+  const result = km.calculateSingleKM([
+    { time: 1, status: 1 }, { time: 2, status: 0 },
+    { time: 3, status: 1 }, { time: 4, status: 0 }, { time: 5, status: 1 }
+  ]);
+  for (const point of result.points) {
+    assert.ok(point.lower >= 0 && point.lower <= point.y);
+    assert.ok(point.y <= point.upper && point.upper <= 1);
+  }
+});
+
 test("Kaplan–Meier handles an event and censoring at the same time", () => {
   const result = km.calculateSingleKM([
     { time: 1, status: 1 },
