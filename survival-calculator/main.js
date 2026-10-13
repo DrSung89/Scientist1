@@ -395,7 +395,14 @@ document.addEventListener("DOMContentLoaded", function() {
         
         for(let i=1; i<groups.length; i++) {
             const group2 = groups[i];
-            const res = runLogRank(group1.data, group2.data);
+            const logRank = runLogRank(group1.data, group2.data);
+            const cox = fitCoxHR(group1.data, group2.data);
+            const res = {
+                ...logRank,
+                hr: cox.converged ? cox.hr : NaN,
+                hrLower: cox.converged ? cox.hrLower : NaN,
+                hrUpper: cox.converged ? cox.hrUpper : NaN
+            };
             const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
             const pVal = res.p < 0.001 ? "&lt; 0.001" : res.p.toFixed(4);
             

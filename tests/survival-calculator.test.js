@@ -336,3 +336,38 @@ test("Cox HR reports N/A for all-censored data, a zero-event group, and separate
   ];
   assert.equal(logRankContext.fitCoxHR(earlyEvents, lateEvents).converged, false);
 });
+
+
+test("displayed pairwise HR comes from the Cox model, not the log-rank approximation", () => {
+  const start = source.indexOf("function calculateLogRankStats");
+  const end = closingWrapper ? closingWrapper.index : -1;
+  assert.notEqual(start, -1, "pairwise stats function exists");
+  assert.ok(end > start, "statistics function block exists");
+  const context = {
+    escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char])
+  };
+  vm.runInNewContext(
+    source.slice(start, end) + "\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    context
+  );
+  const group1 = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const html = context.calculateLogRankStats([
+    { name: "Control", data: group1 },
+    { name: "Treatment", data: group2 }
+  ]);
+  assert.match(html, /0\.59 \(0\.13 - 2\.66\)/);
+  assert.doesNotMatch(html, /0\.58 \(/, "must not display the old score-based approximation");
+});
