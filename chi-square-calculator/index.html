@@ -344,10 +344,10 @@
         });
 
         // 2. Chi-Square Logic
-        function chiSquareCDF(x, df) {
-            if (typeof jStat !== 'undefined') return jStat.chisquare.cdf(x, df);
-            // This page uses a 2x2 table (df = 1). Approximate erf for the df=1 CDF fallback.
-            // For X ~ chi-square(1), CDF(x) = erf(sqrt(x / 2)).
+        function chiSquarePValue(x, df) {
+            // For df = 1, the chi-square survival function is erfc(sqrt(x / 2)).
+            // Calculate the upper tail directly to avoid cancellation in 1 - CDF(x)
+            // when the p-value is very small. This calculator only supports 2x2 tables.
             if (!Number.isFinite(x) || x < 0 || df !== 1) return NaN;
             const z = Math.sqrt(x / 2);
             const t = 1 / (1 + 0.5 * z);
@@ -363,9 +363,8 @@
                 t * (-0.82215223 +
                 t * 0.17087277))))))))
             );
-            return Math.max(0, Math.min(1, 1 - erfc));
+            return Math.max(0, Math.min(1, erfc));
         }
-
         function calcChi() {
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
@@ -411,9 +410,8 @@
             // Cramér's V
             const cramersV = Math.sqrt(chiSq / total);
 
-            // P-value (df=1 for 2x2 table)
-            let pVal = 1 - chiSquareCDF(chiSq, 1);
-            pVal = Math.max(0, Math.min(1, pVal)); // Guard floating-point edge cases
+            // P-value (df=1 for 2x2 table): calculate the upper tail directly.
+            const pVal = chiSquarePValue(chiSq, 1);
 
             // Output Formatting
             document.getElementById('p-val').innerText = pVal.toFixed(5);
@@ -422,7 +420,7 @@
             if (pVal < 0.05) {
                 sigMsg.innerHTML = '<span class="text-error flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">emergency</span> Significant Association Detected</span>';
             } else {
-                sigMsg.innerHTML = '<span class="text-success flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">check_circle</span> No Significant Association (Retain Null)</span>';
+                sigMsg.innerHTML = '<span class="text-success flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">check_circle</span> No Statistically Significant Association Detected (Fail to Reject Null)</span>';
             }
             
             document.getElementById('chi-stat').innerText = chiSq.toFixed(3);
