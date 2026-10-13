@@ -175,6 +175,22 @@
                 </p>
 
                 <h2 class="text-2xl font-headline font-bold text-primary mt-10 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                    <span class="material-symbols-outlined">database</span> Information Processed by This Website
+                </h2>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                    <strong class="text-on-surface font-medium">Daily visitor counter:</strong> The site uses Firebase Firestore to maintain an aggregate count for each date. A small sessionStorage entry in your browser helps avoid incrementing the count repeatedly during the same visit session for that date. The counter is intended to store a daily total, not a profile of an individual visitor.
+                </p>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                    <strong class="text-on-surface font-medium">Community board:</strong> If you submit a post, the site stores the nickname, title, post content, and server timestamp in Firebase Firestore. Posts are publicly visible. The board currently displays recent posts from the last three months; this display filter does not mean older records are automatically deleted from storage. Do not submit personal data, patient-identifiable information, confidential research, or unpublished proprietary material.
+                </p>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-4">
+                    <strong class="text-on-surface font-medium">Calculator inputs:</strong> The calculators are designed to perform calculations in your browser. Do not enter identifying or confidential data. Third-party services loaded by the site, including advertising providers, may process technical information under their own privacy policies.
+                </p>
+                <p class="text-on-surface-variant font-light leading-relaxed mb-6">
+                    <strong class="text-on-surface font-medium">Requests and questions:</strong> You can contact the site at <a class="text-primary underline" href="mailto:scientisttoolkit@gmail.com">scientisttoolkit@gmail.com</a>. Messages sent through your email application are handled by your email provider as well as the recipient. To request removal of a public board post, include its title or URL; do not send sensitive data in the request.
+                </p>
+
+                <h2 class="text-2xl font-headline font-bold text-primary mt-10 mb-4 flex items-center gap-2 border-b border-outline-variant/30 pb-2">
                     <span class="material-symbols-outlined">task_alt</span> Consent
                 </h2>
                 <p class="text-on-surface-variant font-light leading-relaxed mb-10">
@@ -182,7 +198,7 @@
                 </p>
                 
                 <div class="mt-12 pt-6 border-t border-outline-variant/30 text-sm text-outline font-body flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">update</span> Last updated: February 2026
+                    <span class="material-symbols-outlined text-[18px]">update</span> Last updated: October 2026
                 </div>
 
             </div>
