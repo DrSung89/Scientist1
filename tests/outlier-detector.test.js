@@ -5,15 +5,16 @@ const vm = require('node:vm');
 
 const source = fs.readFileSync('assets/main.js', 'utf8');
 
-function runOutlierCalculator(values, jStat) {
+function runOutlierCalculator(values, jStat, requestedMethod = 'auto') {
   let onReady;
   let onClick;
   const input = { value: values.join(',') };
+  const methodSelect = { value: requestedMethod };
   const result = { innerHTML: '', style: {} };
   const button = { addEventListener: (event, callback) => {
     if (event === 'click') onClick = callback;
   } };
-  const elements = { 'check-outliers': button, 'outlier-data': input, 'outlier-result': result };
+  const elements = { 'check-outliers': button, 'outlier-data': input, 'outlier-method': methodSelect, 'outlier-result': result };
   const document = {
     addEventListener: (event, callback) => { if (event === 'DOMContentLoaded') onReady = callback; },
     getElementById: (id) => elements[id] || null,
@@ -33,7 +34,7 @@ test('small samples do not display a fabricated normality p-value and use IQR sc
   const html = runOutlierCalculator([1, 2, 3, 4, 5, 6, 100]);
   assert.match(html, /Normality P-value: <strong>Not assessed \(N<8\)<\/strong>/);
   assert.match(html, /Method: IQR \(1\.5×\)/);
-  assert.match(html, /Small sample; IQR screening used/);
+  assert.match(html, /Small sample; normality not assessed/);
   assert.doesNotMatch(html, /Assumed Normal|Assumed Non-Normal/);
 });
 
@@ -53,4 +54,17 @@ test('invalid entries are rejected rather than silently ignored', () => {
 test('identical observations return a zero-standard-deviation warning', () => {
   const html = runOutlierCalculator([4, 4, 4, 4]);
   assert.match(html, /SD is 0/);
+});
+
+test('manual IQR selection overrides automatic normality routing', () => {
+  const jStat = { chisquare: { cdf: () => 0 }, studentt: { inv: () => 2.5 } };
+  const html = runOutlierCalculator([0, 1, 2, 3, 4, 5, 6, 30], jStat, 'iqr');
+  assert.match(html, /Method: IQR \(1\.5×\)/);
+});
+
+test('manual Grubbs selection is available when small-sample normality is not assessed', () => {
+  const html = runOutlierCalculator([1, 2, 3, 4, 5, 6, 100], undefined, 'grubbs');
+  assert.match(html, /Normality P-value: <strong>Not assessed \(N<8\)<\/strong>/);
+  assert.match(html, /Method: Grubb's Test/);
+  assert.match(html, /Potential: 100/);
 });

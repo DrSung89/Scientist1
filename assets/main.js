@@ -133,6 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         outlierButton.addEventListener('click', () => {
             const raw = document.getElementById('outlier-data').value;
+            const methodSelect = document.getElementById('outlier-method');
+            const requestedMethod = methodSelect ? methodSelect.value : 'auto';
             const tokens = raw.split(/[\s,]+/).filter(s => s.trim() !== '');
             const resDiv = document.getElementById('outlier-result');
 
@@ -162,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Small samples should not be routed to Grubbs using a skewness heuristic.
                 isNormal = false;
                 pValueDisplay = "Not assessed (N<8)";
-                normMsg = "<span style='color:#d97706; font-weight:bold;'>Small sample; IQR screening used</span>";
+                normMsg = "<span style='color:#d97706; font-weight:bold;'>Small sample; normality not assessed</span>";
             } else {
                 const normTest = testNormalityDP(data);
                 const pVal = normTest.p;
@@ -174,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let methodUsed, outliers = [], thresholdInfo;
-            if (isNormal) {
+            if (requestedMethod === 'grubbs' || (requestedMethod === 'auto' && isNormal)) {
                 methodUsed = "Grubb's Test";
                 const g_crit = getGCrit(n);
                 const g_max = (data[n-1] - mean) / sd;
