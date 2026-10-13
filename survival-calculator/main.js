@@ -386,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function() {
                  <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem;">
                     <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e1e3e4;">
                         <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
-                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Approximate hazard ratio for Group 2 relative to Group 1, derived from log-rank statistics; not a Cox model estimate.">Approx. HR (95% CI)</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Univariate Cox proportional-hazards estimate for Group 2 relative to Group 1, using Efron handling of tied event times.">Cox HR (95% CI)</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">P-value (Pairwise Log-rank)</th>
                     </tr>`;
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> The HR is a log-rank-based approximation for Group 2 relative to Group 1, not a Cox-model estimate. It is shown only when both groups have at least one observed event; with zero events in either group, the estimate may be unbounded or unstable. HR &lt; 1 indicates a lower estimated hazard in Group 2. Pairwise p-values are unadjusted for multiple comparisons.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> HR is estimated from a univariate Cox proportional-hazards model (Group 2 relative to Group 1), with Efron handling of tied event times and a Wald 95% confidence interval. “N/A” means the estimate did not converge to a finite, stable solution (for example, if either group has no observed events or the data exhibit separation). HR &lt; 1 indicates a lower estimated hazard in Group 2. The displayed p-value and chi-square are from the pairwise log-rank test, not the Cox model; pairwise p-values are unadjusted for multiple comparisons.</p>`;
         return html;
     }
 
@@ -462,6 +462,100 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         return { chisq, p, hr, hrLower, hrUpper };
+    }
+
+    // Fit a univariate Cox model for a binary group indicator (Group 2 = 1).
+    // Efron's method is used for tied event times. The log-rank test remains separate.
+    function fitCoxHR(g1, g2) {
+        const invalid = reason => ({
+            converged: false, reason,
+            beta: NaN, se: NaN, hr: NaN, hrLower: NaN, hrUpper: NaN
+        });
+        if (!Array.isArray(g1) || !Array.isArray(g2) || !g1.length || !g2.length) {
+            return invalid("empty-group");
+        }
+        const validRows = [...g1, ...g2].every(d =>
+            d && Number.isFinite(d.time) && (d.status === 0 || d.status === 1)
+        );
+        if (!validRows) return invalid("invalid-data");
+
+        const events1 = g1.filter(d => d.status === 1).length;
+        const events2 = g2.filter(d => d.status === 1).length;
+        if (events1 === 0 || events2 === 0) return invalid("no-events-in-group");
+
+        const eventTimes = Array.from(new Set(
+            [...g1, ...g2].filter(d => d.status === 1).map(d => d.time)
+        )).sort((a, b) => a - b);
+        if (!eventTimes.length) return invalid("no-events");
+
+        function scoreAndInformation(beta) {
+            const expBeta = Math.exp(beta);
+            if (!Number.isFinite(expBeta) || expBeta === 0) return null;
+            let score = 0;
+            let information = 0;
+
+            for (const time of eventTimes) {
+                const risk1 = g1.filter(d => d.time >= time).length;
+                const risk2 = g2.filter(d => d.time >= time).length;
+                const deaths1 = g1.filter(d => d.time === time && d.status === 1).length;
+                const deaths2 = g2.filter(d => d.time === time && d.status === 1).length;
+                const deaths = deaths1 + deaths2;
+                if (deaths === 0) continue;
+
+                const weightedRisk2 = risk2 * expBeta;
+                const weightedDeaths2 = deaths2 * expBeta;
+                const s0 = risk1 + weightedRisk2;
+                const s0Deaths = deaths1 + weightedDeaths2;
+                if (!(s0 > 0) || !Number.isFinite(s0)) return null;
+
+                score += deaths2;
+                for (let l = 0; l < deaths; l++) {
+                    const fraction = l / deaths;
+                    const denominator = s0 - fraction * s0Deaths;
+                    const group2Weight = weightedRisk2 - fraction * weightedDeaths2;
+                    if (!(denominator > 0) || !Number.isFinite(denominator)) return null;
+                    const probability = group2Weight / denominator;
+                    score -= probability;
+                    information += probability * (1 - probability);
+                }
+            }
+            return { score, information };
+        }
+
+        let beta = 0;
+        let converged = false;
+        let finalStats = null;
+        for (let iteration = 0; iteration < 100; iteration++) {
+            const stats = scoreAndInformation(beta);
+            if (!stats || !(stats.information > 1e-12) ||
+                !Number.isFinite(stats.score) || !Number.isFinite(stats.information)) {
+                return invalid("singular-information");
+            }
+            finalStats = stats;
+            const rawStep = stats.score / stats.information;
+            if (!Number.isFinite(rawStep)) return invalid("non-finite-step");
+            const step = Math.max(-2, Math.min(2, rawStep));
+            beta += step;
+            if (!Number.isFinite(beta) || Math.abs(beta) > 20) {
+                return invalid("separation-or-unbounded-estimate");
+            }
+            if (Math.abs(step) < 1e-8) {
+                converged = true;
+                break;
+            }
+        }
+
+        if (!converged) return invalid("non-convergence");
+        finalStats = scoreAndInformation(beta);
+        if (!finalStats || !(finalStats.information > 0)) return invalid("singular-information");
+        const se = Math.sqrt(1 / finalStats.information);
+        const lower = Math.exp(beta - 1.96 * se);
+        const upper = Math.exp(beta + 1.96 * se);
+        const hr = Math.exp(beta);
+        if (![se, lower, upper, hr].every(Number.isFinite) || lower <= 0 || upper <= 0) {
+            return invalid("non-finite-estimate");
+        }
+        return { converged: true, reason: null, beta, se, hr, hrLower: lower, hrUpper: upper };
     }
 
     function getChi2Pval(x) {
