@@ -159,6 +159,16 @@
                     <textarea id="outlier-data" rows="6" placeholder="e.g.: 1.2, 1.5, 1.8, 2.1, 19.5..." class="w-full p-4 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body text-sm text-on-surface resize-y leading-relaxed"></textarea>
                 </div>
 
+                <div class="mb-5">
+                    <label for="outlier-method" class="block font-headline text-sm font-bold text-on-surface mb-2">Detection method</label>
+                    <select id="outlier-method" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                        <option value="auto">Automatic suggestion (normality screen)</option>
+                        <option value="grubbs">Grubbs' test (one candidate; approximately normal data)</option>
+                        <option value="iqr">IQR rule (1.5 × IQR; exploratory screening)</option>
+                    </select>
+                    <p class="text-on-surface-variant text-xs mt-2">Automatic mode is only a screening suggestion. Choose a method based on your study plan and assumptions; a flagged value is not automatically invalid.</p>
+                </div>
+
                 <button id="check-outliers" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
                     <span class="material-symbols-outlined">troubleshoot</span> Check Data
                 </button>
@@ -191,7 +201,7 @@
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-3">1. Normality Screening and Its Limits</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed">
-                            For datasets with at least 8 observations, this tool calculates a D'Agostino–Pearson omnibus normality-test p-value. A p-value ≥ 0.05 means the test did not find sufficient evidence against normality; it does <strong>not</strong> prove that the data are normally distributed. For fewer than 8 observations, the tool does not report a normality p-value and uses IQR screening instead. Choose an outlier method based on the study design and analysis plan, not only on a preliminary normality test.
+                            In automatic mode, datasets with at least 8 observations receive a D'Agostino–Pearson omnibus normality screen. A p-value ≥ 0.05 does not prove normality; it only means this test did not find sufficient evidence against it. With fewer than 8 observations, normality is not assessed and automatic mode uses IQR screening. You can also choose Grubbs' test or the IQR rule explicitly. The selected method should follow the study design and analysis plan, not be chosen solely to produce a preferred result.
                         </p>
                     </div>
 
