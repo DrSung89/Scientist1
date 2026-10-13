@@ -34,7 +34,7 @@ assert.ok(logRankEnd > logRankStart, "log-rank function block exists");
 const logRankSnippet = source.slice(logRankStart, logRankEnd);
 const logRankContext = {};
 vm.runInNewContext(
-  logRankSnippet + "\nglobalThis.runLogRank = runLogRank;",
+  logRankSnippet + "\nglobalThis.runLogRank = runLogRank; globalThis.fitCoxHR = fitCoxHR;",
   logRankContext
 );
 
@@ -259,4 +259,69 @@ test("approximate HR matches independent reference values across survival-data s
     assert.ok(result.hrLower < result.hr, scenario.name + ": lower interval should be below HR");
     assert.ok(result.hr < result.hrUpper, scenario.name + ": upper interval should be above HR");
   }
+});
+
+
+test("Cox HR uses Efron ties and returns a finite Wald confidence interval", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const result = logRankContext.fitCoxHR(group1, group2);
+  assert.equal(result.converged, true);
+  assert.ok(Number.isFinite(result.hr) && result.hr > 0);
+  assert.ok(Number.isFinite(result.se) && result.se > 0);
+  assert.ok(result.hrLower > 0 && result.hrLower < result.hr);
+  assert.ok(result.hrUpper > result.hr);
+  assert.ok(Math.abs(Math.log(result.hr) - result.beta) < 1e-12);
+});
+
+test("Cox HR handles tied events and is reciprocal when groups are reversed", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 1, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 1 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const group2 = [
+    { time: 1, status: 0 }, { time: 2, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 1 },
+    { time: 4, status: 0 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const forward = logRankContext.fitCoxHR(group1, group2);
+  const reverse = logRankContext.fitCoxHR(group2, group1);
+  assert.equal(forward.converged, true);
+  assert.equal(reverse.converged, true);
+  assert.ok(Math.abs(forward.hr * reverse.hr - 1) < 1e-7);
+  assert.ok(Math.abs(forward.beta + reverse.beta) < 1e-7);
+});
+
+test("Cox HR reports N/A for all-censored data, a zero-event group, and separated estimates", () => {
+  const allCensored1 = [{ time: 1, status: 0 }, { time: 2, status: 0 }];
+  const allCensored2 = [{ time: 1, status: 0 }, { time: 3, status: 0 }];
+  assert.equal(logRankContext.fitCoxHR(allCensored1, allCensored2).converged, false);
+
+  const eventGroup = [
+    { time: 1, status: 1 }, { time: 2, status: 1 }, { time: 3, status: 0 }
+  ];
+  const noEventGroup = [{ time: 1, status: 0 }, { time: 2, status: 0 }];
+  assert.equal(logRankContext.fitCoxHR(eventGroup, noEventGroup).converged, false);
+  assert.equal(logRankContext.fitCoxHR(noEventGroup, eventGroup).converged, false);
+
+  const earlyEvents = [
+    { time: 1, status: 1 }, { time: 2, status: 1 }, { time: 3, status: 1 }
+  ];
+  const lateEvents = [
+    { time: 4, status: 1 }, { time: 5, status: 1 }, { time: 6, status: 1 }
+  ];
+  assert.equal(logRankContext.fitCoxHR(earlyEvents, lateEvents).converged, false);
 });
