@@ -27,7 +27,7 @@ const km = loadFunctions(
 );
 
 const logRankStart = source.indexOf("function runLogRank");
-const logRankEnd = source.lastIndexOf("\r\n});");
+const closingWrapper = source.match(/\r?\n\}\);\s*$/);\nconst logRankEnd = closingWrapper ? closingWrapper.index : -1;
 assert.notEqual(logRankStart, -1, "log-rank function exists");
 assert.ok(logRankEnd > logRankStart, "log-rank function block exists");
 const logRankSnippet = source.slice(logRankStart, logRankEnd);
@@ -37,7 +37,7 @@ vm.runInNewContext(
   logRankContext
 );
 
-test("Kaplan–Meier uses the risk set before removing same-time censoring", () => {
+test("Kaplan–Meier handles an event and censoring at the same time", () => {
   const result = km.calculateSingleKM([
     { time: 1, status: 1 },
     { time: 1, status: 0 },
