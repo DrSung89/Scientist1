@@ -419,3 +419,39 @@ test("Kaplan–Meier confidence-band helper datasets are hidden from tooltips", 
   assert.match(source, /if\s*\(c\.dataset\.label\.includes\('\(95% CI'\)\)\s*return null;/);
   assert.match(source, /if\s*\(c\.dataset\.label\.includes\('\(Censored\)'\)\)/);
 });
+
+
+test("Kaplan–Meier tooltip callback hides CI helpers and preserves survival/censor labels", () => {
+  const start = source.indexOf("function drawChart");
+  const end = source.indexOf("function calculateLogRankStats", start);
+  assert.notEqual(start, -1, "drawChart function exists");
+  assert.ok(end > start, "drawChart function block exists");
+
+  let chartConfig;
+  function Chart(_ctx, config) {
+    chartConfig = config;
+  }
+  const context = {
+    chartInstance: null,
+    Chart,
+    document: {
+      getElementById(id) {
+        if (id === "survivalChart") return { getContext: () => ({}) };
+        if (id === "xaxis-label") return { value: "Time" };
+        return null;
+      }
+    },
+    console
+  };
+  vm.runInNewContext(
+    source.slice(start, end) + "\nglobalThis.drawChart = drawChart;",
+    context
+  );
+  context.drawChart([]);
+  const label = chartConfig.options.plugins.tooltip.callbacks.label;
+
+  assert.equal(label({ dataset: { label: "Treatment (95% CI upper)" }, parsed: { x: 2, y: 0.7 } }), null);
+  assert.equal(label({ dataset: { label: "Treatment (95% CI)" }, parsed: { x: 2, y: 0.6 } }), null);
+  assert.equal(label({ dataset: { label: "Treatment" }, parsed: { x: 2, y: 0.6 } }), "Treatment: 60.0%");
+  assert.equal(label({ dataset: { label: "Treatment (Censored)" }, parsed: { x: 3, y: 0.6 } }), "Censored at 3");
+});
