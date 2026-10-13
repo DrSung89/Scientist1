@@ -79,38 +79,7 @@ function escapeHtml(text) {
 }
 
 // 삭제 함수 (관리자/비밀번호)
-window.deletePost = function(docId) {
-    // 이벤트 전파 방지 (클릭 시 아코디언이 닫히는 것 방지용)
-    if(event) event.stopPropagation();
-
-    const inputPw = prompt("Enter password to delete:");
-    if (inputPw === null) return;
-
-    const ADMIN_KEY = "rhksflwkqlqjs12!@"; // 관리자 키
-
-    db.collection("posts").doc(docId).get().then((doc) => {
-        if (doc.exists) {
-            const realPw = doc.data().password;
-            if (inputPw === ADMIN_KEY || inputPw === realPw) {
-                db.collection("posts").doc(docId).delete().then(() => {
-                    alert("Deleted successfully.");
-                    // 삭제 후 현재 페이지 새로고침
-                    currentPage = 1;
-                    lastVisibleDocs = [];
-                    loadPosts('init'); 
-                }).catch((error) => {
-                    alert("Error deleting: " + error.message);
-                });
-            } else {
-                alert("Incorrect password!");
-            }
-        } else {
-            alert("Post no longer exists.");
-        }
-    }).catch((error) => {
-        console.error("Error checking password:", error);
-    });
-};
+// Self-service deletion is disabled until server-side authentication is implemented.
 
 // [핵심] 글 목록 불러오기 (클릭형 아코디언 방식 적용)
 function loadPosts(direction = 'init') {
@@ -191,9 +160,7 @@ function loadPosts(direction = 'init') {
                contentDiv.className = "post-content";
                contentDiv.innerHTML = `
                 <div style="margin-top: 10px; margin-bottom: 5px;">${escapeHtml(data.content)}</div>
-                 <div style="text-align:right; margin-top: 0;">
-                  <button class="delete-btn" onclick="deletePost('${doc.id}')" style="padding: 3px 8px; font-size: 0.75rem;">Delete Post</button>
-                 </div>
+
                 `;
 
                 // 4. 클릭 이벤트 (열고 닫기)
@@ -244,11 +211,10 @@ if (saveBtn) {
     saveBtn.addEventListener('click', () => {
         const name = document.getElementById('writer-name').value.trim();
         const title = document.getElementById('post-title').value.trim();
-        const password = document.getElementById('post-password').value.trim();
         const content = document.getElementById('post-content').value.trim();
 
-        if (!name || !title || !content || !password) {
-            alert("Please fill in all fields (including Password).");
+        if (!name || !title || !content) {
+            alert("Please fill in your nickname, title, and post content.");
             return;
         }
 
@@ -258,7 +224,6 @@ if (saveBtn) {
         db.collection("posts").add({
             name: name,
             title: title,
-            password: password,
             content: content,
             date: firebase.firestore.FieldValue.serverTimestamp()
         })
@@ -267,7 +232,6 @@ if (saveBtn) {
             // 입력창 초기화
             document.getElementById('writer-name').value = "";
             document.getElementById('post-title').value = "";
-            document.getElementById('post-password').value = "";
             document.getElementById('post-content').value = "";
             
             loadPosts('init'); // 목록 새로고침
