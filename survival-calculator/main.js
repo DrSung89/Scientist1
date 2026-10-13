@@ -167,11 +167,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 let data = [];
 
                 for (let i = 0; i < timeInputs.length; i++) {
-                    const t = parseFloat(timeInputs[i].value);
-                    const s = parseInt(statusInputs[i].value);
-                    if (!isNaN(t)) {
-                        data.push({ time: t, status: s });
+                    const rawTime = timeInputs[i].value.trim();
+                    if (rawTime === "") continue;
+
+                    const t = Number(rawTime);
+                    const rawStatus = statusInputs[i].value;
+                    if (!Number.isFinite(t) || t < 0) {
+                        alert("Group " + g + ", row " + (i + 1) + ": enter a valid non-negative follow-up time.");
+                        return;
                     }
+                    if (rawStatus !== "0" && rawStatus !== "1") {
+                        alert("Group " + g + ", row " + (i + 1) + ": status must be 1 (event) or 0 (censored).");
+                        return;
+                    }
+                    data.push({ time: t, status: Number(rawStatus) });
                 }
 
                 if (data.length === 0) continue;
