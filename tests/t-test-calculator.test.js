@@ -126,7 +126,7 @@ test('F-test reciprocal-tail calculation agrees with an independent upper-tail i
   const expected = 2 * regularizedBeta(df2 / (df2 + df1 * f), df2 / 2, df1 / 2);
   assert.ok(Math.abs(actual - expected) < 1e-12, 'expected ' + expected + ', got ' + actual);
   assert.ok(sandbox.twoSidedFTestPValue(1e6, df1, df2) > 0);
-  const atOneExpected = 2 * regularizedBeta(df2 / (df2 + df1), df2 / 2, df1 / 2);
+  const atOneExpected = Math.min(1, 2 * regularizedBeta(df2 / (df2 + df1), df2 / 2, df1 / 2));
   assert.ok(Math.abs(sandbox.twoSidedFTestPValue(1, df1, df2) - atOneExpected) < 1e-12);
 });
 
