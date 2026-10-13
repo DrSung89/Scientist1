@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (n < 8) {
                     html += `<div style="background:#fff7ed; padding:10px; border-radius:4px; color:#9a3412;">
                         <strong>⚠️ Potential: ${outliers.join(", ")}</strong><br>
-                        <span style="font-size:0.85em">Small N (≤5). Recommend increasing replicates.</span>
+                        <span style="font-size:0.85em">Small N (N<8). Interpret this screening result cautiously.</span>
                     </div>`;
                 } else {
                     let tipText = "";
