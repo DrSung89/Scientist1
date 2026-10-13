@@ -264,7 +264,7 @@
                             <span class="material-symbols-outlined">timer</span> Clinical Significance of "Median Survival Time"
                         </h3>
                         <p class="text-sm leading-relaxed text-amber-800 font-light mb-4">
-                            Instead of using a simple mathematical mean, survival studies rely on the <strong>Median Survival Time</strong>. This represents the precise time point at which the survival probability curve crosses the 0.5 (50%) threshold—meaning exactly half of the cohort has experienced the event.
+                            Instead of using a simple mathematical mean, survival studies rely on the <strong>Median Survival Time</strong>. This is the earliest observed time at which the Kaplan–Meier estimated survival probability is 50% or lower. Because censoring is accounted for in the estimate, this does not necessarily mean exactly half of the enrolled participants have had the event.
                         </p>
                         <div class="bg-white/60 p-3 rounded text-sm text-amber-950 font-medium">
                             <strong>"Not Reached (NR)":</strong> If a novel drug is highly efficacious, more than 50% of the subjects might survive until the end of the study. In this scenario, the curve never drops to 0.5, and the median survival is scientifically reported as "Not Reached."
@@ -276,7 +276,7 @@
                             <span class="material-symbols-outlined">analytics</span> The Log-Rank Test (Statistical Validation)
                         </h3>
                         <p class="text-sm leading-relaxed text-sky-800 font-light">
-                            While the KM plot provides an intuitive visual representation of the data, you cannot claim a drug is effective just by looking at a graph. Our calculator automatically performs the <strong>Log-Rank Test (Mantel-Cox test)</strong>. This hypothesis test generates a Chi-Square statistic and a precise <strong>P-value</strong>, determining if the survival curves of different groups (e.g., Control vs. Treatment) are statistically significantly different from one another.
+                            While the KM plot provides an intuitive visual representation of the data, you cannot claim a drug is effective just by looking at a graph. Our calculator automatically performs the <strong>Log-Rank Test (Mantel-Cox test)</strong>. This hypothesis test generates a Chi-Square statistic and an asymptotic <strong>P-value</strong> to assess evidence of a difference between groups. Statistical significance does not by itself establish clinical importance or prove a treatment effect.
                         </p>
                     </div>
 
@@ -295,18 +295,18 @@
                                 </p>
                             </div>
                             <div class="bg-white p-4 rounded border border-indigo-100">
-                                <h4 class="font-bold text-indigo-900 text-sm mb-1">2. Hazard Ratio (Peto's Approximation)</h4>
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1">2. Hazard Ratio (Cox Proportional-Hazards Model)</h4>
                                 <p class="text-sm font-light text-slate-700 leading-relaxed">
                                     Unlike simple event rates, the Hazard Ratio represents the <strong>instantaneous relative risk</strong> of the event occurring at any given point in time. It inherently accounts for the <em>accumulation of time</em>.
                                     <br><br>
-                                    • <strong>HR = 1</strong>: No difference in risk.<br>
-                                    • <strong>HR < 1</strong>: The treatment group has a lower risk (delays the event better) than the control.
-                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: We utilize Peto's variance-based approximation, which is the standard methodology for 1-to-1 Log-Rank comparisons without complex covariate modeling.</span>
+                                    • <strong>HR = 1</strong>: The estimated instantaneous event hazards are equal between groups.<br>
+                                    • <strong>HR &lt; 1</strong>: Group 2 has a lower estimated instantaneous event hazard than Group 1.
+                                    <br><span class="text-xs text-slate-500 mt-2 block">*Note: HR is estimated with a univariate Cox proportional-hazards model, using Efron's method for tied event times. Interpretation assumes proportional hazards over time; this calculator does not test that assumption. HR alone does not establish treatment efficacy or causality.</span>
                                 </p>
                             </div>
                             <div class="bg-indigo-900 text-indigo-50 p-4 rounded text-sm font-light leading-relaxed">
                                 <strong class="text-white block mb-1">💡 The "Time" Factor in Survival Analysis:</strong>
-                                Imagine all subjects in both the Control and Treatment groups die by the end of a 100-day study. A simple survival rate calculation would show 0% efficacy. However, if the Control group died on Day 10, but the Treatment group survived until Day 90, the <strong>Hazard Ratio</strong> will correctly capture this massive 80-day delay, mathematically proving the treatment's efficacy.
+                                For example, two groups may eventually experience the event but at different times. The hazard ratio summarizes their estimated instantaneous hazard ratio under the proportional-hazards model; it is not an 80-day delay estimate and does not, on its own, prove efficacy. Consider the Kaplan–Meier curves and study design alongside the HR and log-rank result.
                             </div>
                         </div>
                     </div>
