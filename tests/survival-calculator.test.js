@@ -92,9 +92,10 @@ test("log-rank includes subjects censored at an event time in the risk set", () 
   assert.ok(Math.abs(result.p - 1) < 1e-8, "zero chi-square should yield p approximately 1");
 });
 
-test("log-rank matches an independently calculated reference statistic and p-value", () => {
+test("log-rank matches independent reference values for test statistic, p-value, and approximate HR", () => {
   // Reference values calculated independently from the standard one-degree-of-freedom
-  // log-rank equations; p-value is the chi-square survival probability.
+  // log-rank equations and the score-based HR approximation. The HR interval is a
+  // Wald-style approximation, not a Cox-model confidence interval.
   const group1 = [
     { time: 1, status: 1 },
     { time: 2, status: 1 },
@@ -110,7 +111,9 @@ test("log-rank matches an independently calculated reference statistic and p-val
   const result = logRankContext.runLogRank(group1, group2);
   assert.ok(Math.abs(result.chisq - 1.719836400818) < 1e-8);
   assert.ok(Math.abs(result.p - 0.189714105128) < 1e-6);
-  assert.ok(result.hrLower < result.hr && result.hr < result.hrUpper);
+  assert.ok(Math.abs(result.hr - 0.250630279840) < 1e-9);
+  assert.ok(Math.abs(result.hrLower - 0.031685084273) < 1e-9);
+  assert.ok(Math.abs(result.hrUpper - 1.982495505843) < 1e-9);
 });
 
 
