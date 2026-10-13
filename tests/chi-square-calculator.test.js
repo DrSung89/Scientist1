@@ -9,7 +9,9 @@ const end = html.indexOf('\n        function calcChi()', start);
 assert.ok(start >= 0 && end > start, 'chi-square p-value function should exist in the calculator page');
 
 const source = html.slice(start, end);
-const chiSquarePValue = vm.runInNewContext(`(${source}; chiSquarePValue)`);
+const sandbox = {};
+vm.runInNewContext(`${source}\nglobalThis.chiSquarePValue = chiSquarePValue;`, sandbox);
+const chiSquarePValue = sandbox.chiSquarePValue;
 
 test('df=1 chi-square survival function matches reference values', () => {
   const cases = [
