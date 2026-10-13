@@ -113,6 +113,29 @@ test("log-rank matches an independently calculated reference statistic and p-val
   assert.ok(result.hrLower < result.hr && result.hr < result.hrUpper);
 });
 
+
+test("log-rank does not report an approximate HR or CI when either group has zero events", () => {
+  const noEventsGroup = [{ time: 5, status: 0 }];
+  const eventGroup = [
+    { time: 1, status: 1 },
+    { time: 2, status: 1 },
+    { time: 3, status: 1 },
+    { time: 4, status: 0 }
+  ];
+
+  for (const [g1, g2] of [
+    [noEventsGroup, eventGroup],
+    [eventGroup, noEventsGroup]
+  ]) {
+    const result = logRankContext.runLogRank(g1, g2);
+    assert.ok(Number.isFinite(result.chisq));
+    assert.ok(Number.isFinite(result.p));
+    assert.ok(Number.isNaN(result.hr));
+    assert.ok(Number.isNaN(result.hrLower));
+    assert.ok(Number.isNaN(result.hrUpper));
+  }
+});
+
 test("log-rank with no observed events returns chi-square 0 and p-value 1", () => {
   const group1 = [
     { time: 1, status: 0 },
