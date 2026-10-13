@@ -27,7 +27,8 @@ const km = loadFunctions(
 );
 
 const logRankStart = source.indexOf("function runLogRank");
-const closingWrapper = source.match(/\r?\n\}\);\s*$/);\nconst logRankEnd = closingWrapper ? closingWrapper.index : -1;
+const closingWrapper = source.match(/\r?\n\}\);\s*$/);
+const logRankEnd = closingWrapper ? closingWrapper.index : -1;
 assert.notEqual(logRankStart, -1, "log-rank function exists");
 assert.ok(logRankEnd > logRankStart, "log-rank function block exists");
 const logRankSnippet = source.slice(logRankStart, logRankEnd);
