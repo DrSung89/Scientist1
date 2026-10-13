@@ -373,6 +373,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 if(c.dataset.label.includes('(Censored)')) {
                                     return 'Censored at ' + c.parsed.x;
                                 }
+                                if(c.dataset.label.includes('(95% CI)')) return null;
                                 return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' 
                             }
                         } 
@@ -382,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         labels: { 
                             boxWidth: 12, padding: 10, font: { size: 12 },
                             filter: function(item, chart) {
-                                return !item.text.includes('(Censored)');
+                                return !item.text.includes('(Censored)') && !item.text.includes('(95% CI)');
                             }
                         } 
                     }
