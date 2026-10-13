@@ -449,7 +449,9 @@
             
             let p_f = 1; 
             if (v1 !== 0 && v2 !== 0) {
-                p_f = 2 * (1 - jStat.centralF.cdf(f_stat, df1_f, df2_f));
+                // Use the reciprocal F distribution to evaluate the upper tail directly.
+                // This avoids subtracting a CDF near 1 for small two-sided p-values.
+                p_f = Math.min(1, 2 * jStat.centralF.cdf(1 / f_stat, df2_f, df1_f));
             } else if (v1 !== v2) {
                 p_f = 0; 
             }
@@ -474,7 +476,8 @@
             const se_student = Math.sqrt(v_pooled * (1/n1 + 1/n2));
             const t_student = diff / se_student;
             const df_student = n1 + n2 - 2;
-            const p_student = 2 * (1 - jStat.studentt.cdf(Math.abs(t_student), df_student));
+            // Student-t is symmetric: evaluate the lower tail directly for better precision.
+            const p_student = Math.min(1, 2 * jStat.studentt.cdf(-Math.abs(t_student), df_student));
             const t_crit_student = Math.abs(jStat.studentt.inv(0.025, df_student));
             const ci_low_student = diff - (t_crit_student * se_student);
             const ci_hi_student = diff + (t_crit_student * se_student);
@@ -485,7 +488,8 @@
             const num = Math.pow((v1/n1) + (v2/n2), 2);
             const den = (Math.pow(v1/n1, 2) / (n1 - 1)) + (Math.pow(v2/n2, 2) / (n2 - 1));
             const df_welch = num / den;
-            const p_welch = 2 * (1 - jStat.studentt.cdf(Math.abs(t_welch), df_welch));
+            // Student-t is symmetric: evaluate the lower tail directly for better precision.
+            const p_welch = Math.min(1, 2 * jStat.studentt.cdf(-Math.abs(t_welch), df_welch));
             const t_crit_welch = Math.abs(jStat.studentt.inv(0.025, df_welch));
             const ci_low_welch = diff - (t_crit_welch * se_welch);
             const ci_hi_welch = diff + (t_crit_welch * se_welch);
@@ -503,7 +507,10 @@
 
             // Output Formatting
             // Tailwind's text-error (#ba1a1a) for significance highlight
-            const formatP = (p) => p < 0.05 ? `<span style="color:#ba1a1a">${p.toFixed(4)} *</span>` : p.toFixed(4);
+            const formatP = (p) => {
+                const displayed = p < 0.0001 ? '<0.0001' : p.toFixed(4);
+                return p < 0.05 ? `<span style="color:#ba1a1a">${displayed} *</span>` : displayed;
+            };
             
             document.getElementById('t-student').innerText = t_student.toFixed(3);
             document.getElementById('df-student').innerText = df_student.toFixed(1);
