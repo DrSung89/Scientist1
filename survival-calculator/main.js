@@ -188,18 +188,28 @@ document.addEventListener("DOMContentLoaded", function() {
                 groupData.push({ name: groupName, data: data });
 
                 const kmResult = calculateSingleKM(data);
-                
+                const groupColor = colors[(g-1) % 4];
+                const ciColor = groupColor === '#007bff' ? 'rgba(0, 123, 255, 0.12)'
+                    : groupColor === '#dc3545' ? 'rgba(220, 53, 69, 0.12)'
+                    : groupColor === '#28a745' ? 'rgba(40, 167, 69, 0.12)'
+                    : 'rgba(253, 126, 20, 0.12)';
                 allDatasets.push({
-                    label: groupName,
-                    data: kmResult.points,
-                    borderColor: colors[(g-1) % 4],
-                    backgroundColor: colors[(g-1) % 4],
-                    borderWidth: 2,
-                    fill: false,       
-                    stepped: true,     
-                    tension: 0,
-                    pointRadius: 2,
-                    pointHoverRadius: 5
+                    label: groupName + ' (95% CI upper)',
+                    data: kmResult.points.map(point => ({ x: point.x, y: point.upper })),
+                    borderColor: 'transparent', backgroundColor: 'transparent',
+                    borderWidth: 0, pointRadius: 0, stepped: true, fill: false, tension: 0
+                });
+                allDatasets.push({
+                    label: groupName + ' (95% CI)',
+                    data: kmResult.points.map(point => ({ x: point.x, y: point.lower })),
+                    borderColor: 'transparent', backgroundColor: ciColor,
+                    borderWidth: 0, pointRadius: 0, stepped: true, fill: '-1', tension: 0
+                });
+                allDatasets.push({
+                    label: groupName, data: kmResult.points,
+                    borderColor: groupColor, backgroundColor: groupColor,
+                    borderWidth: 2, fill: false, stepped: true, tension: 0,
+                    pointRadius: 2, pointHoverRadius: 5
                 });
                 
                 // ★ Censor Tick 데이터셋 추가
@@ -237,50 +247,57 @@ document.addEventListener("DOMContentLoaded", function() {
     // ★ 그래프 깨짐 방지 및 정확한 At-risk 감소 반영
     function calculateSingleKM(data) {
         data.sort((a, b) => a.time - b.time);
-        let n = data.length;
+        let currentN = data.length;
         let survivalProb = 1.0;
-        let points = [{x: 0, y: 1.0}]; 
-        let censoredPoints = []; 
-        let grouped = {};
-        
+        let greenwoodSum = 0;
+        const z = 1.96;
+        const points = [{ x: 0, y: 1.0, lower: 1.0, upper: 1.0 }];
+        const censoredPoints = [];
+        const grouped = {};
         data.forEach(d => {
-            if (!grouped[d.time]) grouped[d.time] = { event: 0, censor: 0, total: 0 };
-            if (d.status === 1) grouped[d.time].event++; 
+            if (!grouped[d.time]) grouped[d.time] = { event: 0, censor: 0 };
+            if (d.status === 1) grouped[d.time].event++;
             else grouped[d.time].censor++;
-            grouped[d.time].total++;
         });
-        
+        function confidenceInterval(survival, greenwood) {
+            if (survival <= 0) return { lower: 0, upper: 0 };
+            if (survival >= 1 || greenwood <= 0) return { lower: survival, upper: survival };
+            const logSurvival = Math.log(survival);
+            const standardError = Math.sqrt(greenwood) / Math.abs(logSurvival);
+            const theta = Math.log(-logSurvival);
+            const lower = Math.exp(-Math.exp(theta + z * standardError));
+            const upper = Math.exp(-Math.exp(theta - z * standardError));
+            return {
+                lower: Math.max(0, Math.min(survival, lower)),
+                upper: Math.min(1, Math.max(survival, upper))
+            };
+        }
         const times = Object.keys(grouped).map(Number).sort((a, b) => a - b);
-        let currentN = n;
         let medianTime = "Not Reached";
         let medianFound = false;
-        
         times.forEach(t => {
             const info = grouped[t];
-            
-            // Event 발생 시에만 points.push
             if (info.event > 0) {
-                survivalProb *= (1 - (info.event / currentN));
-                points.push({ x: t, y: survivalProb });
-                
-                if (!medianFound && survivalProb <= 0.5) { 
-                    medianTime = t; 
-                    medianFound = true; 
+                const events = info.event;
+                if (currentN > 0) {
+                    survivalProb *= 1 - events / currentN;
+                    if (currentN > events) greenwoodSum += events / (currentN * (currentN - events));
+                }
+                const ci = confidenceInterval(survivalProb, greenwoodSum);
+                points.push({ x: t, y: survivalProb, lower: ci.lower, upper: ci.upper });
+                if (!medianFound && survivalProb <= 0.5) {
+                    medianTime = t;
+                    medianFound = true;
                 }
             }
-            
-            // Censor 마크
             if (info.censor > 0) {
-                 censoredPoints.push({ x: t, y: survivalProb });
+                const ci = confidenceInterval(survivalProb, greenwoodSum);
+                censoredPoints.push({ x: t, y: survivalProb, lower: ci.lower, upper: ci.upper });
             }
-
-            currentN -= info.event;
-            currentN -= info.censor;
+            currentN -= info.event + info.censor;
         });
-        
-        return { median: medianTime, points: points, censoredPoints: censoredPoints };
+        return { median: medianTime, points, censoredPoints };
     }
-
     function escapeHtml(value) {
         return String(value).replace(/[&<>"\']/g, function(char) {
             return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"' : "&quot;", "\'": "&#39;" })[char];
@@ -364,7 +381,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         labels: { 
                             boxWidth: 12, padding: 10, font: { size: 12 },
                             filter: function(item, chart) {
-                                return !item.text.includes('(Censored)');
+                                return !item.text.includes('(Censored)') && !item.text.includes('(95% CI)');
                             }
                         } 
                     }
