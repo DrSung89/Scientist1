@@ -386,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function() {
                  <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem;">
                     <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e1e3e4;">
                         <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
-                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Approximate hazard ratio for Group 2 relative to Group 1, derived from log-rank statistics; not a Cox model estimate.">HR (95% CI)</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Approximate hazard ratio for Group 2 relative to Group 1, derived from log-rank statistics; not a Cox model estimate.">Approx. HR (95% CI)</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">P-value (Pairwise Log-rank)</th>
                     </tr>`;
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR &lt; 1 indicates a lower estimated hazard in Group 2; group order matters.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> The HR is a log-rank-based approximation for Group 2 relative to Group 1, not a Cox-model estimate; HR &lt; 1 indicates a lower estimated hazard in Group 2. Pairwise p-values are unadjusted for multiple comparisons.</p>`;
         return html;
     }
 
