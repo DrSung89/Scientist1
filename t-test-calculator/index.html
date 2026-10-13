@@ -408,6 +408,21 @@
         const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
         const getVariance = (arr, mean) => arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
 
+        // Evaluate small two-sided p-values through the lower tail rather than 1 - CDF.
+        function twoSidedStudentTPValue(t, df) {
+            return Math.min(1, 2 * jStat.studentt.cdf(-Math.abs(t), df));
+        }
+
+        // For f >= 1, use the reciprocal F-distribution identity with swapped degrees of freedom.
+        function twoSidedFTestPValue(f, df1, df2) {
+            return Math.min(1, 2 * jStat.centralF.cdf(1 / f, df2, df1));
+        }
+
+        function formatPValue(p) {
+            const displayed = p < 0.0001 ? '<0.0001' : p.toFixed(4);
+            return p < 0.05 ? `<span style="color:#ba1a1a">${displayed} *</span>` : displayed;
+        }
+
         function runAnalysis() {
             if (typeof jStat === 'undefined') {
                 alert("Statistical library is still loading. Please try again in a second.");
@@ -507,19 +522,16 @@
 
             // Output Formatting
             // Tailwind's text-error (#ba1a1a) for significance highlight
-            const formatP = (p) => {
-                const displayed = p < 0.0001 ? '<0.0001' : p.toFixed(4);
-                return p < 0.05 ? `<span style="color:#ba1a1a">${displayed} *</span>` : displayed;
-            };
+            
             
             document.getElementById('t-student').innerText = t_student.toFixed(3);
             document.getElementById('df-student').innerText = df_student.toFixed(1);
-            document.getElementById('p-student').innerHTML = formatP(p_student);
+            document.getElementById('p-student').innerHTML = formatPValue(p_student);
             document.getElementById('ci-student').innerText = `[${ci_low_student.toFixed(3)} , ${ci_hi_student.toFixed(3)}]`;
 
             document.getElementById('t-welch').innerText = t_welch.toFixed(3);
             document.getElementById('df-welch').innerText = df_welch.toFixed(1);
-            document.getElementById('p-welch').innerHTML = formatP(p_welch);
+            document.getElementById('p-welch').innerHTML = formatPValue(p_welch);
             document.getElementById('ci-welch').innerText = `[${ci_low_welch.toFixed(3)} , ${ci_hi_welch.toFixed(3)}]`;
 
             document.getElementById('mean-diff').innerText = diff.toFixed(3);
