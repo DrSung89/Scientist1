@@ -281,6 +281,12 @@ test("Cox HR uses Efron ties and returns a finite Wald confidence interval", () 
   assert.ok(Number.isFinite(result.se) && result.se > 0);
   assert.ok(result.hrLower > 0 && result.hrLower < result.hr);
   assert.ok(result.hrUpper > result.hr);
+  // Fixed reference values from a separate Efron partial-likelihood score/information calculation.
+  assert.ok(Math.abs(result.beta - (-0.527277415214)) < 1e-8);
+  assert.ok(Math.abs(result.hr - 0.590209680103) < 1e-8);
+  assert.ok(Math.abs(result.se - 0.767710369598) < 1e-8);
+  assert.ok(Math.abs(result.hrLower - 0.131074457468) < 1e-8);
+  assert.ok(Math.abs(result.hrUpper - 2.657630427893) < 1e-8);
   assert.ok(Math.abs(Math.log(result.hr) - result.beta) < 1e-12);
 });
 
@@ -301,6 +307,11 @@ test("Cox HR handles tied events and is reciprocal when groups are reversed", ()
   const reverse = logRankContext.fitCoxHR(group2, group1);
   assert.equal(forward.converged, true);
   assert.equal(reverse.converged, true);
+  // Fixed reference for Efron's method with tied deaths.
+  assert.ok(Math.abs(forward.hr - 0.693643961322) < 1e-8);
+  assert.ok(Math.abs(forward.beta - (-0.365796474149)) < 1e-8);
+  assert.ok(Math.abs(forward.hrLower - 0.155087125106) < 1e-8);
+  assert.ok(Math.abs(forward.hrUpper - 3.102397731269) < 1e-8);
   assert.ok(Math.abs(forward.hr * reverse.hr - 1) < 1e-7);
   assert.ok(Math.abs(forward.beta + reverse.beta) < 1e-7);
 });
