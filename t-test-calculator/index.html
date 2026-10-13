@@ -414,10 +414,18 @@
                 return;
             }
 
-            const parse = (id) => document.getElementById(id).value.split(/[\s,]+/).filter(v => v !== '' && !isNaN(v)).map(Number);
+            const parse = (id) => {
+                const tokens = document.getElementById(id).value.split(/[\s,]+/).filter(v => v.trim() !== '');
+                if (tokens.length === 0 || tokens.some(v => !Number.isFinite(Number(v)))) return null;
+                return tokens.map(Number);
+            };
             const A = parse('group-a');
             const B = parse('group-b');
 
+            if (!A || !B) {
+                alert("Use only valid numeric values separated by commas or spaces. Invalid entries are not ignored.");
+                return;
+            }
             if (A.length < 2 || B.length < 2) {
                 alert("Need at least 2 numeric values per group.");
                 return;
@@ -426,6 +434,10 @@
             const n1 = A.length, n2 = B.length;
             const m1 = getMean(A), m2 = getMean(B);
             const v1 = getVariance(A, m1), v2 = getVariance(B, m2);
+            if (v1 === 0 && v2 === 0) {
+                alert("Both groups have zero variance. The t-statistic and standardized effect size are undefined for these data.");
+                return;
+            }
             const sd1 = Math.sqrt(v1), sd2 = Math.sqrt(v2);
             const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
             const diff = m1 - m2;
@@ -442,23 +454,20 @@
                 p_f = 0; 
             }
 
-            const isEqualVariance = p_f >= 0.05;
             const fTestBox = document.getElementById('f-test-box');
             const fTestRes = document.getElementById('f-test-result');
-            
-            if (isEqualVariance) {
-                fTestBox.style.background = '#f0fdf4'; // emerald-50
-                fTestBox.style.borderColor = '#10b981'; // emerald-500
-                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (≥ 0.05). Variances are <strong class="text-on-surface">equal</strong>.<br>👉 <strong class="text-on-surface">Student's t-test</strong> is recommended.`;
-                document.getElementById('row-student').style.background = '#f0fdf4';
-                document.getElementById('row-welch').style.background = 'transparent';
+
+            if (p_f < 0.05) {
+                fTestBox.style.background = '#fffbeb';
+                fTestBox.style.borderColor = '#f59e0b';
+                fTestRes.innerHTML = `F-test P = ${p_f.toFixed(4)}. This test suggests unequal variances, but it is sensitive to departures from normality. <strong class="text-on-surface">Welch's t-test is the recommended default.</strong>`;
             } else {
-                fTestBox.style.background = '#fffbeb'; // amber-50
-                fTestBox.style.borderColor = '#f59e0b'; // amber-500
-                fTestRes.innerHTML = `P = ${p_f.toFixed(4)} (< 0.05). Variances are <strong class="text-on-surface">significantly different</strong>.<br>👉 <strong class="text-on-surface">Welch's t-test</strong> is highly recommended.`;
-                document.getElementById('row-welch').style.background = '#fffbeb';
-                document.getElementById('row-student').style.background = 'transparent';
+                fTestBox.style.background = '#f0fdf4';
+                fTestBox.style.borderColor = '#10b981';
+                fTestRes.innerHTML = `F-test P = ${p_f.toFixed(4)}. This does not establish that variances are equal. <strong class="text-on-surface">Welch's t-test remains a robust default</strong> when group variances or sample sizes may differ.`;
             }
+            document.getElementById('row-welch').style.background = '#f0fdf4';
+            document.getElementById('row-student').style.background = 'transparent';
 
             // 2. Student's t-test
             const v_pooled = ((n1 - 1)*v1 + (n2 - 1)*v2) / (n1 + n2 - 2);
