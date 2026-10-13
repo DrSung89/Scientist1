@@ -8,6 +8,8 @@ on:
       - "tests/survival-calculator.test.js"
       - "chi-square-calculator/index.html"
       - "tests/chi-square-calculator.test.js"
+      - "t-test-calculator/index.html"
+      - "tests/t-test-calculator.test.js"
       - ".github/workflows/survival-calculator-tests.yml"
   pull_request:
     paths:
@@ -25,4 +27,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js
+      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/t-test-calculator.test.js
