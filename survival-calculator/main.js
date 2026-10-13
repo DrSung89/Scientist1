@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> The HR is a log-rank-based approximation for Group 2 relative to Group 1, not a Cox-model estimate; HR &lt; 1 indicates a lower estimated hazard in Group 2. Pairwise p-values are unadjusted for multiple comparisons.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> The HR is a log-rank-based approximation for Group 2 relative to Group 1, not a Cox-model estimate. It is shown only when both groups have at least one observed event; with zero events in either group, the estimate may be unbounded or unstable. HR &lt; 1 indicates a lower estimated hazard in Group 2. Pairwise p-values are unadjusted for multiple comparisons.</p>`;
         return html;
     }
 
@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         let hr = NaN, hrLower = NaN, hrUpper = NaN;
-        if (E1 > 0 && E2 > 0 && V > 0) {
+        if (E1 > 0 && E2 > 0 && V > 0 && O1 > 0 && O2 > 0) {
             hr = Math.exp((O2 - E2) / V); 
             let seLogHr = Math.sqrt(1 / V);
             hrLower = Math.exp(Math.log(hr) - 1.96 * seLogHr);
