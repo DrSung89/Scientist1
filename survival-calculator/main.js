@@ -426,9 +426,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let O1 = 0, E1 = 0, O2 = 0, E2 = 0, V = 0;
 
         times.forEach(t => {
-            // ★ At-risk 집합 오류 수정
-            let r1 = g1.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
-            let r2 = g2.filter(d => d.time > t || (d.time === t && d.status === 1)).length;
+            // Subjects censored at t remain at risk immediately before events at t.
+            let r1 = g1.filter(d => d.time >= t).length;
+            let r2 = g2.filter(d => d.time >= t).length;
             let r = r1 + r2;
 
             let d1 = g1.filter(d => d.time === t && d.status === 1).length;
