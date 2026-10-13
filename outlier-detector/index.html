@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
     <title>Outlier Detector (Grubb's Test & IQR) | Scientist's Toolkit</title>
-    <meta name="description" content="Automatically detect and remove statistical outliers from your datasets using Shapiro-Wilk normality testing, Grubb's Test, and IQR methods.">
+    <meta name="description" content="Screen potential outliers using D'Agostino-Pearson normality testing, Grubbs' test, and the IQR rule. Review findings before excluding data.">
     <link rel="canonical" href="https://scientisttoolkit.xyz/outlier-detector/">
     
     <meta property="og:type" content="website">
@@ -189,23 +189,23 @@
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-headline font-bold text-primary mb-3">1. Automated Normality Testing (Shapiro-Wilk equivalent)</h3>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-3">1. Normality Screening and Its Limits</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed">
-                            Before deciding <em>how</em> to find an outlier, you must know the distribution of your data. Our tool automatically runs the <strong>D'Agostino-Pearson Omnibus Test</strong> in the background. If your data passes this test (P ≥ 0.05), it is considered Normally Distributed, and the tool will deploy Grubb's Test. If it fails, the tool shifts to the non-parametric IQR method.
+                            For datasets with at least 8 observations, this tool calculates a D'Agostino–Pearson omnibus normality-test p-value. A p-value ≥ 0.05 means the test did not find sufficient evidence against normality; it does <strong>not</strong> prove that the data are normally distributed. For fewer than 8 observations, the tool does not report a normality p-value and uses IQR screening instead. Choose an outlier method based on the study design and analysis plan, not only on a preliminary normality test.
                         </p>
                     </div>
 
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-3">2. Grubb's Test (For Normal Distributions)</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed">
-                            Also known as the maximum normed residual test, Grubb's Test is the gold standard for detecting a single outlier in a univariate data set that follows an approximately normal distribution. It compares the maximum absolute deviation from the mean against the standard deviation of the dataset. If the calculated G-value exceeds the critical threshold for your sample size, the point is flagged for removal.
+                            Grubbs' test evaluates whether the single most extreme observation is inconsistent with a univariate normal model. It compares the largest absolute deviation from the mean, scaled by the sample standard deviation, with a critical value. This calculator tests one candidate at a time; detecting additional outliers requires a separately planned procedure because repeated testing can increase the false-positive rate. A flagged observation is a prompt for review, not an automatic instruction to delete data.
                         </p>
                     </div>
 
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-3">3. The IQR Method (Tukey's Fences)</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-6">
-                            When your biological data is skewed or not normally distributed, standard deviation-based tests are invalid. The Interquartile Range (IQR) method is robust against non-normality. It finds the middle 50% of your data (between the 25th percentile, Q1, and the 75th percentile, Q3). Any data point falling below $Q1 - 1.5 \times IQR$ or above $Q3 + 1.5 \times IQR$ is flagged as a mathematical outlier.
+                            The Interquartile Range (IQR) method is a distribution-light screening rule, not a formal test that establishes whether a value is erroneous. It finds the middle 50% of the data (between the 25th percentile, Q1, and the 75th percentile, Q3). Values below $Q1 - 1.5 \times IQR$ or above $Q3 + 1.5 \times IQR$ are flagged as potential outliers. The rule can flag valid observations, especially in small samples or skewed distributions, so review observations in their experimental context.
                         </p>
                         
                         <div class="my-8 text-center bg-white p-4 rounded-lg shadow-sm border border-outline-variant/30 inline-block w-full">
@@ -229,7 +229,7 @@
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What if the tool detects multiple outliers?</h4>
-                                <p class="text-on-surface-variant font-light leading-relaxed">Standard Grubb's test is designed to find one outlier at a time. If the tool detects multiple anomalies, it is generally recommended to remove the most extreme outlier first, then re-run the analysis to see if the second point is still an outlier without the skewing effect of the first one.</p>
+                                <p class="text-on-surface-variant font-light leading-relaxed">This calculator's Grubbs mode flags at most one observation per run. Repeatedly removing observations and re-running a single-outlier test can inflate the overall false-positive rate unless the procedure accounts for sequential testing. If several observations are flagged by IQR, investigate possible technical causes and follow a pre-specified, documented rule rather than deleting values solely to improve statistical significance.</p>
                             </div>
                         </div>
                     </div>

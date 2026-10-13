@@ -65,12 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function testNormalityDP(data) {
         const n = data.length;
-        if (n < 8) {
-            const m = stat.mean(data);
-            const s = stat.sd(data, m);
-            const sk = stat.skewness(data, m, s);
-            return { p: Math.abs(sk) < 1 ? 0.5 : 0.01 }; 
-        }
+        // Do not fabricate a normality-test p-value for small samples.
+        if (n < 8) return { p: null, reason: 'small-sample' };
 
         const mean = stat.mean(data);
         const sd = stat.sd(data, mean);
@@ -162,16 +158,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const skew = stat.skewness(data, mean, sd);
 
             let isNormal, pValueDisplay, normMsg;
-            if (n <= 5) {
-                isNormal = Math.abs(skew) < 0.8;
-                pValueDisplay = "N/A <span style='color:#999; font-size:0.8em'>(N≤5)</span>";
-                normMsg = isNormal ? "Assumed Normal (Low Skew)" : "Assumed Non-Normal (High Skew)";
+            if (n < 8) {
+                // Small samples should not be routed to Grubbs using a skewness heuristic.
+                isNormal = false;
+                pValueDisplay = "Not assessed (N<8)";
+                normMsg = "<span style='color:#d97706; font-weight:bold;'>Small sample; IQR screening used</span>";
             } else {
                 const normTest = testNormalityDP(data);
                 const pVal = normTest.p;
-                isNormal = pVal >= 0.05;
-                pValueDisplay = pVal.toFixed(3);
-                normMsg = isNormal ? "<span style='color:#059669; font-weight:bold;'>Passed (Normal)</span>" : "<span style='color:#d97706; font-weight:bold;'>Failed (Non-Normal)</span>";
+                isNormal = Number.isFinite(pVal) && pVal >= 0.05;
+                pValueDisplay = Number.isFinite(pVal) ? pVal.toFixed(3) : "Not available";
+                normMsg = isNormal
+                    ? "<span style='color:#059669; font-weight:bold;'>No evidence against normality</span>"
+                    : "<span style='color:#d97706; font-weight:bold;'>Evidence against normality</span>";
             }
 
             let methodUsed, outliers = [], thresholdInfo;
@@ -180,8 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const g_crit = getGCrit(n);
                 const g_max = (data[n-1] - mean) / sd;
                 const g_min = (mean - data[0]) / sd;
-                if (g_max > g_crit) outliers.push(data[n-1]);
-                if (g_min > g_crit) outliers.push(data[0]);
+                // Standard Grubbs' test evaluates one most-extreme observation per test.
+                if (Math.max(g_max, g_min) > g_crit) {
+                    outliers.push(g_max >= g_min ? data[n-1] : data[0]);
+                }
                 thresholdInfo = `Critical G: ${g_crit.toFixed(2)}`;
             } else {
                 methodUsed = "IQR (1.5×)";
@@ -210,10 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
 
             if (outliers.length > 0) {
-                if (n <= 5) {
+                if (n < 8) {
                     html += `<div style="background:#fff7ed; padding:10px; border-radius:4px; color:#9a3412;">
                         <strong>⚠️ Potential: ${outliers.join(", ")}</strong><br>
-                        <span style="font-size:0.85em">Small N (≤5). Recommend increasing replicates.</span>
+                        <span style="font-size:0.85em">Small N (N<8). Interpret this screening result cautiously.</span>
                     </div>`;
                 } else {
                     let tipText = "";
