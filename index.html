@@ -295,6 +295,40 @@
             </div>
             <div class="absolute -bottom-16 -right-16 text-[24rem] font-headline font-bold text-outline-variant/10 select-none pointer-events-none tracking-tighter italic">Σ</div>
         </section>
+        <section id="method-selection-guide" class="px-6 py-12 max-w-screen-xl mx-auto relative z-10">
+            <div class="max-w-4xl">
+                <p class="font-body text-xs tracking-widest uppercase text-primary font-bold mb-3">Practical methodology</p>
+                <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mb-4">Choose a method before interpreting a result</h2>
+                <p class="font-body text-base leading-7 text-on-surface-variant mb-6">Scientist's Toolkit brings common wet-lab calculations and introductory statistical workflows into one place. The result is only as reliable as the inputs, assumptions, and experimental design behind it. Use the method notes on each tool page to understand what is calculated and when a different analysis may be needed.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
+                        <h3 class="font-headline font-bold text-lg mb-2">Preparing reagents</h3>
+                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">Use the <a class="text-primary underline" href="molarity-calculator/">molarity calculator</a> when molecular weight, mass, volume, and concentration are known in compatible units. Use the <a class="text-primary underline" href="dilution-calculator/">dilution calculator</a> for stock-to-working-solution calculations; check that the final volume and concentration match your protocol.</p>
+                        <p class="font-body text-xs leading-5 text-outline">For hydrates, salts, purity corrections, or density-dependent preparations, verify the molecular form and assumptions separately.</p>
+                    </article>
+                    <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
+                        <h3 class="font-headline font-bold text-lg mb-2">Quantifying protein</h3>
+                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">The <a class="text-primary underline" href="protein-calculator/">protein quantification tool</a> uses a standard curve to estimate sample concentrations. Review the standard concentrations and the fitted relationship before accepting an estimate.</p>
+                        <p class="font-body text-xs leading-5 text-outline">A high fit statistic does not by itself establish assay validity; inspect residuals, replicate variability, and whether samples fall within the calibrated range.</p>
+                    </article>
+                    <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
+                        <h3 class="font-headline font-bold text-lg mb-2">Comparing experimental groups</h3>
+                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">The <a class="text-primary underline" href="t-test-calculator/">independent-samples t-test</a> supports comparisons of two groups, while the <a class="text-primary underline" href="chi-square-calculator/">chi-square calculator</a> is for categorical count data. Choose the test based on the outcome and study design, not only on which result is significant.</p>
+                        <p class="font-body text-xs leading-5 text-outline">Check independence, sample size, distributional assumptions, expected cell counts, and report effect sizes or confidence intervals where appropriate.</p>
+                    </article>
+                    <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
+                        <h3 class="font-headline font-bold text-lg mb-2">Reviewing unusual values and time-to-event data</h3>
+                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">The <a class="text-primary underline" href="outlier-detector/">outlier detector</a> can help flag observations for investigation; it should not be used to delete inconvenient values automatically. The <a class="text-primary underline" href="survival-calculator/">survival analysis tool</a> supports Kaplan–Meier workflows for time-to-event data.</p>
+                        <p class="font-body text-xs leading-5 text-outline">Document exclusion criteria in advance and confirm censoring, event coding, and follow-up definitions before interpreting survival estimates.</p>
+                    </article>
+                </div>
+                <div class="mt-6 rounded-lg bg-surface-container-low p-5">
+                    <h3 class="font-headline font-bold text-lg mb-2">Scope and scientific responsibility</h3>
+                    <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">These tools are intended for education and research support, not as a substitute for protocol review, statistical consultation, or clinical decision-making. Human-equivalent dose estimates are preliminary scaling calculations and do not establish a safe or effective human dose. Do not enter patient-identifiable or confidential unpublished data into public-facing tools.</p>
+                    <p class="font-body text-sm leading-6 text-on-surface-variant">The toolkit is developed by a researcher with a Ph.D. in Cancer Biology. Read the <a class="text-primary underline" href="about/">developer's background and project purpose</a>, or consult the <a class="text-primary underline" href="help/">methodology and usage guide</a> before applying a result to an experiment.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="w-full border-t border-outline-variant/30 bg-surface-container-low mt-auto relative z-20">
