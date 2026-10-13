@@ -174,3 +174,89 @@ test("log-rank chi-square and p-value are invariant to group order", () => {
   assert.ok(Number.isFinite(forward.hr) && Number.isFinite(reverse.hr));
   assert.ok(Math.abs(forward.hr * reverse.hr - 1) < 1e-8, "reversing groups should invert the approximate HR");
 });
+
+
+test("approximate HR matches independent reference values across survival-data scenarios", () => {
+  // These fixtures pin the calculator's score-based approximation, not Cox-model estimates.
+  // The companion comparison used an independent univariate Cox partial-likelihood solver
+  // with Breslow handling of tied event times. Strong effects can materially separate the
+  // two estimates, so the UI must continue to identify this result as approximate.
+  const scenarios = [
+    {
+      name: "moderate effect",
+      group1: [
+        { time: 1, status: 1 }, { time: 2, status: 1 },
+        { time: 3, status: 0 }, { time: 4, status: 1 },
+        { time: 5, status: 0 }, { time: 6, status: 1 },
+        { time: 7, status: 0 }, { time: 8, status: 0 }
+      ],
+      group2: [
+        { time: 2, status: 1 }, { time: 3, status: 0 },
+        { time: 4, status: 0 }, { time: 5, status: 1 },
+        { time: 6, status: 0 }, { time: 7, status: 0 },
+        { time: 8, status: 1 }, { time: 9, status: 0 }
+      ],
+      expectedHr: 0.582153525153
+    },
+    {
+      name: "strong effect with few events",
+      group1: [
+        { time: 1, status: 1 }, { time: 2, status: 1 },
+        { time: 3, status: 1 }, { time: 4, status: 1 },
+        { time: 5, status: 1 }, { time: 6, status: 0 },
+        { time: 7, status: 0 }, { time: 8, status: 0 }
+      ],
+      group2: [
+        { time: 3, status: 0 }, { time: 4, status: 0 },
+        { time: 5, status: 0 }, { time: 6, status: 1 },
+        { time: 7, status: 0 }, { time: 8, status: 0 },
+        { time: 9, status: 0 }, { time: 10, status: 0 }
+      ],
+      expectedHr: 0.191775869715
+    },
+    {
+      name: "tied event times",
+      group1: [
+        { time: 1, status: 1 }, { time: 1, status: 1 },
+        { time: 2, status: 1 }, { time: 3, status: 0 },
+        { time: 4, status: 1 }, { time: 5, status: 0 },
+        { time: 6, status: 0 }
+      ],
+      group2: [
+        { time: 1, status: 0 }, { time: 2, status: 1 },
+        { time: 2, status: 1 }, { time: 3, status: 1 },
+        { time: 4, status: 0 }, { time: 5, status: 0 },
+        { time: 6, status: 0 }
+      ],
+      expectedHr: 0.664432671779
+    },
+    {
+      name: "heavy censoring",
+      group1: [
+        { time: 1, status: 1 }, { time: 2, status: 0 },
+        { time: 3, status: 0 }, { time: 4, status: 0 },
+        { time: 5, status: 1 }, { time: 6, status: 0 },
+        { time: 7, status: 0 }, { time: 8, status: 0 },
+        { time: 9, status: 1 }
+      ],
+      group2: [
+        { time: 1, status: 0 }, { time: 2, status: 0 },
+        { time: 3, status: 1 }, { time: 4, status: 0 },
+        { time: 5, status: 0 }, { time: 6, status: 0 },
+        { time: 7, status: 0 }, { time: 8, status: 1 },
+        { time: 9, status: 0 }
+      ],
+      expectedHr: 0.670320046036
+    }
+  ];
+
+  for (const scenario of scenarios) {
+    const result = logRankContext.runLogRank(scenario.group1, scenario.group2);
+    assert.ok(
+      Math.abs(result.hr - scenario.expectedHr) < 1e-9,
+      scenario.name + ": approximate HR should match the independent reference"
+    );
+    assert.ok(result.hrLower < result.hr, scenario.name + ": lower interval should be below HR");
+    assert.ok(result.hr < result.hrUpper, scenario.name + ": upper interval should be above HR");
+  }
+});
