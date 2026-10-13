@@ -50,6 +50,32 @@ test("Kaplan–Meier handles an event and censoring at the same time", () => {
   assert.equal(result.points[2].y, 0);
 });
 
+test("Kaplan–Meier does not report a median when survival never reaches 50%", () => {
+  const result = km.calculateSingleKM([
+    { time: 1, status: 1 },
+    { time: 2, status: 0 },
+    { time: 3, status: 0 },
+    { time: 4, status: 0 }
+  ]);
+  assert.equal(result.median, "Not Reached");
+  assert.ok(Math.abs(result.points.at(-1).y - 0.75) < 1e-12);
+});
+
+test("Kaplan–Meier all-censored data retains survival at 100% and has no median", () => {
+  const result = km.calculateSingleKM([
+    { time: 1, status: 0 },
+    { time: 2, status: 0 },
+    { time: 3, status: 0 }
+  ]);
+  assert.equal(result.median, "Not Reached");
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(result.points)),
+    [{ x: 0, y: 1 }]
+  );
+  assert.equal(result.censoredPoints.length, 3);
+  assert.ok(result.censoredPoints.every(point => point.y === 1));
+});
+
 test("log-rank includes subjects censored at an event time in the risk set", () => {
   const group1 = [
     { time: 1, status: 1 },
@@ -64,6 +90,42 @@ test("log-rank includes subjects censored at an event time in the risk set", () 
   const result = logRankContext.runLogRank(group1, group2);
   assert.ok(Math.abs(result.chisq) < 1e-12, "equal event counts and risk sets should yield zero score");
   assert.ok(Math.abs(result.p - 1) < 1e-8, "zero chi-square should yield p approximately 1");
+});
+
+test("log-rank matches an independently calculated reference statistic and p-value", () => {
+  // Reference values calculated independently from the standard one-degree-of-freedom
+  // log-rank equations; p-value is the chi-square survival probability.
+  const group1 = [
+    { time: 1, status: 1 },
+    { time: 2, status: 1 },
+    { time: 3, status: 1 },
+    { time: 4, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 },
+    { time: 3, status: 0 },
+    { time: 4, status: 0 },
+    { time: 5, status: 0 }
+  ];
+  const result = logRankContext.runLogRank(group1, group2);
+  assert.ok(Math.abs(result.chisq - 1.719836400818) < 1e-8);
+  assert.ok(Math.abs(result.p - 0.189714105128) < 1e-6);
+  assert.ok(result.hrLower < result.hr && result.hr < result.hrUpper);
+});
+
+test("log-rank with no observed events returns chi-square 0 and p-value 1", () => {
+  const group1 = [
+    { time: 1, status: 0 },
+    { time: 2, status: 0 }
+  ];
+  const group2 = [
+    { time: 1, status: 0 },
+    { time: 3, status: 0 }
+  ];
+  const result = logRankContext.runLogRank(group1, group2);
+  assert.equal(result.chisq, 0);
+  assert.equal(result.p, 1);
+  assert.ok(Number.isNaN(result.hr));
 });
 
 test("log-rank chi-square and p-value are invariant to group order", () => {
