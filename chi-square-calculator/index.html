@@ -346,19 +346,47 @@
         // 2. Chi-Square Logic
         function chiSquareCDF(x, df) {
             if (typeof jStat !== 'undefined') return jStat.chisquare.cdf(x, df);
-            return 1 - Math.exp(-x / 2); // Fallback
+            // This page uses a 2x2 table (df = 1). Approximate erf for the df=1 CDF fallback.
+            // For X ~ chi-square(1), CDF(x) = erf(sqrt(x / 2)).
+            if (!Number.isFinite(x) || x < 0 || df !== 1) return NaN;
+            const z = Math.sqrt(x / 2);
+            const t = 1 / (1 + 0.5 * z);
+            const erfc = t * Math.exp(
+                -z * z - 1.26551223 +
+                t * (1.00002368 +
+                t * (0.37409196 +
+                t * (0.09678418 +
+                t * (-0.18628806 +
+                t * (0.27886807 +
+                t * (-1.13520398 +
+                t * (1.48851587 +
+                t * (-0.82215223 +
+                t * 0.17087277))))))))
+            );
+            return Math.max(0, Math.min(1, 1 - erfc));
         }
 
         function calcChi() {
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
 
-            if ([a,b,c,d].some(isNaN)) { alert("Fill all fields with valid numbers."); return; }
+            if ([a,b,c,d].some(v => !Number.isFinite(v))) {
+                alert("Fill all four cells with valid numbers.");
+                return;
+            }
+            if ([a,b,c,d].some(v => v < 0 || !Number.isInteger(v))) {
+                alert("Observed counts must be non-negative whole numbers.");
+                return;
+            }
 
             // Totals
             const row1 = a + b, row2 = c + d;
             const col1 = a + c, col2 = b + d;
             const total = a + b + c + d;
+            if (total === 0 || row1 === 0 || row2 === 0 || col1 === 0 || col2 === 0) {
+                alert("Each row and column must have a non-zero total.");
+                return;
+            }
 
             // Expected Values
             const ea = (row1 * col1) / total;
@@ -385,7 +413,7 @@
 
             // P-value (df=1 for 2x2 table)
             let pVal = 1 - chiSquareCDF(chiSq, 1);
-            if(pVal < 0) pVal = 0; // Floating point fix
+            pVal = Math.max(0, Math.min(1, pVal)); // Guard floating-point edge cases
 
             // Output Formatting
             document.getElementById('p-val').innerText = pVal.toFixed(5);
