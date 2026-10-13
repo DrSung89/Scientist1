@@ -112,7 +112,7 @@ test("Kaplan–Meier all-censored data retains survival at 100% and has no media
   assert.equal(result.median, "Not Reached");
   assert.deepEqual(
     JSON.parse(JSON.stringify(result.points)),
-    [{ x: 0, y: 1 }]
+    [{ x: 0, y: 1, lower: 1, upper: 1 }]
   );
   assert.equal(result.censoredPoints.length, 3);
   assert.ok(result.censoredPoints.every(point => point.y === 1));
