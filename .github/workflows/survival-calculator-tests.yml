@@ -13,6 +13,8 @@ on:
     paths:
       - "survival-calculator/main.js"
       - "tests/survival-calculator.test.js"
+      - "chi-square-calculator/index.html"
+      - "tests/chi-square-calculator.test.js"
       - ".github/workflows/survival-calculator-tests.yml"
 
 jobs:
