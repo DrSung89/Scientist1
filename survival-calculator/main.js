@@ -272,6 +272,12 @@ document.addEventListener("DOMContentLoaded", function() {
         return { median: medianTime, points: points, censoredPoints: censoredPoints };
     }
 
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"\']/g, function(char) {
+            return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"' : "&quot;", "\'": "&#39;" })[char];
+        });
+    }
+
     function displayResults(medianResults, datasets, statsHtml) {
         const resultDiv = document.getElementById("os-result");
         if(!resultDiv) return;
@@ -285,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function() {
         medianResults.forEach(res => {
             medianHtml += `
                 <tr>
-                    <td style="padding:6px 10px; font-weight:bold; color:${res.color};">${res.name}</td>
+                    <td style="padding:6px 10px; font-weight:bold; color:${res.color};">${escapeHtml(res.name)}</td>
                     <td style="padding:6px 10px;">${res.median}</td>
                 </tr>
             `;
@@ -366,12 +372,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // ★ 새로 추가된 통계 함수 (HR, 95% CI, P-value)
     // ==========================================
     function calculateLogRankStats(groups) {
-        let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (vs ${groups[0].name})</h4>`;
+        let html = `<h4 style="margin: 15px 0 5px 0; color: #191c1d; font-size: 1rem;">📈 Pairwise Statistical Analysis (other groups vs ${escapeHtml(groups[0].name)})</h4>`;
         html += `<div style="overflow-x: auto; border: 1px solid #e1e3e4; border-radius: 8px;">
                  <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem;">
                     <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e1e3e4;">
                         <th style="padding: 10px; font-weight: 600; color: #414754; text-align: left;">Comparison</th>
-                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Hazard Ratio: Instantaneous risk (Peto's method).">HR (95% CI)</th>
+                        <th style="padding: 10px; font-weight: 600; color: #414754;" title="Approximate hazard ratio for Group 2 relative to Group 1, derived from log-rank statistics; not a Cox model estimate.">HR (95% CI)</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">Chi-Square</th>
                         <th style="padding: 10px; font-weight: 600; color: #414754;">P-value (Pairwise Log-rank)</th>
                     </tr>`;
@@ -382,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const group2 = groups[i];
             const res = runLogRank(group1.data, group2.data);
             const pStyle = res.p < 0.05 ? "font-weight: bold; color: #0056b3;" : "color: #414754;";
-            const pVal = res.p < 0.001 ? "< 0.001" : res.p.toFixed(4);
+            const pVal = res.p < 0.001 ? "&lt; 0.001" : res.p.toFixed(4);
             
             let hrDisplay = "N/A";
             if (isFinite(res.hr) && !isNaN(res.hr)) {
@@ -390,14 +396,14 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             html += `<tr style="border-bottom: 1px solid #e1e3e4;">
-                <td style="padding: 10px; text-align: left; font-weight: 500;">${group1.name} vs ${group2.name}</td>
+                <td style="padding: 10px; text-align: left; font-weight: 500;">${escapeHtml(group2.name)} vs ${escapeHtml(group1.name)}</td>
                 <td style="padding: 10px; font-weight: bold; color: #0056b3;">${hrDisplay}</td>
                 <td style="padding: 10px; color: #414754;">${res.chisq.toFixed(2)}</td>
                 <td style="padding: 10px; ${pStyle}">${pVal}</td>
             </tr>`;
         }
         html += `</table></div>`;
-        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR < 1 indicates lower risk (better survival) in the treatment group.</p>`;
+        html += `<p style="font-size: 0.8rem; color: #666; margin-top: 6px;"><strong>Note:</strong> Hazard Ratio (HR) is calculated via Peto's approximation. HR &lt; 1 indicates a lower estimated hazard in Group 2; group order matters.</p>`;
         return html;
     }
 
