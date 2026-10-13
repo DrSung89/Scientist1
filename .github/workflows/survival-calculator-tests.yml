@@ -1,0 +1,24 @@
+name: Survival calculator regression tests
+
+on:
+  push:
+    branches: [main, survival-calculator-validation]
+    paths:
+      - "survival-calculator/main.js"
+      - "tests/survival-calculator.test.js"
+      - ".github/workflows/survival-calculator-tests.yml"
+  pull_request:
+    paths:
+      - "survival-calculator/main.js"
+      - "tests/survival-calculator.test.js"
+      - ".github/workflows/survival-calculator-tests.yml"
+
+jobs:
+  survival-calculator-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tests/survival-calculator.test.js
