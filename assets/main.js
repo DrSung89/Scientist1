@@ -119,24 +119,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
+        // Two-sided Grubbs critical value at alpha = 0.05.
+        // Use the exact t-quantile formula when jStat is available; otherwise use conservative tabulated values.
         const grubbsTable = {
-            3: 1.15, 4: 1.46, 5: 1.67, 6: 1.82, 7: 1.94, 8: 2.03, 9: 2.11, 10: 2.18,
-            12: 2.29, 15: 2.41, 20: 2.56, 30: 2.75, 50: 2.96, 100: 3.21
+            3: 1.1547, 4: 1.481, 5: 1.715, 6: 1.887, 7: 2.020, 8: 2.127, 9: 2.215, 10: 2.290,
+            12: 2.412, 15: 2.549, 20: 2.708, 30: 2.908, 50: 3.128, 100: 3.384
         };
         const getGCrit = (n) => {
+            if (typeof jStat !== 'undefined' && jStat.studentt && typeof jStat.studentt.inv === 'function') {
+                const tCrit = jStat.studentt.inv(1 - 0.05 / (2 * n), n - 2);
+                return ((n - 1) / Math.sqrt(n)) * Math.sqrt((tCrit * tCrit) / (n - 2 + tCrit * tCrit));
+            }
             const keys = Object.keys(grubbsTable).map(Number).sort((a,b)=>a-b);
-            for (let k of keys) { if(n <= k) return grubbsTable[k]; }
+            for (let k of keys) { if (n <= k) return grubbsTable[k]; }
             return 3.5;
         };
 
         outlierButton.addEventListener('click', () => {
             const raw = document.getElementById('outlier-data').value;
-            const data = raw.split(/[\s,]+/).filter(s=>s.trim()!=='' && !isNaN(s)).map(Number).sort((a,b)=>a-b);
+            const tokens = raw.split(/[\s,]+/).filter(s => s.trim() !== '');
             const resDiv = document.getElementById('outlier-result');
-            
-            resDiv.style.whiteSpace = 'normal'; 
+
+            resDiv.style.whiteSpace = 'normal';
             resDiv.style.display = 'block';
 
+            if (tokens.length === 0 || tokens.some(s => !Number.isFinite(Number(s)))) {
+                resDiv.innerHTML = "<span style='color:red;'>Use only valid numbers separated by commas or spaces. Invalid entries are not ignored.</span>";
+                return;
+            }
+            const data = tokens.map(Number).sort((a,b)=>a-b);
             if (data.length < 3) { resDiv.innerHTML = "<span style='color:red;'>Enter at least 3 numbers.</span>"; return; }
 
             const n = data.length;
@@ -236,14 +247,15 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
     const mb = document.getElementById('calculate-molarity');
     if(mb) mb.addEventListener('click',()=>{
         const m=parseFloat(document.getElementById('mass').value), mw=parseFloat(document.getElementById('mw').value), v=parseFloat(document.getElementById('volume').value), c=parseFloat(document.getElementById('concentration').value), rd=document.getElementById('molarity-result');
-        if(isNaN(mw)){rd.innerHTML="<span style='color:red'>Enter MW.</span>";return;}
-        // Molarity 수식 엔진에도 'ng':1e-9 추가
+        if (!Number.isFinite(mw) || mw <= 0) { rd.innerHTML = "<span style='color:red'>Enter a molecular weight greater than zero.</span>"; return; }
+        const values = [m, v, c];
+        if (values.filter(Number.isFinite).length !== 2) { rd.innerHTML = "<span style='color:red'>Enter exactly two of mass, volume, and concentration.</span>"; return; }
+        if (values.some(x => Number.isFinite(x) && x <= 0)) { rd.innerHTML = "<span style='color:red'>Known mass, volume, and concentration values must be greater than zero.</span>"; return; }
         const f={'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6,'ng':1e-9,'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6};
         const mF=f[document.getElementById('mass-unit').value], vF=f[document.getElementById('vol-unit').value], cF=f[document.getElementById('conc-unit').value];
-        if(!isNaN(m)&&isNaN(v)&&!isNaN(c)) rd.innerHTML=`Required Vol: ${smartFormat((m*mF)/(mw*c*cF),'L','vol')}`;
-        else if(isNaN(m)&&!isNaN(v)&&!isNaN(c)) rd.innerHTML=`Required Mass: ${smartFormat(mw*v*vF*c*cF,'g','mass')}`;
-        else if(!isNaN(m)&&!isNaN(v)&&isNaN(c)) rd.innerHTML=`Conc: ${smartFormat((m*mF)/(mw*v*vF),'M','conc')}`;
-        else rd.innerHTML="<span style='color:red'>Fill 3 fields.</span>";
+        if(!Number.isFinite(m)) rd.innerHTML=`Required Mass: ${smartFormat(mw*v*vF*c*cF,'g','mass')}`;
+        else if(!Number.isFinite(v)) rd.innerHTML=`Required Vol: ${smartFormat((m*mF)/(mw*c*cF),'L','vol')}`;
+        else rd.innerHTML=`Conc: ${smartFormat((m*mF)/(mw*v*vF),'M','conc')}`;
     });
 
     // ★★★ [업그레이드된 HED Calculator] ★★★
@@ -260,7 +272,8 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
         const sB=document.getElementById('species-b').value;
         const wB=parseFloat(document.getElementById('weight-b').value);
         
-        if(isNaN(dA)){document.getElementById('hed-result').innerHTML="<span style='color:red'>Enter Dose.</span>";return;}
+        if (!Number.isFinite(dA) || dA <= 0) { document.getElementById('hed-result').innerHTML = "<span style='color:red'>Enter a dose greater than zero.</span>"; return; }
+        if (Number.isFinite(wB) && wB <= 0) { document.getElementById('hed-result').innerHTML = "<span style='color:red'>Target body weight must be greater than zero.</span>"; return; }
         
         // 사용자가 mg을 입력했을 경우, A 동물의 표준 체중으로 나누어 mg/kg으로 환산
         let baseMpk = dA;
@@ -315,19 +328,29 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
               m2U=f[document.getElementById('m2-unit').value], 
               v2U=f[document.getElementById('v2-unit').value];
 
-        if([m1,v1,m2,v2].filter(x=>isNaN(x)).length!==1){
-            rd.innerHTML="<span style='color:red'>Empty 1 field.</span>";
+        const values = [m1, v1, m2, v2];
+        if (values.filter(Number.isFinite).length !== 3) {
+            rd.innerHTML = "<span style='color:red'>Enter exactly three of stock concentration, stock volume, final concentration, and final volume.</span>";
+            return;
+        }
+        if (values.some(x => Number.isFinite(x) && x <= 0)) {
+            rd.innerHTML = "<span style='color:red'>Known concentrations and volumes must be greater than zero.</span>";
             return;
         }
 
-        if(isNaN(m1)) rd.innerHTML=`Stock Conc: ${smartFormat((m2*m2U*v2*v2U)/(v1*v1U),'M','conc')}`;
-        else if(isNaN(v1)){
-            const val=(m2*m2U*v2*v2U)/(m1*m1U); 
-            const v2UnitText = document.getElementById('v2-unit').value; // 단위 글자 가져오기
+        if(!Number.isFinite(m1)) rd.innerHTML=`Stock Conc: ${smartFormat((m2*m2U*v2*v2U)/(v1*v1U),'M','conc')}`;
+        else if(!Number.isFinite(v1)){
+            const val=(m2*m2U*v2*v2U)/(m1*m1U);
+            if (val > v2*v2U) { rd.innerHTML = "<span style='color:red'>Required stock volume exceeds the final volume; choose a lower final concentration or a larger final volume.</span>"; return; }
+            const v2UnitText = document.getElementById('v2-unit').value;
             rd.innerHTML=`Stock Vol: ${smartFormat(val,'L','vol')}<br><span style='font-size:0.9em;color:#666'>(Add + ${((v2*v2U-val)/v2U).toFixed(3)} ${v2UnitText} Solvent)</span>`;
         }
-        else if(isNaN(m2)) rd.innerHTML=`Final Conc: ${smartFormat((m1*m1U*v1*v1U)/(v2*v2U),'M','conc')}`;
-        else rd.innerHTML=`Final Vol: ${smartFormat((m1*m1U*v1*v1U)/(m2*m2U),'L','vol')}`;
+        else if(!Number.isFinite(m2)) rd.innerHTML=`Final Conc: ${smartFormat((m1*m1U*v1*v1U)/(v2*v2U),'M','conc')}`;
+        else {
+            const val=(m1*m1U*v1*v1U)/(m2*m2U);
+            if (val < v1*v1U) { rd.innerHTML = "<span style='color:red'>Calculated final volume is smaller than the stock volume; this is not a dilution.</span>"; return; }
+            rd.innerHTML=`Final Vol: ${smartFormat(val,'L','vol')}`;
+        }
 });
 
 // ====================================================
@@ -336,19 +359,21 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
     const pbtn = document.getElementById('calculate-protein');
     if (pbtn) pbtn.addEventListener('click', () => {
         const mode = document.querySelector('input[name="prot-mode"]:checked').value;
-        const sampleRaw = document.getElementById('prot-sample-od').value;
-        const samples = sampleRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
-        
+        const parseList = (raw) => {
+            const tokens = raw.split(/[\s,]+/).filter(x => x.trim() !== '');
+            if (tokens.length === 0 || tokens.some(x => !Number.isFinite(Number(x)))) return null;
+            return tokens.map(Number);
+        };
+        const samples = parseList(document.getElementById('prot-sample-od').value);
         const tMass = parseFloat(document.getElementById('prot-target-mass').value);
         const tVol = parseFloat(document.getElementById('prot-total-vol').value);
         const dyeX = parseFloat(document.getElementById('prot-dye-x').value);
-        // [추가됨] Replicates 값 가져오기 (비어있으면 기본값 1)
-        const reps = parseInt(document.getElementById('prot-replicates').value) || 1;
-        
+        const repsRaw = document.getElementById('prot-replicates').value.trim();
+        const reps = repsRaw === '' ? 1 : Number(repsRaw);
         const resDiv = document.getElementById('protein-result');
 
-        if (samples.length === 0 || isNaN(tVol) || isNaN(dyeX)) {
-            resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Please input Sample O.D., Total Volume, and Dye concentration.</span>";
+        if (!samples || samples.length === 0 || !Number.isFinite(tVol) || tVol <= 0 || !Number.isFinite(dyeX) || dyeX <= 1 || !Number.isInteger(reps) || reps < 1) {
+            resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Enter valid sample O.D. values, a positive total volume, a dye multiplier greater than 1, and a positive whole-number replicate count. Invalid values are not ignored.</span>";
             resDiv.style.display = 'block';
             if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
             return;
@@ -364,22 +389,28 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
         if (mode === 'std') {
             const concRaw = document.getElementById('prot-std-conc').value;
             const odRaw = document.getElementById('prot-std-od').value;
-            const concs = concRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
-            const ods = odRaw.split(/[\s,]+/).filter(x => x !== '' && !isNaN(x)).map(Number);
+            const concs = parseList(concRaw);
+            const ods = parseList(odRaw);
 
-            if (concs.length !== ods.length || concs.length < 2) {
+            if (!concs || !ods || concs.length !== ods.length || concs.length < 2) {
                 resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Standard Concentrations and O.D.s must have the same number of values (minimum 2).</span>";
                 resDiv.style.display = 'block';
                 if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
                 return;
             }
-            if (isNaN(tMass)) {
-                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Target Mass is required for Standard Curve mode.</span>";
+            if (!Number.isFinite(tMass) || tMass <= 0) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Target mass must be greater than zero in Standard Curve mode.</span>";
                 resDiv.style.display = 'block';
                 if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
                 return;
             }
 
+            if (concs.some(x => x < 0) || new Set(concs).size < 2) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Standard concentrations must be non-negative and include at least two distinct values.</span>";
+                resDiv.style.display = 'block';
+                if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+                return;
+            }
             const n = concs.length;
             const sumX = concs.reduce((a, b) => a + b, 0);
             const sumY = ods.reduce((a, b) => a + b, 0);
@@ -388,10 +419,22 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
             
             const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
             const intercept = (sumY - slope * sumX) / n;
+            if (!Number.isFinite(slope) || slope === 0 || !Number.isFinite(intercept)) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 The standards do not produce a valid non-zero linear slope. Check the standard concentrations and O.D. values.</span>";
+                resDiv.style.display = 'block';
+                if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+                return;
+            }
 
             const meanY = sumY / n;
             const ssTot = ods.reduce((a, c) => a + Math.pow(c - meanY, 2), 0);
             const ssRes = ods.reduce((a, c, i) => a + Math.pow(c - (slope * concs[i] + intercept), 2), 0);
+            if (ssTot === 0) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Standard O.D. values have no variation, so R² cannot be calculated.</span>";
+                resDiv.style.display = 'block';
+                if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+                return;
+            }
             const r2 = 1 - (ssRes / ssTot);
 
             const r2Color = r2 >= 0.95 ? '#065f46' : '#b91c1c';
