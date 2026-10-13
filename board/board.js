@@ -78,7 +78,7 @@ function escapeHtml(text) {
         .replace(/'/g, "&#039;");
 }
 
-// 삭제 함수 (관리자/비밀번호)
+// Public posts have no client-side delete control; removal requests go to support.
 // Self-service deletion is disabled until server-side authentication is implemented.
 
 // [핵심] 글 목록 불러오기 (클릭형 아코디언 방식 적용)
