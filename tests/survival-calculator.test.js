@@ -349,7 +349,7 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
     })[char])
   };
   vm.runInNewContext(
-    source.slice(start, end) + "\\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    source.slice(start, end) + "\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
     context
   );
   const group1 = [
