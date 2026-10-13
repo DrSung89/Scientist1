@@ -188,7 +188,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 groupData.push({ name: groupName, data: data });
 
                 const kmResult = calculateSingleKM(data);
-                
                 const groupColor = colors[(g-1) % 4];
                 const ciColor = groupColor === '#007bff' ? 'rgba(0, 123, 255, 0.12)'
                     : groupColor === '#dc3545' ? 'rgba(220, 53, 69, 0.12)'
@@ -373,7 +372,6 @@ document.addEventListener("DOMContentLoaded", function() {
                                 if(c.dataset.label.includes('(Censored)')) {
                                     return 'Censored at ' + c.parsed.x;
                                 }
-                                if(c.dataset.label.includes('(95% CI)')) return null;
                                 return c.dataset.label + ': ' + (c.parsed.y * 100).toFixed(1) + '%' 
                             }
                         } 
