@@ -444,7 +444,7 @@ test("Kaplan–Meier tooltip callback hides CI helpers and preserves survival/ce
     console
   };
   vm.runInNewContext(
-    source.slice(start, end) + "\\nglobalThis.drawChart = drawChart;",
+    source.slice(start, end) + "\nglobalThis.drawChart = drawChart;",
     context
   );
   context.drawChart([]);
