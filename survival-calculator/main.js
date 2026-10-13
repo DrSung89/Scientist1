@@ -369,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     tooltip: { 
                         callbacks: { 
                             label: c => {
+                                if(c.dataset.label.includes('(95% CI')) return null;
                                 if(c.dataset.label.includes('(Censored)')) {
                                     return 'Censored at ' + c.parsed.x;
                                 }

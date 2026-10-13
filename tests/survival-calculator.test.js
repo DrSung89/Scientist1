@@ -413,3 +413,9 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
   assert.match(html, /0\.59 \(0\.13 - 2\.66\)/);
   assert.doesNotMatch(html, /0\.58 \(/, "must not display the old score-based approximation");
 });
+
+
+test("Kaplan–Meier confidence-band helper datasets are hidden from tooltips", () => {
+  assert.match(source, /if\s*\(c\.dataset\.label\.includes\('\(95% CI'\)\)\s*return null;/);
+  assert.match(source, /if\s*\(c\.dataset\.label\.includes\('\(Censored\)'\)\)/);
+});
