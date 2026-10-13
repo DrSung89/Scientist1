@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Clinical Trial Sample Size Strategy: Ziftomenib vs Revumenib | Scientist's Toolkit</title>
+    <meta name="description" content="Compare fixed-N exact-binomial and Simon two-stage oncology trial designs, then work through a hypothetical two-arm response-rate sample-size calculation and its limitations.">
     <link rel="canonical" href="https://scientisttoolkit.xyz/articles/clinical-trial-sample-size/">
     <link rel="icon" type="image/png" href="/favicon.png">
     
@@ -88,6 +89,23 @@
                         Conversely, <strong>Ziftomenib</strong> was positioned for a registration-enabling Phase II trial aimed at definitive FDA approval. Instead of an early-stopping strategy, they employed an <strong>Exact Binomial Distribution</strong> to ensure robust statistical power from the outset, committing to a fixed cohort of 85 patients. As demonstrated here, even for drugs with the same mechanism (Menin inhibitors), the statistical framework must be tailored precisely to the trial's regulatory objectives and clinical phase.
                     </p>
                 </div>
+
+                <section class="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-6">
+                    <h2 class="text-2xl font-headline font-bold text-slate-900 mb-4">4. Worked Example: A Two-Arm Response-Rate Trial</h2>
+                    <p class="mb-4">The designs above are single-arm oncology examples. To illustrate a different question, suppose a hypothetical randomized Phase II study compares a new treatment with control and expects response rates of 30% and 10%, respectively. With equal allocation, a two-sided type I error of 5%, and 80% power, a common normal-approximation calculation for two independent proportions gives approximately <strong>62 evaluable participants per arm</strong>.</p>
+                    <div class="rounded-lg bg-white p-4 border border-slate-200 mb-4">
+                        <p class="font-semibold text-slate-800 mb-2">Assumptions</p>
+                        <ul class="list-disc pl-5 space-y-1 text-sm">
+                            <li>Control response rate: 10%; treatment response rate: 30%</li>
+                            <li>Two-sided α = 0.05; power = 80%; allocation ratio = 1:1</li>
+                            <li>Approximate sample size: 62 evaluable participants in each arm</li>
+                            <li>If 10% of participants are expected to be unevaluable, enroll about 69 per arm (62 ÷ 0.90, rounded up)</li>
+                        </ul>
+                    </div>
+                    <p class="mb-3">This is an illustrative planning calculation, not a recommendation for a real protocol. The estimate can change with the chosen test, continuity correction, exact methods, multiplicity control, stratification, and the definition of the primary endpoint. A response-rate endpoint also needs a clinically justified target difference, not merely a difference that produces a convenient sample size.</p>
+                    <p class="mb-3"><strong>Do not apply this two-arm formula directly to the Ziftomenib or Revumenib examples above.</strong> Their registration strategies used single-arm response-rate hypotheses and different design assumptions. Cross-trial differences in disease subtype, eligibility criteria, endpoint definitions, follow-up, and analysis populations also prevent a simple head-to-head efficacy comparison.</p>
+                    <p class="text-sm text-slate-600">Before finalizing a protocol, have a trial statistician verify the design and reproduce the calculation with validated statistical software. The worked example is educational and does not replace a prespecified statistical analysis plan.</p>
+                </section>
             </div>
 
             <footer class="mt-16 pt-8 border-t border-outline-variant/30">
