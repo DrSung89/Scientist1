@@ -5,12 +5,12 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
     <title>T-Test Calculator (Student's & Welch's) | Scientist's Toolkit</title>
-    <meta name="description" content="Calculate both Student's and Welch's t-tests with F-test for equal variances. Get P-value, 95% CI, and Cohen's d. Publication-ready statistics for researchers.">
+    <meta name="description" content="Calculate Student's and Welch's independent-samples t-tests with p-values, 95% confidence intervals, and signed Cohen's d. Includes an F-test as a variance diagnostic; Welch's test is the recommended default.">
     <link rel="canonical" href="https://scientisttoolkit.xyz/t-test-calculator/">
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="Robust T-Test Calculator | Scientist's Toolkit">
-    <meta property="og:description" content="Calculate Student's & Welch's t-test, F-test, P-value, 95% CI, and Cohen's d. Free robust statistical tool.">
+    <meta property="og:description" content="Calculate Student's and Welch's t-tests, p-values, 95% confidence intervals, and signed Cohen's d. Welch's test is a robust default; the F-test is provided as a diagnostic.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/t-test-calculator/">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -143,7 +143,7 @@
         <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
             <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Statistical Module</span>
             <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Independent Samples T-Test</h1>
-            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Automatically tests for equality of variances (F-test) to recommend between <strong>Student's</strong> and <strong>Welch's</strong> T-Test.</p>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Compare <strong>Student's</strong> and <strong>Welch's</strong> t-tests. Welch's test is the recommended default; the F-test is shown as a variance diagnostic, not as a rule for choosing the test.</p>
             <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Science is a journey of resilience. Keep going. 🚀</p>
         </section>
 
@@ -254,7 +254,7 @@
                             <span id="mean-diff" class="text-primary font-bold ml-1 font-mono"></span>
                         </div>
                         <div>
-                            <span class="text-on-surface-variant font-medium">Effect Size (Cohen's d):</span> 
+                            <span class="text-on-surface-variant font-medium">Effect Size (signed Cohen's d):</span> 
                             <span id="effect-size" class="text-primary font-bold ml-1 font-mono"></span>
                         </div>
                     </div>
@@ -273,12 +273,12 @@
 
                 <div class="space-y-12">
                     <div>
-                        <h3 class="text-xl font-headline font-bold text-primary mb-4">1. Why We Automatically Check for Variance (The F-Test)</h3>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">1. Understanding the F-Test for Variances</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-4">
-                            A massive pitfall for many researchers is running a standard t-test without verifying the assumptions of their data. The traditional Student's T-Test strictly assumes <strong>Homoscedasticity</strong>—meaning that the variance (the spread of data points) in both Group A and Group B is statistically equal.
+                            Student's t-test assumes equal population variances. Welch's t-test does not require that assumption and is generally a sound default for comparing two independent means, including when sample sizes or variances differ.
                         </p>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-6">
-                            However, in biology, a treatment often increases the variability of a group alongside its mean. To prevent Type I errors (false positives), our calculator automatically runs an <strong>F-test for equality of variances</strong> in the background. If the F-test yields a P-value < 0.05, it flags the data as having unequal variances (heteroscedasticity) and recommends Welch's method.
+                            The calculator reports an <strong>F-test for equality of variances</strong> as a diagnostic only. This test is sensitive to departures from normality, and choosing Student's or Welch's test based on a preliminary variance test can distort the overall error rate. Prefer Welch's test as the default unless your analysis plan justifies the equal-variance assumption independently.
                         </p>
                         
                         
@@ -290,13 +290,13 @@
                             <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 shadow-sm">
                                 <h4 class="font-headline font-bold text-on-surface mb-2">Student's T-Test</h4>
                                 <p class="text-sm font-light text-on-surface-variant leading-relaxed">
-                                    Uses a "pooled variance" approach. It is only mathematically appropriate when the F-test confirms your groups have similar standard deviations.
+                                    Uses a pooled variance and assumes equal population variances. Use it when that assumption is justified by the study design or analysis plan—not simply because a preliminary F-test is not significant.
                                 </p>
                             </div>
                             <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 shadow-sm">
                                 <h4 class="font-headline font-bold text-on-surface mb-2">Welch's T-Test</h4>
                                 <p class="text-sm font-light text-on-surface-variant leading-relaxed">
-                                    The robust modern standard. It does not assume equal variance and dynamically adjusts the degrees of freedom (df) using the Satterthwaite approximation.
+                                    Does not assume equal population variances and adjusts the degrees of freedom (df) using the Welch–Satterthwaite approximation. It is a robust default for two independent groups.
                                 </p>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                         <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
                             <li><strong class="font-medium text-on-surface">P-value:</strong> If P < 0.05, the difference between the groups is considered statistically significant, allowing you to reject the null hypothesis.</li>
                             <li><strong class="font-medium text-on-surface">95% Confidence Interval (CI):</strong> This shows the range where the true mean difference likely falls. <em>Crucial rule:</em> If the CI range includes zero (e.g., [-1.2, 3.4]), the test is NOT statistically significant.</li>
-                            <li><strong class="font-medium text-on-surface">Cohen's d (Effect Size):</strong> While a p-value tells you if an effect exists, Cohen's d tells you <em>how large</em> the effect is in standard deviation units. <br><span class="text-sm">(Benchmarks: 0.2 = Small effect, 0.5 = Medium effect, 0.8+ = Large and obvious effect).</span></li>
+                            <li><strong class="font-medium text-on-surface">Signed Cohen's d (Effect Size):</strong> The magnitude describes the standardized difference, while the sign indicates direction (Group A minus Group B). This calculator uses the pooled standard deviation; for unequal variances, interpret it as a conventional standardized effect size rather than a Welch-specific effect size. <br><span class="text-sm">(Benchmarks: 0.2 = Small effect, 0.5 = Medium effect, 0.8+ = Large and obvious effect).</span></li>
                         </ul>
                     </div>
 
@@ -491,7 +491,7 @@
             const ci_hi_welch = diff + (t_crit_welch * se_welch);
 
             // 4. Cohen's d
-            const cohens_d = Math.abs(diff) / Math.sqrt(v_pooled);
+            const cohens_d = diff / Math.sqrt(v_pooled);
 
             // HTML에 값 채우기 (Descriptive)
             document.getElementById('n-a').innerText = n1;
