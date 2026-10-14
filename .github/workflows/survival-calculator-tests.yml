@@ -1,4 +1,4 @@
-name: Survival calculator regression tests
+name: Calculator regression tests
 
 on:
   push:
@@ -15,6 +15,8 @@ on:
       - "tests/molarity-dilution.test.js"
       - "hed-calculator/index.html"
       - "tests/hed-calculator.test.js"
+      - "protein-calculator/index.html"
+      - "tests/protein-calculator.test.js"
       - "assets/main.js"
       - "outlier-detector/index.html"
       - "tests/outlier-detector.test.js"
@@ -32,17 +34,19 @@ on:
       - "tests/molarity-dilution.test.js"
       - "hed-calculator/index.html"
       - "tests/hed-calculator.test.js"
+      - "protein-calculator/index.html"
+      - "tests/protein-calculator.test.js"
       - "assets/main.js"
       - "outlier-detector/index.html"
       - "tests/outlier-detector.test.js"
       - ".github/workflows/survival-calculator-tests.yml"
 
 jobs:
-  survival-calculator-tests:
+  calculator-regression-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js
+      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
