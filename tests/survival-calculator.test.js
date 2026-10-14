@@ -719,3 +719,38 @@ test("Cox HR display preserves precision for small estimates and confidence limi
   assert.equal(context.formatHRValue(0.4046), "0.405");
   assert.equal(context.formatHRValue(1.23456), "1.23");
 });
+
+
+test("pairwise results display N/A for a non-convergent Cox estimate without hiding log-rank results", () => {
+  const start = source.indexOf("function calculateLogRankStats");
+  const end = closingWrapper ? closingWrapper.index : -1;
+  assert.notEqual(start, -1, "pairwise stats function exists");
+  assert.ok(end > start, "statistics function block exists");
+
+  const context = {
+    escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]),
+    runLogRank: () => ({ chisq: 4.12, p: 0.042 }),
+    fitCoxHR: () => ({
+      converged: false,
+      hr: NaN,
+      hrLower: NaN,
+      hrUpper: NaN
+    }),
+    formatHRValue: value => Number(value).toPrecision(3)
+  };
+
+  vm.runInNewContext(
+    source.slice(start, end) + "\\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    context
+  );
+  const html = context.calculateLogRankStats([
+    { name: "Control", data: [{ time: 1, status: 1 }] },
+    { name: "Treatment", data: [{ time: 2, status: 1 }] }
+  ]);
+
+  assert.match(html, />N\/A<\/td>/, "unstable Cox estimates should not be presented as numeric HRs");
+  assert.match(html, /4\.12/, "the pairwise log-rank chi-square should still be shown");
+  assert.match(html, /0\.0420/, "the pairwise log-rank p-value should still be shown");
+});
