@@ -742,7 +742,7 @@ test("pairwise results display N/A for a non-convergent Cox estimate without hid
   };
 
   vm.runInNewContext(
-    source.slice(start, end) + "\\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    source.slice(start, end) + "\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
     context
   );
   const html = context.calculateLogRankStats([
