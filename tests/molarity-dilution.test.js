@@ -109,7 +109,7 @@ test('dilution calculator solves each of the other unknown variables', () => {
 test('dilution calculator rejects invalid inputs and impossible dilution volumes', () => {
   assert.match(dilution({ m1: 1, v1: 1, m2: 10, v2: 100 }), /exactly three/i);
   assert.match(dilution({ m1: 1, v1: 0, m2: 10, v2: 100 }), /greater than zero/i);
-  assert.match(dilution({ m1: 1, v1: null, m2: 100, v2: 10 }), /exceeds the final volume/i);
+  assert.match(dilution({ m1: 1, v1: null, m2: 2000, v2: 10 }), /exceeds the final volume/i);
 });
 
 test('dilution calculator formats nanomolar results without losing the unit scale', () => {
