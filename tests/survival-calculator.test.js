@@ -455,3 +455,56 @@ test("Kaplan–Meier tooltip callback hides CI helpers and preserves survival/ce
   assert.equal(label({ dataset: { label: "Treatment" }, parsed: { x: 2, y: 0.6 } }), "Treatment: 60.0%");
   assert.equal(label({ dataset: { label: "Treatment (Censored)" }, parsed: { x: 3, y: 0.6 } }), "Censored at 3");
 });
+
+
+test("Cox HR and confidence interval are invariant to positive time scaling and time translation", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const transform = rows => rows.map(({ time, status }) => ({
+    time: time * 12 + 100,
+    status
+  }));
+  const original = logRankContext.fitCoxHR(group1, group2);
+  const transformed = logRankContext.fitCoxHR(transform(group1), transform(group2));
+
+  assert.equal(original.converged, true);
+  assert.equal(transformed.converged, true);
+  for (const key of ["beta", "se", "hr", "hrLower", "hrUpper"]) {
+    assert.ok(
+      Math.abs(original[key] - transformed[key]) < 1e-8,
+      key + " should not depend on the time origin or time units"
+    );
+  }
+});
+
+test("Cox HR safely rejects empty groups and malformed survival rows", () => {
+  const validGroup = [
+    { time: 1, status: 1 },
+    { time: 2, status: 0 },
+    { time: 3, status: 1 }
+  ];
+  assert.equal(logRankContext.fitCoxHR([], validGroup).reason, "empty-group");
+  assert.equal(logRankContext.fitCoxHR(validGroup, []).reason, "empty-group");
+  assert.equal(
+    logRankContext.fitCoxHR([{ time: NaN, status: 1 }], validGroup).reason,
+    "invalid-data"
+  );
+  assert.equal(
+    logRankContext.fitCoxHR([{ time: 1, status: 2 }], validGroup).reason,
+    "invalid-data"
+  );
+  assert.equal(
+    logRankContext.fitCoxHR([{ time: 1, status: "1" }], validGroup).reason,
+    "invalid-data"
+  );
+});
