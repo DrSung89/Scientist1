@@ -386,6 +386,7 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
   assert.notEqual(start, -1, "pairwise stats function exists");
   assert.ok(end > start, "statistics function block exists");
   const context = {
+    formatHRValue: value => Number(value).toPrecision(3),
     escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[char])
