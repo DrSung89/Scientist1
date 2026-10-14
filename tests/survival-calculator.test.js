@@ -619,3 +619,26 @@ test("Cox HR and Wald confidence interval match an independent Efron tied-events
   assert.ok(Math.abs(result.hrLower - 0.15508712510603426) < 1e-6);
   assert.ok(Math.abs(result.hrUpper - 3.1023977312692788) < 1e-6);
 });
+
+
+test("Cox HR reports non-convergence for separated survival data", () => {
+  // Group 1 has an early event; after its final censoring time, only Group 2
+  // remains at risk and experiences its event. The partial likelihood has no
+  // finite maximum, so a finite HR must not be reported.
+  const group1 = [
+    { time: 1, status: 1 },
+    { time: 1.5, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 },
+    { time: 3, status: 0 }
+  ];
+
+  const result = logRankContext.fitCoxHR(group1, group2);
+
+  assert.equal(result.converged, false);
+  assert.equal(result.reason, "separation-or-unbounded-estimate");
+  assert.ok(Number.isNaN(result.hr));
+  assert.ok(Number.isNaN(result.hrLower));
+  assert.ok(Number.isNaN(result.hrUpper));
+});
