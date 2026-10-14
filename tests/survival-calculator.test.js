@@ -675,3 +675,28 @@ test("Cox estimates remain valid when an observed survival time is zero", () => 
     );
   }
 });
+
+
+test("Cox HR rejects groups without observed events", () => {
+  const withEvents = [
+    { time: 1, status: 1 },
+    { time: 2, status: 0 },
+    { time: 3, status: 1 }
+  ];
+  const allCensored = [
+    { time: 1, status: 0 },
+    { time: 2, status: 0 },
+    { time: 3, status: 0 }
+  ];
+  const noEventsInGroup = logRankContext.fitCoxHR(withEvents, allCensored);
+  const noEventsAnywhere = logRankContext.fitCoxHR(allCensored, allCensored);
+
+  for (const result of [noEventsInGroup, noEventsAnywhere]) {
+    assert.equal(result.converged, false);
+    assert.equal(result.reason, "no-events-in-group");
+    assert.ok(Number.isNaN(result.hr));
+    assert.ok(Number.isNaN(result.se));
+    assert.ok(Number.isNaN(result.hrLower));
+    assert.ok(Number.isNaN(result.hrUpper));
+  }
+});
