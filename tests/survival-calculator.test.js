@@ -562,3 +562,27 @@ test("Cox HR reciprocates and confidence limits reverse when groups are swapped"
   assert.ok(Math.abs(forward.hrLower * reverse.hrUpper - 1) < 1e-8);
   assert.ok(Math.abs(forward.hrUpper * reverse.hrLower - 1) < 1e-8);
 });
+
+
+test("Cox HR and Wald confidence interval match an independent no-ties reference", () => {
+  // Reference values calculated independently from the Cox score equation
+  // by solving U(beta) = 0 and evaluating observed information.
+  const group1 = [
+    { time: 1, status: 1 }, { time: 3, status: 1 },
+    { time: 5, status: 0 }, { time: 7, status: 1 },
+    { time: 9, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 4, status: 0 },
+    { time: 6, status: 1 }, { time: 8, status: 0 },
+    { time: 10, status: 1 }
+  ];
+  const result = logRankContext.fitCoxHR(group1, group2);
+
+  assert.equal(result.converged, true);
+  assert.ok(Math.abs(result.beta - (-0.5336388182045297)) < 1e-6);
+  assert.ok(Math.abs(result.se - 0.9158956125209344) < 1e-6);
+  assert.ok(Math.abs(result.hr - 0.5864670353356476) < 1e-6);
+  assert.ok(Math.abs(result.hrLower - 0.09741313523550024) < 1e-6);
+  assert.ok(Math.abs(result.hrUpper - 3.5307721356456288) < 1e-6);
+});
