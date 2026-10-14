@@ -82,7 +82,7 @@ test('molarity calculator computes concentration from mass and volume', () => {
 });
 
 test('molarity calculator computes required mass with unit conversion', () => {
-  assert.match(molarity({ mass: null, volume: 100, concentration: 10 }), /0\.180 g/);
+  assert.match(molarity({ mass: null, volume: 100, concentration: 10 }), /180\.000 mg/);
 });
 
 test('molarity calculator computes required volume', () => {
