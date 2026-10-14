@@ -536,3 +536,29 @@ test("Cox HR and confidence interval are invariant to row order with tied event 
     );
   }
 });
+
+
+test("Cox HR reciprocates and confidence limits reverse when groups are swapped", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const forward = logRankContext.fitCoxHR(group1, group2);
+  const reverse = logRankContext.fitCoxHR(group2, group1);
+
+  assert.equal(forward.converged, true);
+  assert.equal(reverse.converged, true);
+  assert.ok(Math.abs(forward.beta + reverse.beta) < 1e-8);
+  assert.ok(Math.abs(forward.se - reverse.se) < 1e-8);
+  assert.ok(Math.abs(forward.hr * reverse.hr - 1) < 1e-8);
+  assert.ok(Math.abs(forward.hrLower * reverse.hrUpper - 1) < 1e-8);
+  assert.ok(Math.abs(forward.hrUpper * reverse.hrLower - 1) < 1e-8);
+});
