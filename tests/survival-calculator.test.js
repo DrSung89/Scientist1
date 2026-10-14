@@ -811,3 +811,53 @@ test("multi-group pairwise results isolate Cox N/A fallback to the affected comp
     "a non-convergent estimate in another row must not hide a valid Cox estimate");
 });
 
+
+
+test("pairwise survival output HTML-escapes user-provided group names", () => {
+  const escapeStart = source.indexOf("function escapeHtml");
+  const escapeEnd = source.indexOf("\n    function displayResults", escapeStart);
+  assert.notEqual(escapeStart, -1, "escapeHtml function exists");
+  assert.ok(escapeEnd > escapeStart, "escapeHtml function block exists");
+  const escapeContext = {};
+  vm.runInNewContext(
+    source.slice(escapeStart, escapeEnd) + "\nglobalThis.escapeHtml = escapeHtml;",
+    escapeContext
+  );
+
+  const statsStart = source.indexOf("function calculateLogRankStats");
+  const statsEnd = source.indexOf("\n    function runLogRank", statsStart);
+  assert.notEqual(statsStart, -1, "pairwise stats function exists");
+  assert.ok(statsEnd > statsStart, "pairwise stats function block exists");
+  const context = {
+    formatHRValue: value => Number(value).toPrecision(3),
+    runLogRank: logRankContext.runLogRank,
+    fitCoxHR: logRankContext.fitCoxHR,
+    escapeHtml: escapeContext.escapeHtml
+  };
+  vm.runInNewContext(
+    source.slice(statsStart, statsEnd) + "\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    context
+  );
+
+  const html = context.calculateLogRankStats([
+    {
+      name: '<img src=x onerror="alert(1)">',
+      data: [
+        { time: 1, status: 1 }, { time: 2, status: 1 },
+        { time: 3, status: 0 }, { time: 4, status: 1 }
+      ]
+    },
+    {
+      name: 'Treatment & <script>alert("x")</script>',
+      data: [
+        { time: 2, status: 1 }, { time: 3, status: 0 },
+        { time: 4, status: 0 }, { time: 5, status: 1 }
+      ]
+    }
+  ]);
+
+  assert.match(html, /&lt;img src=x onerror=&quot;alert\(1\)&quot;&gt;/);
+  assert.match(html, /Treatment &amp; &lt;script&gt;alert\(&quot;x&quot;\)&lt;\/script&gt;/);
+  assert.doesNotMatch(html, /<img\b/i, "raw image markup must not be emitted");
+  assert.doesNotMatch(html, /<script\b/i, "raw script markup must not be emitted");
+});
