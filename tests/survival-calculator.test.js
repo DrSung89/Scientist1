@@ -382,7 +382,7 @@ test("Cox HR reports N/A for all-censored data, a zero-event group, and separate
 
 test("displayed pairwise HR comes from the Cox model, not the log-rank approximation", () => {
   const start = source.indexOf("function calculateLogRankStats");
-  const end = closingWrapper ? closingWrapper.index : -1;
+  const end = source.indexOf("\n    function runLogRank", start);
   assert.notEqual(start, -1, "pairwise stats function exists");
   assert.ok(end > start, "statistics function block exists");
   const context = {
