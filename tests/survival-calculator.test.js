@@ -642,3 +642,36 @@ test("Cox HR reports non-convergence for separated survival data", () => {
   assert.ok(Number.isNaN(result.hrLower));
   assert.ok(Number.isNaN(result.hrUpper));
 });
+
+
+test("Cox estimates remain valid when an observed survival time is zero", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const group2 = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const zeroBased = rows => rows.map(({ time, status }) => ({
+    time: time - 1,
+    status
+  }));
+
+  const original = logRankContext.fitCoxHR(group1, group2);
+  const shifted = logRankContext.fitCoxHR(zeroBased(group1), zeroBased(group2));
+
+  assert.equal(original.converged, true);
+  assert.equal(shifted.converged, true);
+  assert.equal(Math.min(...zeroBased(group1).map(row => row.time)), 0);
+  for (const key of ["beta", "se", "hr", "hrLower", "hrUpper"]) {
+    assert.ok(
+      Math.abs(original[key] - shifted[key]) < 1e-8,
+      key + " should remain invariant when the earliest time is zero"
+    );
+  }
+});
