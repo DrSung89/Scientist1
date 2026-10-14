@@ -386,6 +386,7 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
   assert.notEqual(start, -1, "pairwise stats function exists");
   assert.ok(end > start, "statistics function block exists");
   const context = {
+    formatHRValue: value => Number(value).toPrecision(3),
     escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[char])
@@ -699,4 +700,22 @@ test("Cox HR rejects groups without observed events", () => {
     assert.ok(Number.isNaN(result.hrLower));
     assert.ok(Number.isNaN(result.hrUpper));
   }
+});
+
+
+test("Cox HR display preserves precision for small estimates and confidence limits", () => {
+  const start = source.indexOf("function formatHRValue");
+  const end = source.indexOf("\n    // ==========================================", start);
+  assert.notEqual(start, -1, "HR formatter exists");
+  assert.ok(end > start, "HR formatter boundary exists");
+  const context = {};
+  vm.runInNewContext(
+    source.slice(start, end) + "\nglobalThis.formatHRValue = formatHRValue;",
+    context
+  );
+
+  assert.equal(context.formatHRValue(0.0438), "0.0438");
+  assert.equal(context.formatHRValue(0.0047), "0.00470");
+  assert.equal(context.formatHRValue(0.4046), "0.405");
+  assert.equal(context.formatHRValue(1.23456), "1.23");
 });

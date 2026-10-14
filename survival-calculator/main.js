@@ -395,6 +395,11 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Preserve meaningful digits for small hazard ratios and confidence limits.
+    function formatHRValue(value) {
+        return Number(value).toPrecision(3);
+    }
+
     // ==========================================
     // ★ 새로 추가된 통계 함수 (HR, 95% CI, P-value)
     // ==========================================
@@ -425,8 +430,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const pVal = res.p < 0.001 ? "&lt; 0.001" : res.p.toFixed(4);
             
             let hrDisplay = "N/A";
-            if (isFinite(res.hr) && !isNaN(res.hr)) {
-                hrDisplay = `${res.hr.toFixed(2)} (${res.hrLower.toFixed(2)} - ${res.hrUpper.toFixed(2)})`;
+            if ([res.hr, res.hrLower, res.hrUpper].every(value => Number.isFinite(value) && value > 0)) {
+                hrDisplay = `${formatHRValue(res.hr)} (${formatHRValue(res.hrLower)} - ${formatHRValue(res.hrUpper)})`;
             }
 
             html += `<tr style="border-bottom: 1px solid #e1e3e4;">
