@@ -61,7 +61,7 @@ function hed(values = {}) {
 test('HED uses the Km ratio for a standard mouse-to-human conversion', () => {
   const result = hed();
   assert.match(result, /Equivalent Dose: <strong[^>]*>0\.8108 mg\/kg<\/strong>/);
-  assert.match(result, /Absolute Dose[^>]*>48\.6486 mg<\/strong>/);
+  assert.match(result, /Absolute Dose[\s\S]*?48\.6486 mg<\/strong>/);
 });
 
 test('HED converts an absolute source dose to mg/kg using the source species standard weight', () => {
@@ -80,12 +80,12 @@ test('HED applies a custom target body weight entered in grams', () => {
     'weight-b-unit': 'g'
   });
   assert.match(result, /Equivalent Dose: <strong[^>]*>5\.0000 mg\/kg<\/strong>/);
-  assert.match(result, /Absolute Dose[^>]*Custom 0\.25kg[^>]*>1\.2500 mg<\/strong>/);
+  assert.match(result, /Absolute Dose[\s\S]*?Custom 0\.25kg[\s\S]*?1\.2500 mg<\/strong>/);
 });
 
 test('HED uses the target species standard weight when custom weight is blank', () => {
   const result = hed({ 'species-b': 'Rat' });
-  assert.match(result, /Absolute Dose[^>]*Standard 0\.15kg[^>]*>0\.7500 mg<\/strong>/);
+  assert.match(result, /Absolute Dose[\s\S]*?Standard 0\.15kg[\s\S]*?0\.7500 mg<\/strong>/);
 });
 
 test('HED rejects non-positive doses and non-positive custom target weights', () => {
