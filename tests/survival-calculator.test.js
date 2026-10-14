@@ -586,3 +586,28 @@ test("Cox HR and Wald confidence interval match an independent no-ties reference
   assert.ok(Math.abs(result.hrLower - 0.09741313523550024) < 1e-6);
   assert.ok(Math.abs(result.hrUpper - 3.5307721356456288) < 1e-6);
 });
+
+
+test("Cox HR and Wald confidence interval match an independent Efron tied-events reference", () => {
+  // Reference values independently obtained by bisection on the Efron score equation.
+  const group1 = [
+    { time: 1, status: 1 }, { time: 1, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 1 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const group2 = [
+    { time: 1, status: 0 }, { time: 2, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 1 },
+    { time: 4, status: 0 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const result = logRankContext.fitCoxHR(group1, group2);
+
+  assert.equal(result.converged, true);
+  assert.ok(Math.abs(result.beta - (-0.3657964741493449)) < 1e-6);
+  assert.ok(Math.abs(result.se - 0.7642713001902359) < 1e-6);
+  assert.ok(Math.abs(result.hr - 0.6936439613216824) < 1e-6);
+  assert.ok(Math.abs(result.hrLower - 0.15508712510603426) < 1e-6);
+  assert.ok(Math.abs(result.hrUpper - 3.1023977312692788) < 1e-6);
+});
