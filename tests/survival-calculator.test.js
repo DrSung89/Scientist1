@@ -411,7 +411,7 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
     { name: "Control", data: group1 },
     { name: "Treatment", data: group2 }
   ]);
-  assert.match(html, /0\.59 \(0\.13 - 2\.66\)/);
+  assert.match(html, /0\.590 \(0\.131 - 2\.66\)/);
   assert.doesNotMatch(html, /0\.58 \(/, "must not display the old score-based approximation");
 });
 
