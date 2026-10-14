@@ -8,6 +8,8 @@ on:
       - "tests/survival-calculator.test.js"
       - "chi-square-calculator/index.html"
       - "tests/chi-square-calculator.test.js"
+      - "t-test-calculator/index.html"
+      - "tests/t-test-calculator.test.js"
       - "assets/main.js"
       - "outlier-detector/index.html"
       - "tests/outlier-detector.test.js"
@@ -18,6 +20,8 @@ on:
       - "tests/survival-calculator.test.js"
       - "chi-square-calculator/index.html"
       - "tests/chi-square-calculator.test.js"
+      - "t-test-calculator/index.html"
+      - "tests/t-test-calculator.test.js"
       - "assets/main.js"
       - "outlier-detector/index.html"
       - "tests/outlier-detector.test.js"
@@ -31,4 +35,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js
+      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js
