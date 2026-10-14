@@ -500,7 +500,8 @@ document.addEventListener("DOMContentLoaded", function() {
             return invalid("empty-group");
         }
         const validRows = [...g1, ...g2].every(d =>
-            d && Number.isFinite(d.time) && (d.status === 0 || d.status === 1)
+            d && Number.isFinite(d.time) && d.time >= 0 &&
+            (d.status === 0 || d.status === 1)
         );
         if (!validRows) return invalid("invalid-data");
 
