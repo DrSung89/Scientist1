@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
     // 3. Other Calculators
     // ====================================================
-function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6,'ng':1e-9};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM','nM'];if(t==='mass')U=['kg','g','mg','ug','ng'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
+function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1,'mL':1e-3,'uL':1e-6,'M':1,'mM':1e-3,'uM':1e-6,'nM':1e-9,'kg':1e3,'g':1,'mg':1e-3,'ug':1e-6,'ng':1e-9};let b=v*f[u],U=['L','mL','uL'];if(t==='conc')U=['M','mM','uM','nM'];if(t==='mass')U=['kg','g','mg','ug','ng'];let best=U[U.length-1];for(let x of U){if(Math.abs(b)/f[x]>=1){best=x;break;}}return`<strong>${(b/f[best]).toFixed(3)} ${best}</strong>`;}
 
     // Molarity Calculator
     const mb = document.getElementById('calculate-molarity');
