@@ -387,6 +387,8 @@ test("displayed pairwise HR comes from the Cox model, not the log-rank approxima
   assert.ok(end > start, "statistics function block exists");
   const context = {
     formatHRValue: value => Number(value).toPrecision(3),
+    runLogRank: logRankContext.runLogRank,
+    fitCoxHR: logRankContext.fitCoxHR,
     escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[char])
@@ -731,7 +733,7 @@ test("pairwise results display N/A for a non-convergent Cox estimate without hid
     escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[char]),
-    runLogRank: () => ({ chisq: 4.12, p: 0.042 }),
+    runLogRank: logRankContext.runLogRank,
     fitCoxHR: () => ({
       converged: false,
       hr: NaN,
@@ -751,6 +753,6 @@ test("pairwise results display N/A for a non-convergent Cox estimate without hid
   ]);
 
   assert.match(html, />N\/A<\/td>/, "unstable Cox estimates should not be presented as numeric HRs");
-  assert.match(html, /4\.12/, "the pairwise log-rank chi-square should still be shown");
-  assert.match(html, /0\.0420/, "the pairwise log-rank p-value should still be shown");
+  assert.match(html, /1\.00/, "the pairwise log-rank chi-square should still be shown");
+  assert.match(html, /0\.3173/, "the pairwise log-rank p-value should still be shown");
 });
