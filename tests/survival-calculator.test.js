@@ -756,3 +756,58 @@ test("pairwise results display N/A for a non-convergent Cox estimate without hid
   assert.match(html, /1\.00/, "the pairwise log-rank chi-square should still be shown");
   assert.match(html, /0\.3173/, "the pairwise log-rank p-value should still be shown");
 });
+
+test("multi-group pairwise results isolate Cox N/A fallback to the affected comparison", () => {
+  const start = source.indexOf("function calculateLogRankStats");
+  const end = closingWrapper ? closingWrapper.index : -1;
+  assert.notEqual(start, -1, "pairwise stats function exists");
+  assert.ok(end > start, "statistics function block exists");
+
+  const context = {
+    formatHRValue: value => Number(value).toPrecision(3),
+    runLogRank: logRankContext.runLogRank,
+    fitCoxHR: logRankContext.fitCoxHR,
+    escapeHtml: value => String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char])
+  };
+  vm.runInNewContext(
+    source.slice(start, end) + "\nglobalThis.calculateLogRankStats = calculateLogRankStats;",
+    context
+  );
+
+  const control = [
+    { time: 1, status: 1 }, { time: 2, status: 1 },
+    { time: 3, status: 0 }, { time: 4, status: 1 },
+    { time: 5, status: 0 }, { time: 6, status: 1 },
+    { time: 7, status: 0 }, { time: 8, status: 0 }
+  ];
+  const treatment = [
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 0 }, { time: 5, status: 1 },
+    { time: 6, status: 0 }, { time: 7, status: 0 },
+    { time: 8, status: 1 }, { time: 9, status: 0 }
+  ];
+  const noEventGroup = [
+    { time: 1, status: 0 }, { time: 2, status: 0 },
+    { time: 3, status: 0 }, { time: 4, status: 0 }
+  ];
+
+  const html = context.calculateLogRankStats([
+    { name: "Control", data: control },
+    { name: "No events", data: noEventGroup },
+    { name: "Treatment", data: treatment }
+  ]);
+
+  const noEventRow = html.match(/<tr[^>]*>\s*<td[^>]*>No events vs Control<\/td>[\s\S]*?<\/tr>/);
+  assert.ok(noEventRow, "the non-convergent comparison should have its own table row");
+  assert.match(noEventRow[0], /<td[^>]*>N\/A<\/td>/, "only the affected Cox estimate should be N/A");
+  assert.match(noEventRow[0], /<td[^>]*>\d+\.\d{2}<\/td>/, "log-rank chi-square should remain visible");
+  assert.match(noEventRow[0], /<td[^>]*>(?:&lt; 0\.001|\d\.\d{4})<\/td>/, "log-rank p-value should remain visible");
+
+  const treatmentRow = html.match(/<tr[^>]*>\s*<td[^>]*>Treatment vs Control<\/td>[\s\S]*?<\/tr>/);
+  assert.ok(treatmentRow, "the valid comparison should still have its own table row");
+  assert.match(treatmentRow[0], /<td[^>]*>0\.590 \(0\.131 - 2\.66\)<\/td>/,
+    "a non-convergent estimate in another row must not hide a valid Cox estimate");
+});
+
