@@ -507,6 +507,14 @@ test("Cox HR safely rejects empty groups and malformed survival rows", () => {
     logRankContext.fitCoxHR([{ time: 1, status: "1" }], validGroup).reason,
     "invalid-data"
   );
+  assert.equal(
+    logRankContext.fitCoxHR([{ time: -1, status: 1 }], validGroup).reason,
+    "invalid-data"
+  );
+  assert.equal(
+    logRankContext.fitCoxHR([{ time: Infinity, status: 1 }], validGroup).reason,
+    "invalid-data"
+  );
 });
 
 
