@@ -508,3 +508,31 @@ test("Cox HR safely rejects empty groups and malformed survival rows", () => {
     "invalid-data"
   );
 });
+
+
+test("Cox HR and confidence interval are invariant to row order with tied event times", () => {
+  const group1 = [
+    { time: 1, status: 1 }, { time: 1, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 0 },
+    { time: 4, status: 1 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const group2 = [
+    { time: 1, status: 0 }, { time: 2, status: 1 },
+    { time: 2, status: 1 }, { time: 3, status: 1 },
+    { time: 4, status: 0 }, { time: 5, status: 0 },
+    { time: 6, status: 0 }
+  ];
+  const permute = rows => [...rows].reverse();
+  const original = logRankContext.fitCoxHR(group1, group2);
+  const reordered = logRankContext.fitCoxHR(permute(group1), permute(group2));
+
+  assert.equal(original.converged, true);
+  assert.equal(reordered.converged, true);
+  for (const key of ["beta", "se", "hr", "hrLower", "hrUpper"]) {
+    assert.ok(
+      Math.abs(original[key] - reordered[key]) < 1e-8,
+      key + " should not depend on the order of input rows"
+    );
+  }
+});
