@@ -50,6 +50,7 @@ function runCalculator(buttonId, initialValues) {
   onReady();
   assert.equal(typeof onClick, 'function', buttonId + ' should register a click handler');
   onClick();
+  elements.__click = onClick;
   return elements;
 }
 
@@ -114,4 +115,21 @@ test('dilution calculator rejects invalid inputs and impossible dilution volumes
 
 test('dilution calculator formats nanomolar results without losing the unit scale', () => {
   assert.match(dilution({ m1: 0.001, 'm1-unit': 'mM', v1: 1, m2: null, 'm2-unit': 'nM', v2: 1000 }), /1\.000 nM/);
+});
+
+
+test('molarity calculator replaces a previous result when recalculation input is invalid', () => {
+  const elements = runCalculator('calculate-molarity', {
+    'calculate-molarity': null,
+    mass: 0.018, 'mass-unit': 'g',
+    concentration: null, 'conc-unit': 'mM',
+    volume: 100, 'vol-unit': 'mL',
+    mw: 180,
+    'molarity-result': null
+  });
+  assert.match(elements['molarity-result'].innerHTML, /1\.000 mM/);
+  elements.mass.value = '0';
+  elements.__click();
+  assert.match(elements['molarity-result'].innerHTML, /greater than zero/i);
+  assert.doesNotMatch(elements['molarity-result'].innerHTML, /1\.000 mM/);
 });
