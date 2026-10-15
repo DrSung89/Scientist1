@@ -159,3 +159,26 @@ test('F-test diagnostic returns valid statistics for two positive variances', ()
   assert.equal(result.df2, 7);
   assert.ok(result.pValue > 0 && result.pValue <= 1);
 });
+
+
+test('new t-test analysis hides stale results before validation', () => {
+  const start = html.indexOf('function clearTTestResults() {');
+  const end = html.indexOf('function runAnalysis()', start);
+  assert.ok(start >= 0 && end > start, 'result-reset helper should be defined before runAnalysis');
+
+  const resultArea = { style: { display: 'block' } };
+  const sandbox = {
+    document: {
+      getElementById(id) {
+        return id === 'result-area' ? resultArea : null;
+      }
+    }
+  };
+  vm.runInNewContext(extractFunction('clearTTestResults') + '\nglobalThis.clearTTestResults = clearTTestResults;', sandbox);
+  sandbox.clearTTestResults();
+  assert.equal(resultArea.style.display, 'none');
+
+  const runAnalysisStart = html.indexOf('function runAnalysis() {');
+  const runAnalysisBody = html.slice(runAnalysisStart, runAnalysisStart + 180);
+  assert.match(runAnalysisBody, /clearTTestResults\(\);/, 'runAnalysis must clear old results before validation');
+});
