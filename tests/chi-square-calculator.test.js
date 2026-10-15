@@ -13,8 +13,9 @@ assert.ok(formatStart >= 0 && formatEnd > formatStart, 'chi-square p-value forma
 
 const source = html.slice(start, formatStart) + html.slice(formatStart, formatEnd);
 const sandbox = {};
-vm.runInNewContext(`${source}\nglobalThis.chiSquarePValue = chiSquarePValue;`, sandbox);
+vm.runInNewContext(`${source}\nglobalThis.chiSquarePValue = chiSquarePValue;\nglobalThis.formatChiSquarePValue = formatChiSquarePValue;`, sandbox);
 const chiSquarePValue = sandbox.chiSquarePValue;
+const formatChiSquarePValue = sandbox.formatChiSquarePValue;
 
 test('df=1 chi-square survival function matches reference values', () => {
   const cases = [
