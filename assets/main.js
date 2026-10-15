@@ -250,6 +250,7 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
     const mb = document.getElementById('calculate-molarity');
     if(mb) mb.addEventListener('click',()=>{
         const m=parseFloat(document.getElementById('mass').value), mw=parseFloat(document.getElementById('mw').value), v=parseFloat(document.getElementById('volume').value), c=parseFloat(document.getElementById('concentration').value), rd=document.getElementById('molarity-result');
+        rd.innerHTML = '';
         if (!Number.isFinite(mw) || mw <= 0) { rd.innerHTML = "<span style='color:red'>Enter a molecular weight greater than zero.</span>"; return; }
         const values = [m, v, c];
         if (values.filter(Number.isFinite).length !== 2) { rd.innerHTML = "<span style='color:red'>Enter exactly two of mass, volume, and concentration.</span>"; return; }
