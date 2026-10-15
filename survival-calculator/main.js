@@ -149,8 +149,14 @@ document.addEventListener("DOMContentLoaded", function() {
         return html;
     }
 
+    function clearSurvivalResults() {
+        const resultDiv = document.getElementById("os-result");
+        if (resultDiv) resultDiv.style.display = "none";
+    }
+
     if(calcBtn) {
         calcBtn.addEventListener("click", function() {
+            clearSurvivalResults();
             const numGroups = parseInt(numGroupsSelect.value);
             const allDatasets = [];
             const medianResults = [];
