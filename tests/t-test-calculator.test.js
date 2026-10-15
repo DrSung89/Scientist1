@@ -103,6 +103,7 @@ const sandbox = {
 for (const name of [
   'twoSidedStudentTPValue',
   'twoSidedFTestPValue',
+  'calculateFTestDiagnostic',
   'formatPValue',
   'formatSignificantPValue',
   'calculateCohensD'
@@ -142,4 +143,19 @@ test('signed Cohen d preserves Group A minus Group B direction', () => {
   assert.equal(sandbox.calculateCohensD(-4, 4), -2);
   assert.match(html, /Welch's test is the recommended default/);
   assert.match(html, /choosing Student's or Welch's test based on a preliminary variance test can distort the overall error rate/);
+});
+
+
+test('F-test diagnostic is unavailable when either group has zero variance', () => {
+  assert.equal(sandbox.calculateFTestDiagnostic(0, 4, 3, 3), null);
+  assert.equal(sandbox.calculateFTestDiagnostic(4, 0, 3, 3), null);
+  assert.equal(sandbox.calculateFTestDiagnostic(0, 0, 3, 3), null);
+});
+
+test('F-test diagnostic returns valid statistics for two positive variances', () => {
+  const result = sandbox.calculateFTestDiagnostic(4, 1, 6, 8);
+  assert.equal(result.f, 4);
+  assert.equal(result.df1, 5);
+  assert.equal(result.df2, 7);
+  assert.ok(result.pValue > 0 && result.pValue <= 1);
 });
