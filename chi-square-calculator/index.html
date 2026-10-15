@@ -370,7 +370,20 @@
             return p < 0.00001 ? '<0.00001' : p.toFixed(5);
         }
 
+        function clearChiSquareResults() {
+            document.getElementById('result-area').style.display = 'none';
+            document.getElementById('warning-msg').style.display = 'none';
+
+            ['exp-a', 'exp-b', 'exp-c', 'exp-d'].forEach(id => {
+                document.getElementById(id).innerText = 'Exp: -';
+            });
+            ['p-val', 'sig-msg', 'chi-stat', 'cramers-v'].forEach(id => {
+                document.getElementById(id).innerText = '';
+            });
+        }
+
         function calcChi() {
+            clearChiSquareResults();
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
 
