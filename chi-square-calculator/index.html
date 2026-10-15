@@ -365,6 +365,11 @@
             );
             return Math.max(0, Math.min(1, erfc));
         }
+        function formatChiSquarePValue(p) {
+            if (!Number.isFinite(p) || p < 0 || p > 1) return 'Not available';
+            return p < 0.00001 ? '<0.00001' : p.toFixed(5);
+        }
+
         function calcChi() {
             const getVal = (id) => parseFloat(document.getElementById(id).value);
             const a = getVal('a'), b = getVal('b'), c = getVal('c'), d = getVal('d');
@@ -414,7 +419,7 @@
             const pVal = chiSquarePValue(chiSq, 1);
 
             // Output Formatting
-            document.getElementById('p-val').innerText = pVal.toFixed(5);
+            document.getElementById('p-val').innerText = formatChiSquarePValue(pVal);
             
             const sigMsg = document.getElementById('sig-msg');
             if (pVal < 0.05) {
