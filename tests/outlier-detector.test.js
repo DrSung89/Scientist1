@@ -68,3 +68,9 @@ test('manual Grubbs selection is available when small-sample normality is not as
   assert.match(html, /Method: Grubb's Test/);
   assert.match(html, /Potential: 100/);
 });
+
+test('large-sample Grubbs fallback uses a conservative critical value without jStat', () => {
+  const values = Array.from({ length: 200 }, (_, i) => i + 1);
+  const html = runOutlierCalculator(values, undefined, 'grubbs');
+  assert.match(html, /Critical G: 3\\.61/);
+});
