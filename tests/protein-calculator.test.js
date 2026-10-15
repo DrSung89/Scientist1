@@ -117,3 +117,18 @@ test('rejects a relative sample whose blank-corrected absorbance is not positive
   const result = calculate({ 'prot-sample-od': '0.1, 0.3', 'prot-blank-od': '0.1' }, 'rel');
   assert.match(result, /Net O\.D\. ≤ 0/i);
 });
+
+
+test('rejects blank O.D. values that are empty or non-numeric in relative mode', () => {
+  assert.match(calculate({ 'prot-blank-od': '' }, 'rel'), /valid numeric Blank O\.D\. value/i);
+  assert.match(calculate({ 'prot-blank-od': 'abc' }, 'rel'), /valid numeric Blank O\.D\. value/i);
+});
+
+test('allows zero and negative blank O.D. when blank-corrected sample values are positive', () => {
+  const zeroBlank = calculate({ 'prot-blank-od': '0', 'prot-sample-od': '0.1, 0.3' }, 'rel');
+  assert.match(zeroBlank, /Reference O\.D\. \(Most dilute sample\) = <strong>0\.1000<\/strong>/);
+
+  const negativeBlank = calculate({ 'prot-blank-od': '-0.05', 'prot-sample-od': '-0.01, -0.03' }, 'rel');
+  assert.match(negativeBlank, /Reference O\.D\. \(Most dilute sample\) = <strong>0\.0200<\/strong>/);
+  assert.doesNotMatch(negativeBlank, /valid numeric Blank O\.D\. value/i);
+});
