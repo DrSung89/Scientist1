@@ -127,9 +127,9 @@ test('molarity calculator replaces a previous result when recalculation input is
     mw: 180,
     'molarity-result': null
   });
-  assert.match(elements['molarity-result'].innerHTML, /1\\.000 mM/);
+  assert.match(elements['molarity-result'].innerHTML, /1\.000 mM/);
   elements.mass.value = '0';
   elements.__click();
   assert.match(elements['molarity-result'].innerHTML, /greater than zero/i);
-  assert.doesNotMatch(elements['molarity-result'].innerHTML, /1\\.000 mM/);
+  assert.doesNotMatch(elements['molarity-result'].innerHTML, /1\.000 mM/);
 });
