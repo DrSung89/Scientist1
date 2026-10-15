@@ -442,7 +442,13 @@
             return meanDifference / Math.sqrt(pooledVariance);
         }
 
+        function clearTTestResults() {
+            const resultArea = document.getElementById('result-area');
+            if (resultArea) resultArea.style.display = 'none';
+        }
+
         function runAnalysis() {
+            clearTTestResults();
             if (typeof jStat === 'undefined') {
                 alert("Statistical library is still loading. Please try again in a second.");
                 return;
