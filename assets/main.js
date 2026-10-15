@@ -495,7 +495,16 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
             html += `</table>`;
 
         } else {
-            const blankOD = parseFloat(document.getElementById('prot-blank-od').value) || 0;
+            const blankODRaw = document.getElementById('prot-blank-od').value.trim();
+            const blankOD = Number(blankODRaw);
+
+            if (blankODRaw === '' || !Number.isFinite(blankOD)) {
+                 resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 Enter a valid numeric Blank O.D. value. Negative values are allowed.</span>";
+                 resDiv.style.display = 'block';
+                 if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
+                 return;
+            }
+
             const netODs = samples.map(od => od - blankOD);
             const minNetOD = Math.min(...netODs);
 
