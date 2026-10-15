@@ -53,3 +53,28 @@ test('invalid chi-square p-values are not displayed as valid results', () => {
   assert.equal(formatChiSquarePValue(-0.1), 'Not available');
   assert.equal(formatChiSquarePValue(1.1), 'Not available');
 });
+
+
+test('clearChiSquareResults clears stale results before a new calculation', () => {
+  const start = html.indexOf('function clearChiSquareResults() {');
+  const end = html.indexOf('function calcChi()', start);
+  assert.ok(start >= 0 && end > start, 'result-reset helper should exist before calcChi');
+
+  const elements = {};
+  const ids = ['result-area', 'warning-msg', 'exp-a', 'exp-b', 'exp-c', 'exp-d', 'p-val', 'sig-msg', 'chi-stat', 'cramers-v'];
+  for (const id of ids) {
+    elements[id] = { innerText: 'stale result', style: { display: 'block' } };
+  }
+  const sandbox = { document: { getElementById: (id) => elements[id] } };
+  vm.runInNewContext(`${html.slice(start, end)}\nglobalThis.clearChiSquareResults = clearChiSquareResults;`, sandbox);
+  sandbox.clearChiSquareResults();
+
+  assert.equal(elements['result-area'].style.display, 'none');
+  assert.equal(elements['warning-msg'].style.display, 'none');
+  for (const id of ['exp-a', 'exp-b', 'exp-c', 'exp-d']) {
+    assert.equal(elements[id].innerText, 'Exp: -');
+  }
+  for (const id of ['p-val', 'sig-msg', 'chi-stat', 'cramers-v']) {
+    assert.equal(elements[id].innerText, '');
+  }
+});
