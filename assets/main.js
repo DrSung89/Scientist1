@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Use the exact t-quantile formula when jStat is available; otherwise use conservative tabulated values.
         const grubbsTable = {
             3: 1.1547, 4: 1.481, 5: 1.715, 6: 1.887, 7: 2.020, 8: 2.127, 9: 2.215, 10: 2.290,
-            12: 2.412, 15: 2.549, 20: 2.708, 30: 2.908, 50: 3.128, 100: 3.384
+            12: 2.412, 15: 2.549, 20: 2.708, 30: 2.908, 50: 3.128, 100: 3.384, 150: 3.518, 200: 3.606, 500: 3.864, 1000: 4.041
         };
         const getGCrit = (n) => {
             if (typeof jStat !== 'undefined' && jStat.studentt && typeof jStat.studentt.inv === 'function') {
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const keys = Object.keys(grubbsTable).map(Number).sort((a,b)=>a-b);
             for (let k of keys) { if (n <= k) return grubbsTable[k]; }
-            return 3.5;
+            return 4.5;
         };
 
         outlierButton.addEventListener('click', () => {
