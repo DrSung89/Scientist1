@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="description" content="Understand attention sinks in large language models, why they matter for interpreting model behavior, and what preprint evidence can and cannot establish for biology.">
-    <title>The Danger of Context Amnesia: Why LLMs Fail at Biological Complexity | Scientist's Toolkit</title>
+    <title>Repeated Tokens, Attention Sinks, and LLM Context Loss | Scientist's Toolkit</title>
     <link rel="canonical" href="https://scientisttoolkit.xyz/articles/llm-attention-sinks-biology/">
     <link rel="icon" type="image/png" href="/favicon.png">
     
@@ -52,17 +52,17 @@
                     <span class="text-xs font-bold tracking-widest uppercase text-primary bg-blue-50 px-2 py-1 rounded">Computational Biology</span>
                     <time class="text-sm text-slate-500 font-medium">August 2026</time>
                 </div>
-                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">The Danger of Context Amnesia: Why LLMs Fail at Biological Complexity</h1>
+                <h1 class="text-3xl md:text-5xl font-headline font-bold text-slate-900 leading-tight mb-4">Repeated Tokens, Attention Sinks, and LLM Context Loss</h1>
                 <p class="text-lg text-slate-600 font-light leading-relaxed">A mechanistic analysis of the "Repeated Token Divergence" phenomenon exposes a fundamental mathematical flaw in Large Language Models. We explore why this architecture makes applying LLMs to highly contextual fields like biology exceptionally dangerous.</p>
             </header>
 
             <div class="prose max-w-none text-slate-700 leading-loose space-y-6 font-light">
                 
                 <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">1. The Illusion of Comprehension and the "Attention Sink"</h2>
-                <p>Large Language Models (LLMs) like GPT-4 and LLaMA have revolutionized data processing, creating an illusion of deep comprehension. However, a prominent structural vulnerability recently detailed by Yona et al. (2025) shatters this illusion. When an LLM is prompted to simply repeat a word continuously, the model inevitably diverges, spewing completely unrelated text or even leaking memorized training data.</p>
-                <p>This bizarre failure is inextricably linked to a mechanism known as <strong>"Attention Sinks."</strong> In transformer architectures, the initial token in a sequence receives a disproportionately high attention score, acting as a functional "sink" to absorb unnecessary attention weights and preserve model fluency. The researchers discovered that the first attention layer acts as a "first-detector neuron." However, lacking absolute positional signals, this layer fails to distinguish between the true first token and a sequence of identical repeating tokens. Consequently, it falsely marks repeated tokens as attention sinks, assigning them abnormally high hidden state norms and severely disrupting the neural circuit.</p>
+                <p>Large Language Models (LLMs) can fail at seemingly simple repetition tasks: when prompted to repeat a token many times, some models eventually generate unrelated text. Yona et al. (2025) investigate this repeated-token divergence and connect it to the attention-sink mechanism. The paper also discusses how this behavior can be exploited in some settings, but the result should be understood as a specific failure mode rather than evidence that LLMs generally lack comprehension.</p>
+                <p>The study links this behavior to <strong>attention sinks</strong>, in which the first token often receives disproportionately high attention. In the models analyzed, the authors describe a circuit involving the first attention layer and specific neurons in a later multilayer perceptron (MLP): the circuit helps mark the first token and amplify its hidden-state norm. Under long repeated-token inputs, the same mechanism can also be triggered by later repeated tokens, which then attract unusually high attention and disrupt the model's normal processing. These mechanistic findings were demonstrated in the models and input patterns examined in the paper.</p>
 
-                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. The Mathematics of Amnesia: Softmax Leakage</h2>
+                <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">2. Repeated Tokens and Softmax Leakage</h2>
                 <p>The danger is not merely that the model hallucinates; the true danger lies in the mathematical proof of <em>why</em> it hallucinates. Yona et al. provide a formal theorem (Theorem 4.1) demonstrating that as a token is repeated, the model mathematically erases the preceding context.</p>
                 <p>Consider a sequence $S_n$ consisting of $k$ fixed prefix tokens (the context) followed by $n$ repetitions of a token. The researchers proved that as $n \to \infty$, the representation of the final token converges strongly to the representation of a singleton sequence $S^*$ containing only the repeated token:</p>
                 
@@ -70,11 +70,11 @@
                     $\lim_{n\to\infty} ||T^{(L)}(S_n)_{n+k} - T^{(L)}(S^*)_1|| = 0$
                 </p>
 
-                <p>This occurs due to <strong>softmax leakage</strong>. As the repetitive sequence grows, the relative influence of the prefix (the context) goes to 0 because the size of the prefix remains constant while the attention weights are overwhelmed by the repetition. In the hidden space of the LLM, the nuanced, intermediate values generated by the prefix context gradually disappear, mathematically converging to an absolute, decontextualized state.</p>
+                <p>The paper also analyzes a theoretical limit known as <strong>softmax leakage</strong>. When a fixed prefix is followed by an increasingly long run of the same token, the prefix's relative influence on the final token representation can approach zero. This result applies to the sequence construction studied in the paper; it is not a general rule that every long prompt loses its context.</p>
 
                 <h2 class="text-2xl font-headline font-bold text-slate-900 mt-8 mb-4">3. The Peril in Biological Interpretation</h2>
                 <p>This architectural "context amnesia" poses a profound danger when applying LLMs to biological sciences. Unlike binary computer logic, biological systems are inherently conditional. A gene's expression, a protein's folding, or a cellular response to a drug is never absolute—it is entirely dictated by the <em>background conditions</em> (the cellular microenvironment, concurrent mutations, or signaling gradients).</p>
-                <p>In the framework of an LLM, these vital biological background conditions act as the "prefix." If an LLM is analyzing a massive genomic sequence or a highly repetitive proteomic dataset, the <em>Softmax Leakage</em> phenomenon dictates that the model will mathematically "forget" the prefix. As the dominant, repetitive signals overwhelm the attention heads, the crucial intermediate probabilities—the nuanced "gray areas" that define biological context—are erased. The model converges on a stark, binary conclusion, completely divorced from the background conditions that actually govern the biological reality.</p>
+                <p>This mechanism raises questions about repetitive inputs in scientific workflows, including genomic or proteomic text. However, the cited study does not test biological sequences or establish that LLMs necessarily forget biological context when processing them. Applying the result to such workflows remains a hypothesis that requires task-specific evaluation using realistic tokenization, sequence lengths, and appropriate controls. The evidence supports a narrower conclusion: repeated-token patterns can disrupt attention-sink circuitry in the models examined.</p>
 
                 <div class="bg-blue-50 p-8 rounded-xl border border-primary/20 shadow-sm my-10">
                     <h3 class="text-xl font-headline font-bold text-primary mb-3">💡 My Practical Perspective: The Limits of Generative AI in the Lab</h3>
