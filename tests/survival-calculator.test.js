@@ -861,3 +861,26 @@ test("pairwise survival output HTML-escapes user-provided group names", () => {
   assert.doesNotMatch(html, /<img\b/i, "raw image markup must not be emitted");
   assert.doesNotMatch(html, /<script\b/i, "raw script markup must not be emitted");
 });
+
+
+test("starting a new survival analysis hides the previous report before input validation", () => {
+  const start = source.indexOf("function clearSurvivalResults() {");
+  const end = source.indexOf('if(calcBtn) {', start);
+  assert.ok(start >= 0 && end > start, "result-reset helper should be defined before the calculate handler");
+
+  const resultDiv = { style: { display: "block" } };
+  const context = {
+    document: {
+      getElementById(id) {
+        return id === "os-result" ? resultDiv : null;
+      }
+    }
+  };
+  vm.runInNewContext(source.slice(start, end) + "\nglobalThis.clearSurvivalResults = clearSurvivalResults;", context);
+  context.clearSurvivalResults();
+  assert.equal(resultDiv.style.display, "none");
+
+  const clickStart = source.indexOf('calcBtn.addEventListener("click", function() {');
+  const clickBody = source.slice(clickStart, clickStart + 180);
+  assert.match(clickBody, /clearSurvivalResults\(\);/, "the report must be cleared at the start of every new calculation");
+});
