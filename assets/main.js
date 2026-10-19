@@ -442,7 +442,7 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
             const r2 = 1 - (ssRes / ssTot);
 
             const r2Color = r2 >= 0.95 ? '#065f46' : '#b91c1c';
-            const r2Warning = r2 < 0.95 ? '<br><span style="color:#b91c1c; font-size:0.85em;">⚠️ R² < 0.95: Curve is sub-optimal. Check your pipetting.</span>' : '';
+            const r2Warning = r2 < 0.95 ? '<br><span style="color:#b91c1c; font-size:0.85em;">⚠️ R² < 0.95: Review standards, assay range, pipetting, and assay conditions.</span>' : '';
 
             html += repNotice;
             html += `<div style="margin-bottom:15px; padding:15px; background:#f8fafc; border-left:4px solid #3b82f6; border-radius:4px;">
