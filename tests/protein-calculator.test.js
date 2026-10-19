@@ -79,6 +79,12 @@ test('standard curve regression recovers a known concentration and calculates lo
   assert.match(result, /4\.00/);
 });
 
+test('low R-squared prompts review without attributing the cause only to pipetting', () => {
+  const result = calculate({ 'prot-std-od': '0.1, 0.3, 1.5' });
+  assert.match(result, /R² < 0\.95/);
+  assert.match(result, /Review standards, assay range, pipetting, and assay conditions/i);
+});
+
 test('replicate multiplier scales all recipe components and final volume', () => {
   const result = calculate({ 'prot-replicates': '3' });
   assert.match(result, /Volumes multiplied by 3x/);
