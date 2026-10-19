@@ -197,34 +197,38 @@
                         <span class="material-symbols-outlined text-3xl">troubleshoot</span> Statistical Outlier Detection Algorithm
                     </h3>
                     <p class="text-on-surface-variant font-light leading-relaxed mb-6">
-                        Handling extreme values (outliers) in experimental data is a delicate process. Arbitrarily removing data points to achieve statistical significance is considered scientific misconduct (p-hacking). Our toolkit employs an intelligent, two-step auto-selection algorithm to ensure statistical rigor before any data points are recommended for exclusion.
+                        Outlier screening should support data review, not make exclusion decisions automatically. The calculator's automatic mode uses a normality screen to suggest either a one-candidate Grubbs' test or the IQR rule. A flagged observation may be valid biology, and results should be interpreted using the study protocol, assay quality controls, and experimental context.
                     </p>
 
-                    <h4 class="font-headline font-bold text-on-surface mb-2">Step 1: The Shapiro-Wilk Normality Test</h4>
+                    <h4 class="font-headline font-bold text-on-surface mb-2">Step 1: D'Agostino–Pearson Normality Screen</h4>
                     <p class="text-on-surface-variant font-light leading-relaxed mb-6">
-                        Before identifying an outlier, we must understand the shape of the data distribution. If the P-value is ≥ 0.05, we assume normality and proceed to parametric tests. If P < 0.05, the data is skewed, requiring non-parametric approaches.
+                        For datasets with at least 8 observations, automatic mode applies the D'Agostino–Pearson omnibus test, which assesses departures from normality using skewness and kurtosis. A p-value ≥ 0.05 does not prove that the data are normally distributed; it means this test did not detect sufficient evidence against normality. A p-value < 0.05 is evidence against the normality assumption, not proof that the data are simply “skewed” or that a non-parametric hypothesis test is required. With fewer than 8 observations, automatic mode does not calculate a normality p-value and uses IQR screening.
                     </p>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-emerald-50 p-5 rounded-lg border border-emerald-200">
-                            <h4 class="font-headline font-bold text-emerald-800 mb-2">Normal (P ≥ 0.05) → Grubb's Test</h4>
+                            <h4 class="font-headline font-bold text-emerald-800 mb-2">No evidence against normality → Grubbs' Test</h4>
                             <p class="text-sm font-light text-emerald-900 leading-relaxed">
-                                Grubb's test is the gold standard for detecting exactly one outlier in a univariate dataset that follows an approximately normal distribution. It calculates a Z-like score (G) representing how far the suspected outlier is from the sample mean.
+                                In automatic mode, a dataset of at least 8 observations with a normality-screen p-value ≥ 0.05 is routed to Grubbs' test. Grubbs' test evaluates one most-extreme candidate at a time under an approximately normal, univariate model. It does not establish that a flagged value is an error, and repeated testing for additional outliers requires a separately planned procedure.
                             </p>
                         </div>
                         <div class="bg-amber-50 p-5 rounded-lg border border-amber-200">
-                            <h4 class="font-headline font-bold text-amber-800 mb-2">Non-Normal (P < 0.05) → IQR Method</h4>
+                            <h4 class="font-headline font-bold text-amber-800 mb-2">Evidence against normality or N < 8 → IQR Rule</h4>
                             <p class="text-sm font-light text-amber-900 leading-relaxed mb-3">
-                                When data heavily deviates from normality, parametric tests fail. The Interquartile Range (IQR) method (Tukey's fences) relies on medians and quartiles, making it highly resistant to the extreme values themselves.
+                                Automatic mode uses the interquartile range (IQR) rule when the normality screen finds evidence against normality or when the sample has fewer than 8 observations. This is an exploratory screening rule, not a formal test of whether a value is erroneous; it can flag valid observations, especially in small samples or skewed distributions.
                             </p>
                             <div class="bg-white/60 p-3 rounded text-xs font-mono text-amber-950">
-                                Q1 = 25th Percentile<br>
-                                Q3 = 75th Percentile<br>
+                                Q1 = 25th percentile<br>
+                                Q3 = 75th percentile<br>
                                 IQR = Q3 - Q1<br>
-                                Limits: < [Q1 - 1.5×IQR] OR > [Q3 + 1.5×IQR]
+                                Limits: below Q1 − 1.5 × IQR or above Q3 + 1.5 × IQR
                             </div>
                         </div>
                     </div>
+
+                    <p class="text-sm text-on-surface-variant font-light leading-relaxed mt-5">
+                        You may manually select Grubbs' test or IQR instead of automatic mode. The normality-screen result does not select a hypothesis test for your study; choose the downstream statistical analysis based on the design, outcome, assumptions, and prespecified analysis plan. Do not remove observations solely because doing so changes statistical significance.
+                    </p>
                 </div>
 
                 <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30 border-t-4 border-t-orange-500">
