@@ -272,6 +272,18 @@
                 <h3 class="text-xl font-headline font-bold text-slate-900 mt-8 mb-3">2. Relative Quantification (No Standard Curve)</h3>
                 <p>In certain qualitative screening scenarios where an absolute standard curve is not available, researchers can normalize samples relatively against each other. This mode requires a "Blank O.D." (absorbance of the lysis buffer alone) to calculate the Net O.D. of each sample. The calculator automatically identifies the most dilute sample (lowest Net O.D.) and calculates a volumetric ratio to ensure an equal amount of total protein is loaded across all wells.</p>
 
+                <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mt-8">
+                    <h3 class="text-lg font-headline font-bold text-blue-900 mb-3">Worked example: from standard curve to loading mix</h3>
+                    <p class="text-slate-700 leading-relaxed mb-3">The values below are illustrative only; use your assay's validated standard range and measured regression rather than copying these values into an experiment.</p>
+                    <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                        <li>Suppose the fitted standard curve is <strong>OD = 0.40 × concentration + 0.05</strong>, with concentration in µg/µL.</li>
+                        <li>For a sample OD of 0.45, the estimated concentration is (0.45 − 0.05) / 0.40 = <strong>1.0 µg/µL</strong>, provided the sample response is within the validated linear range.</li>
+                        <li>To load 10 µg, the sample volume is 10 µg ÷ 1.0 µg/µL = <strong>10 µL</strong>.</li>
+                        <li>For a 20 µL final mixture with 4X loading dye at 1X final concentration, use <strong>5 µL of 4X dye</strong> and <strong>5 µL buffer</strong>, in addition to the 10 µL sample.</li>
+                    </ol>
+                    <p class="text-sm text-slate-600 mt-3">Before using a calculated recipe, check blank subtraction, replicate variation, standard-curve residuals, sample dilution factors, and the assay's accepted range. A good-looking R² alone does not validate the measurement.</p>
+                </div>
+
                 <h3 class="text-xl font-headline font-bold text-slate-900 mt-8 mb-3">3. Preparing the Western Blot Loading Mixture</h3>
                 <p>Once the concentration is determined, calculating the exact pipetting volumes for the SDS-PAGE loading mixture is highly prone to human error. The mixture requires three components to reach a fixed Total Volume:</p>
                 <ul class="list-disc pl-5 mt-2 space-y-2">
