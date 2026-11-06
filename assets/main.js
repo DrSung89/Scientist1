@@ -474,11 +474,11 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
                 }
 
                 if (reqVol > maxSampleVol) {
-                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
+                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
                     finalSampleVol = maxSampleVol; 
                     bufVol = 0;
                 } else if (reqVol < 0 || conc < 0) {
-                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
+                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
                     finalSampleVol = 0;
                     bufVol = maxSampleVol;
                 }
