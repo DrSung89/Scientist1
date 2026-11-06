@@ -270,14 +270,14 @@
                             <span class="material-symbols-outlined">warning</span> Why Simple Weight Scaling is Dangerous
                         </h3>
                         <p class="text-sm leading-relaxed text-amber-800 font-light">
-                            Historically, researchers scaled doses directly by body weight (mg/kg). For example, if a 20g mouse tolerated 10 mg/kg, they assumed a 60kg human could also tolerate 10 mg/kg. <strong class="font-bold">This is scientifically inaccurate and highly dangerous.</strong> Smaller animals have much higher basal metabolic rates and clear drugs significantly faster than larger animals. To account for this metabolic disparity, the FDA mandates that dose translation must be normalized to <strong>Body Surface Area (BSA)</strong>, not just total body mass.
+                            Comparing animal and human doses on a simple mg/kg basis can be misleading because species differ in physiology, pharmacokinetics, and sensitivity to a drug. For many systemically administered therapeutics, the FDA's 2005 guidance describes body-surface-area (BSA) normalization as the standard approach for estimating a human-equivalent dose (HED) from an animal NOAEL when other information is not available. However, this is a <strong>nonbinding recommendation for estimating a maximum recommended starting dose in initial trials in adult healthy volunteers</strong>—not a universal rule for every drug, route, modality, or patient population. The guidance explicitly allows scientifically justified alternative approaches.
                         </p>
                     </div>
 
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-4">The Allometric Scaling Formula</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-6">
-                            To simplify BSA calculations, the FDA introduced the <strong class="text-on-surface font-medium">$K_m$ factor</strong> (where $K_m = \text{Body Weight (kg)} \div \text{BSA (m}^2\text{)}$). By dividing the animal's $K_m$ by the human's $K_m$, we get an accurate conversion ratio.
+                            The FDA guidance provides standardized <strong class="text-on-surface font-medium">$K_m$ factors</strong> for converting doses between species (where $K_m = \text{Body Weight (kg)} \div \text{BSA (m}^2\text{)}$). The ratio of the animal and human $K_m$ factors gives an estimated HED in mg/kg; it is a scaling estimate, not a prediction of equivalent exposure or clinical efficacy. See the FDA's <a class="text-primary underline" href="https://www.fda.gov/files/drugs/published/Estimating-the-Maximum-Safe-Starting-Dose-in-Initial-Clinical-Trials-for-Therapeutics-in-Adult-Healthy-Volunteers.pdf" target="_blank" rel="noopener noreferrer">guidance on estimating the maximum safe starting dose</a> for the scope, assumptions, and exceptions.
                         </p>
                         
                         <div class="bg-surface-container-lowest p-8 rounded-lg border-l-4 border-primary shadow-sm flex flex-col items-center justify-center overflow-x-auto">
@@ -286,6 +286,9 @@
                             </div>
                             <p class="text-xs text-outline font-light text-center">
                                 <em>*Common $K_m$ values: Mouse (3), Rat (6), Dog (20), Adult Human (37).</em>
+                            </p>
+                            <p class="text-sm text-on-surface-variant leading-relaxed mt-6">
+                                <strong>Important:</strong> This calculator performs the interspecies scaling step only. In the FDA's healthy-volunteer starting-dose framework, the HED is derived from an appropriate animal NOAEL, the most relevant species is selected, and a safety factor is applied to determine the maximum recommended starting dose (MRSD). Do not use the calculator output alone as a human starting dose or as a dose recommendation for patients. Route of administration, target engagement, pharmacology, toxicology, exposure, and product-specific factors may require a different approach.
                             </p>
                         </div>
                     </div>
