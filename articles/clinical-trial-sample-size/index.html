@@ -108,12 +108,46 @@
                 </section>
             </div>
 
+                <section class="mt-10 rounded-xl border border-slate-200 bg-white p-6">
+                    <h2 class="text-2xl font-headline font-bold text-slate-900 mb-4">5. A Practical Framework for Selecting a Phase II Design</h2>
+                    <p class="mb-4">Start with the clinical question and primary estimand—not with a preferred sample-size formula. The table below is a planning aid for common oncology development settings; it is not a substitute for protocol-specific statistical design.</p>
+                    <div class="overflow-x-auto mb-5">
+                        <table class="w-full text-sm border-collapse">
+                            <thead><tr class="bg-slate-100 text-left"><th class="p-3 border border-slate-200">Development question</th><th class="p-3 border border-slate-200">Design often considered</th><th class="p-3 border border-slate-200">What the design answers</th><th class="p-3 border border-slate-200">Key limitation to state</th></tr></thead>
+                            <tbody>
+                                <tr><td class="p-3 border border-slate-200">Is there enough preliminary activity to justify further study in a defined population?</td><td class="p-3 border border-slate-200">Single-arm, fixed-N exact binomial design</td><td class="p-3 border border-slate-200">Whether response data are inconsistent with a prespecified uninteresting response rate.</td><td class="p-3 border border-slate-200">Historical benchmarks may not be comparable; this does not estimate a randomized treatment effect.</td></tr>
+                                <tr><td class="p-3 border border-slate-200">Can an inactive regimen be stopped early while limiting exposure?</td><td class="p-3 border border-slate-200">Simon two-stage or another prespecified futility design</td><td class="p-3 border border-slate-200">Whether an interim response count crosses a continuation boundary, with operating characteristics controlled under stated assumptions.</td><td class="p-3 border border-slate-200">The interim rule, evaluability window, and handling of delayed responses must be operationally feasible and prespecified.</td></tr>
+                                <tr><td class="p-3 border border-slate-200">Is the experimental regimen promising relative to a concurrent control?</td><td class="p-3 border border-slate-200">Randomized Phase II design</td><td class="p-3 border border-slate-200">A comparative estimate of treatment effect against the selected control under the trial's randomization and analysis plan.</td><td class="p-3 border border-slate-200">The control, allocation ratio, endpoint, and target effect drive sample size; a single-arm response-rate formula is not interchangeable.</td></tr>
+                                <tr><td class="p-3 border border-slate-200">Is the signal primarily a delay in progression or another time-to-event outcome?</td><td class="p-3 border border-slate-200">Event-driven time-to-event design</td><td class="p-3 border border-slate-200">A comparison based on the planned number of events under assumptions about the hazard ratio and event process.</td><td class="p-3 border border-slate-200">Enrollment is not determined by the hazard ratio alone; accrual, follow-up, censoring, event rate, and analysis timing matter.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-3">Protocol design worksheet</h3>
+                    <ol class="list-decimal pl-5 space-y-2 mb-4">
+                        <li><strong>Define the question and population.</strong> Specify disease subtype, line of therapy, eligibility criteria, treatment setting, and intended population.</li>
+                        <li><strong>Lock the primary endpoint and estimand.</strong> State what counts as a response or event, the assessment window, analysis population, and how missing, unevaluable, or early-discontinued participants are handled.</li>
+                        <li><strong>Justify the null and target values.</strong> For a single-arm activity design, explain why the null response rate (p₀) is clinically uninteresting and why the target rate (p₁) would justify further development. Support both with comparable evidence.</li>
+                        <li><strong>Choose error rates and operating characteristics.</strong> Prespecify type I error (α), power (1 − β), and whether the design is one- or two-sided. Explain why those choices fit the decision.</li>
+                        <li><strong>Specify interim rules before enrollment.</strong> For a two-stage design, document stage sizes, response-count boundaries, timing, data maturity, and whether stopping is for futility only or also for efficacy.</li>
+                        <li><strong>Translate evaluable sample size into enrollment.</strong> Account for expected non-evaluability, withdrawal, and time needed to observe the endpoint. An arbitrary dropout percentage is not a substitute for an endpoint-specific evaluability plan.</li>
+                        <li><strong>Check safety and feasibility separately.</strong> A design powered for efficacy may still be too small to characterize uncommon toxicities. Review exposure, follow-up duration, monitoring, and whether a safety expansion is needed.</li>
+                        <li><strong>Document the decision rule and next step.</strong> State what result would support stop, revise, expand, or proceed—and what uncertainty remains even if the statistical threshold is met.</li>
+                    </ol>
+                    <div class="rounded-lg bg-slate-50 border border-slate-200 p-4">
+                        <p class="font-semibold text-slate-800 mb-2">Simon optimal vs. minimax</p>
+                        <p class="text-sm text-slate-700">Both are two-stage designs with prespecified error constraints, but they optimize different objectives. The optimal design minimizes expected sample size when the true response rate is at the null level; the minimax design minimizes the maximum possible sample size. The preferred design depends on whether expected enrollment under an inactive treatment or maximum enrollment burden is the more important operational constraint. Neither is universally best.</p>
+                    </div>
+                    <p class="text-sm text-slate-600 mt-4">FDA's oncology master-protocol guidance recommends considering designs such as Simon two-stage designs in nonrandomized activity-estimating studies with response rate as the primary endpoint, while allowing other approaches when their rationale and statistical analysis plan are adequately described. The appropriate design remains specific to the development question and should be reviewed by a qualified trial statistician.</p>
+                </section>
             <footer class="mt-16 pt-8 border-t border-outline-variant/30">
                 <p class="text-sm text-slate-600 mb-6">Editorial note: This article interprets published research and cited sources. See our <a class="text-primary underline" href="../../about/#editorial-policy">editorial and correction policy</a> for how we approach source selection, scientific interpretation, and reported errors.</p>
                 <h3 class="text-lg font-headline font-bold text-slate-900 mb-4">References</h3>
                 <ol class="list-decimal pl-5 text-sm text-slate-500 space-y-2">
                     <li>Wang, E. S., et al. (2025). <a href="https://doi.org/10.1200/JCO-25-01694" target="_blank" rel="noopener noreferrer">Ziftomenib in Relapsed or Refractory NPM1-Mutated AML</a>. <em>Journal of Clinical Oncology</em>, 43(31), 3381–3390. DOI: 10.1200/JCO-25-01694.</li>
                     <li>Issa, G. C., et al. (2024). <a href="https://doi.org/10.1200/JCO.24.00826" target="_blank" rel="noopener noreferrer">Menin Inhibition With Revumenib for KMT2A-Rearranged Relapsed or Refractory Acute Leukemia (AUGMENT-101)</a>. <em>Journal of Clinical Oncology</em>, 43(1), 75–84. DOI: 10.1200/JCO.24.00826.</li>
+                    <li>Simon, R. (1989). <a href="https://doi.org/10.1016/0197-2456(89)90015-9" target="_blank" rel="noopener noreferrer">Optimal two-stage designs for phase II clinical trials</a>. <em>Controlled Clinical Trials</em>, 10(1), 1–10.</li>
+                    <li>U.S. Food and Drug Administration. (2022). <a href="https://www.fda.gov/media/120721/download" target="_blank" rel="noopener noreferrer">Master Protocols: Efficient Clinical Trial Design Strategies to Expedite Development of Oncology Drugs and Biologics</a>. Guidance for Industry.</li>
+                    <li>National Cancer Institute Investigational Drug Steering Committee Clinical Trial Design Task Force. (2010). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2840069/" target="_blank" rel="noopener noreferrer">The Design of Phase II Clinical Trials Testing Cancer Therapeutics: Consensus Recommendations</a>. <em>Clinical Cancer Research</em>, 16(6), 1764–1770.</li>
                 </ol>
             </footer>
         </article>
