@@ -415,6 +415,8 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
                 if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
                 return;
             }
+            const minStandardOD = Math.min(...ods);
+            const maxStandardOD = Math.max(...ods);
             const n = concs.length;
             const sumX = concs.reduce((a, b) => a + b, 0);
             const sumY = ods.reduce((a, b) => a + b, 0);
@@ -466,13 +468,17 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
                 let bufVol = maxSampleVol - reqVol;
                 let warnMsg = '';
                 let finalSampleVol = reqVol;
+                if (od < minStandardOD || od > maxStandardOD) {
+                    const direction = od < minStandardOD ? 'Below' : 'Above';
+                    warnMsg += `<br><span style="color:#b45309; font-size:0.8em; font-weight:bold;">${direction} standard OD range: extrapolated estimate; dilute/reassay within validated range.</span>`;
+                }
 
                 if (reqVol > maxSampleVol) {
-                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
+                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
                     finalSampleVol = maxSampleVol; 
                     bufVol = 0;
                 } else if (reqVol < 0 || conc < 0) {
-                    warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
+                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
                     finalSampleVol = 0;
                     bufVol = maxSampleVol;
                 }
