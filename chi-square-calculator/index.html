@@ -249,7 +249,7 @@
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-4">2. Moving Beyond the P-Value: Cramér's V</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-4">
-                            Modern statistical reporting requires more than just a P-value. A P-value only tells you if a relationship exists, but <strong>Cramér's V</strong> (an effect size measurement for nominal data) tells you <em>how strong</em> that relationship is.
+                            Modern statistical reporting requires more than just a P-value. The P-value summarizes how incompatible the observed table is with the null hypothesis of independence, under the test assumptions; it does not measure the size or practical importance of an association. <strong>Cramér's V</strong> is an effect-size measure that describes the strength of association, while its interpretation depends on the table dimensions, study context, and field-specific conventions.
                         </p>
                         <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/30 space-y-3 text-sm font-medium">
                             <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> <span class="text-on-surface-variant"><strong>0.1 to 0.3:</strong> Weak Association</span></div>
@@ -263,7 +263,7 @@
                         <div class="space-y-6">
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why did I get a warning about "Expected counts < 5"?</h4>
-                                <p class="text-on-surface-variant font-light leading-relaxed">This is a fundamental limitation of the Pearson Chi-Square test. The mathematical distribution it relies on becomes highly inaccurate if any single cell's expected frequency drops below 5. This usually happens when your overall sample size is very small, or if one of the outcomes is extremely rare. In these cases, you must report the P-value from <strong>Fisher's Exact Test</strong> instead.</p>
+                                <p class="text-on-surface-variant font-light leading-relaxed">Small expected counts can make the usual asymptotic Pearson Chi-Square P-value unreliable, but an expected count below 5 is a warning threshold—not an automatic rule that makes the test invalid in every setting. Review the full expected-count pattern and study design. For a 2×2 table with sparse data, <strong>Fisher's Exact Test</strong> is a commonly used alternative; depending on the design, an exact or Monte Carlo method may also be appropriate. This calculator reports the Pearson Chi-Square result and does not calculate Fisher's Exact Test, so use a suitable exact-test tool or statistical software when needed.</p>
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use percentages instead of raw counts?</h4>
