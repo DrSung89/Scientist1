@@ -152,7 +152,10 @@ test('rejects a standard curve with a negative slope', () => {
 });
 
 test('does not generate a loading recipe for non-positive estimated concentrations', () => {
-  const result = calculate({ 'prot-sample-od': '0.05' });
+  const result = calculate({
+    'prot-std-od': '0.3, 0.1, 0.5',
+    'prot-sample-od': '0.15'
+  });
   assert.match(result, /Non-positive concentration estimate: no loading recipe generated/i);
 });
 
