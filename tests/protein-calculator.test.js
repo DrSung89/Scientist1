@@ -164,7 +164,7 @@ test('does not present a partial recipe when the target mass exceeds available s
   });
   assert.match(result, /Target mass cannot fit in the selected final volume/i);
   assert.match(result, /maximum loadable mass/i);
-  assert.match(result, /<td>—<\/td>/);
+  assert.match(result, /<strong>—<\/strong>/);
 });
 
 test('warns that two standard points cannot assess calibration linearity', () => {
