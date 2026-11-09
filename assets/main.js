@@ -425,8 +425,8 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
             
             const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
             const intercept = (sumY - slope * sumX) / n;
-            if (!Number.isFinite(slope) || slope === 0 || !Number.isFinite(intercept)) {
-                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 The standards do not produce a valid non-zero linear slope. Check the standard concentrations and O.D. values.</span>";
+            if (!Number.isFinite(slope) || slope <= 0 || !Number.isFinite(intercept)) {
+                resDiv.innerHTML = "<span style='color:#b91c1c; background:#fee2e2; padding:10px; display:block; border-radius:4px;'>🚨 The standards do not produce a valid positive linear slope. Check the standard concentrations, O.D. values, blank correction, and assay setup.</span>";
                 resDiv.style.display = 'block';
                 if(resDiv.classList.contains('hidden')) resDiv.classList.remove('hidden');
                 return;
@@ -443,8 +443,10 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
             }
             const r2 = 1 - (ssRes / ssTot);
 
-            const r2Color = r2 >= 0.95 ? '#065f46' : '#b91c1c';
-            const r2Warning = r2 < 0.95 ? '<br><span style="color:#b91c1c; font-size:0.85em;">⚠️ R² < 0.95: Review standards, assay range, pipetting, and assay conditions.</span>' : '';
+            const r2Color = n === 2 ? '#b45309' : (r2 >= 0.95 ? '#065f46' : '#b91c1c');
+            const r2Warning = n === 2
+                ? '<br><span style="color:#b45309; font-size:0.85em;">⚠️ Only two standards were entered: a straight line is forced through two points, so R² cannot assess linearity. Use additional standards across the intended working range.</span>'
+                : (r2 < 0.95 ? '<br><span style="color:#b91c1c; font-size:0.85em;">⚠️ R² < 0.95: Review standards, assay range, pipetting, and assay conditions.</span>' : '');
 
             html += repNotice;
             html += `<div style="margin-bottom:15px; padding:15px; background:#f8fafc; border-left:4px solid #3b82f6; border-radius:4px;">
@@ -464,39 +466,43 @@ function smartFormat(v,u,t){if(isNaN(v)||v===0)return`0.000 ${u}`;const f={'L':1
 
             samples.forEach((od, i) => {
                 const conc = (od - intercept) / slope;
-                const reqVol = tMass / conc;
-                let bufVol = maxSampleVol - reqVol;
+                const outsideRange = od < minStandardOD || od > maxStandardOD;
+                const estimateValid = !outsideRange && Number.isFinite(conc) && conc > 0;
                 let warnMsg = '';
-                let finalSampleVol = reqVol;
-                if (od < minStandardOD || od > maxStandardOD) {
+                let recipeReady = false;
+                let finalSampleVol = 0;
+                let bufVol = maxSampleVol;
+
+                if (outsideRange) {
                     const direction = od < minStandardOD ? 'Below' : 'Above';
-                    warnMsg += `<br><span style="color:#b45309; font-size:0.8em; font-weight:bold;">${direction} standard OD range: extrapolated estimate; dilute/reassay within validated range.</span>`;
+                    warnMsg = `<br><span style="color:#b45309; font-size:0.8em; font-weight:bold;">${direction} standard OD range: no loading recipe generated. Dilute or adjust the sample and re-assay within the validated range.</span>`;
+                } else if (!Number.isFinite(conc) || conc <= 0) {
+                    warnMsg = '<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Non-positive concentration estimate: no loading recipe generated. Check blank correction and standards.</span>';
+                } else {
+                    const reqVol = tMass / conc;
+                    if (!Number.isFinite(reqVol) || reqVol > maxSampleVol) {
+                        const maxLoadableMass = conc * maxSampleVol;
+                        warnMsg = `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Target mass cannot fit in the selected final volume. Required sample volume: ${Number.isFinite(reqVol) ? reqVol.toFixed(2) : 'not finite'} µL; available: ${maxSampleVol.toFixed(2)} µL; maximum loadable mass: ${maxLoadableMass.toFixed(2)} µg. Increase total volume or reduce target mass.</span>`;
+                    } else {
+                        recipeReady = true;
+                        finalSampleVol = reqVol;
+                        bufVol = maxSampleVol - reqVol;
+                    }
                 }
 
-                if (reqVol > maxSampleVol) {
-                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Over Vol!</span>`;
-                    finalSampleVol = maxSampleVol; 
-                    bufVol = 0;
-                } else if (reqVol < 0 || conc < 0) {
-                    warnMsg += `<br><span style="color:#b91c1c; font-size:0.8em; font-weight:bold;">Too Dilute</span>`;
-                    finalSampleVol = 0;
-                    bufVol = maxSampleVol;
-                }
-
-                // [추가됨] Replicates 값 곱하기
-                const finalSampleDisp = finalSampleVol * reps;
-                const finalBufDisp = bufVol * reps;
-                const finalDyeDisp = dyeVol * reps;
-                const finalTotDisp = tVol * reps;
+                const finalSampleDisp = recipeReady ? finalSampleVol * reps : null;
+                const finalBufDisp = recipeReady ? bufVol * reps : null;
+                const finalDyeDisp = recipeReady ? dyeVol * reps : null;
+                const finalTotDisp = recipeReady ? tVol * reps : null;
 
                 html += `<tr>
                     <td contenteditable="true" class="editable-cell font-bold text-primary" style="outline:none;">Sample ${i + 1}</td>
                     <td>${od}</td>
-                    <td>${Math.max(0, conc).toFixed(2)}</td>
-                    <td style="color:#2563eb; font-weight:bold;">${finalSampleDisp.toFixed(2)} ${warnMsg}</td>
-                    <td style="color:#059669;">${finalBufDisp.toFixed(2)}</td>
-                    <td style="color:#d97706;">${finalDyeDisp.toFixed(2)}</td>
-                    <td><strong>${finalTotDisp.toFixed(2)}</strong></td>
+                    <td>${estimateValid ? conc.toFixed(2) : '—'}</td>
+                    <td style="color:#2563eb; font-weight:bold;">${recipeReady ? finalSampleDisp.toFixed(2) : '—'} ${warnMsg}</td>
+                    <td style="color:#059669;">${recipeReady ? finalBufDisp.toFixed(2) : '—'}</td>
+                    <td style="color:#d97706;">${recipeReady ? finalDyeDisp.toFixed(2) : '—'}</td>
+                    <td><strong>${recipeReady ? finalTotDisp.toFixed(2) : '—'}</strong></td>
                 </tr>`;
             });
             html += `</table>`;

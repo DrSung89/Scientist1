@@ -138,3 +138,43 @@ test('allows zero and negative blank O.D. when blank-corrected sample values are
   assert.match(negativeBlank, /Reference O\.D\. \(Most dilute sample\) = <strong>0\.0200<\/strong>/);
   assert.doesNotMatch(negativeBlank, /valid numeric Blank O\.D\. value/i);
 });
+
+
+test('does not generate a loading recipe for sample O.D. values outside the entered standard range', () => {
+  const result = calculate({ 'prot-sample-od': '0.8' });
+  assert.match(result, /Above standard OD range: no loading recipe generated/i);
+  assert.match(result, /<td>—<\/td>/);
+});
+
+test('rejects a standard curve with a negative slope', () => {
+  const result = calculate({ 'prot-std-od': '0.5, 0.3, 0.1' });
+  assert.match(result, /valid positive linear slope/i);
+});
+
+test('does not generate a loading recipe for non-positive estimated concentrations', () => {
+  const result = calculate({
+    'prot-std-od': '0.3, 0.1, 0.5',
+    'prot-sample-od': '0.15'
+  });
+  assert.match(result, /Non-positive concentration estimate: no loading recipe generated/i);
+});
+
+test('does not present a partial recipe when the target mass exceeds available sample volume', () => {
+  const result = calculate({
+    'prot-target-mass': '100',
+    'prot-total-vol': '20',
+    'prot-sample-od': '0.3'
+  });
+  assert.match(result, /Target mass cannot fit in the selected final volume/i);
+  assert.match(result, /maximum loadable mass/i);
+  assert.match(result, /<strong>—<\/strong>/);
+});
+
+test('warns that two standard points cannot assess calibration linearity', () => {
+  const result = calculate({
+    'prot-std-conc': '0, 1',
+    'prot-std-od': '0.1, 0.3'
+  });
+  assert.match(result, /Only two standards were entered/i);
+  assert.match(result, /R² cannot assess linearity/i);
+});
