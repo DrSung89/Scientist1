@@ -144,7 +144,7 @@
         <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
             <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Data Quality Control</span>
             <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Outlier Detector (IQR & Grubb's)</h1>
-            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Automatically detect and remove statistical outliers from your datasets before hypothesis testing.</p>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Screen potential outliers in your datasets before hypothesis testing; flagged observations require scientific review and are not automatically removed.</p>
             <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Science is a journey of resilience. Keep going. 🚀</p>
         </section>
 
@@ -162,11 +162,11 @@
                 <div class="mb-5">
                     <label for="outlier-method" class="block font-headline text-sm font-bold text-on-surface mb-2">Detection method</label>
                     <select id="outlier-method" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
-                        <option value="auto">Automatic suggestion (normality screen)</option>
+                        <option value="auto">IQR rule (default exploratory screening)</option>
                         <option value="grubbs">Grubbs' test (one candidate; approximately normal data)</option>
                         <option value="iqr">IQR rule (1.5 × IQR; exploratory screening)</option>
                     </select>
-                    <p class="text-on-surface-variant text-xs mt-2">Automatic mode is only a screening suggestion. Choose a method based on your study plan and assumptions; a flagged value is not automatically invalid.</p>
+                    <p class="text-on-surface-variant text-xs mt-2">The default mode uses the IQR rule for exploratory screening. Grubbs’ test is available when its approximate-normality assumption is justified. A flagged value is not automatically invalid.</p>
                 </div>
 
                 <button id="check-outliers" class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
@@ -201,7 +201,7 @@
                     <div>
                         <h3 class="text-xl font-headline font-bold text-primary mb-3">1. Normality Screening and Its Limits</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed">
-                            In automatic mode, datasets with at least 8 observations receive a D'Agostino–Pearson omnibus normality screen. A p-value ≥ 0.05 does not prove normality; it only means this test did not find sufficient evidence against it. With fewer than 8 observations, normality is not assessed and automatic mode uses IQR screening. You can also choose Grubbs' test or the IQR rule explicitly. The selected method should follow the study design and analysis plan, not be chosen solely to produce a preferred result.
+                            Datasets with at least 8 observations receive a D'Agostino–Pearson omnibus normality diagnostic. A p-value ≥ 0.05 does not prove normality; it only means this test did not find sufficient evidence against it. With fewer than 8 observations, this diagnostic is not assessed. The default outlier-screening method is the IQR rule; Grubbs' test can be selected separately when its approximate-normality assumption is justified. Do not select a method solely to produce a preferred result.
                         </p>
                     </div>
 
