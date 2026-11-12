@@ -4,8 +4,11 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 const source = fs.readFileSync('assets/main.js', 'utf8');
+const outlierPage = fs.readFileSync('outlier-detector/index.html', 'utf8');
+const homePage = fs.readFileSync('index.html', 'utf8');
+const helpPage = fs.readFileSync('help/index.html', 'utf8');
 
-function runOutlierCalculator(values, jStat, requestedMethod = 'auto') {
+function runOutlierCalculator(values, jStat, requestedMethod = 'iqr') {
   let onReady;
   let onClick;
   const input = { value: values.join(',') };
@@ -86,10 +89,21 @@ test('identical observations return a zero-standard-deviation warning', () => {
   assert.match(html, /SD is 0/);
 });
 
-test('manual IQR selection overrides automatic normality routing', () => {
+test('explicit IQR selection reports the exploratory screening method', () => {
   const jStat = { chisquare: { cdf: () => 0 }, studentt: { inv: () => 2.5 } };
   const html = runOutlierCalculator([0, 1, 2, 3, 4, 5, 6, 30], jStat, 'iqr');
   assert.match(html, /Method: IQR \(1\.5×\)/);
+});
+
+test('outlier UI and guidance describe the available methods without promising automatic routing', () => {
+  const options = [...outlierPage.matchAll(/<option value="([^"]+)">/g)];
+  assert.deepEqual(options.map(option => option[1]), ['iqr', 'grubbs']);
+  assert.match(outlierPage, /IQR rule is the default exploratory screen/);
+  assert.match(outlierPage, /does not select a method for you/);
+  assert.match(homePage, /normality diagnostic alongside IQR screening/);
+  assert.doesNotMatch(homePage, /routes to Grubb/i);
+  assert.match(helpPage, /does not automatically select an outlier method/);
+  assert.doesNotMatch(helpPage, /In automatic mode, .* routed to Grubbs/i);
 });
 
 test('manual Grubbs selection is available when small-sample normality is not assessed', () => {
