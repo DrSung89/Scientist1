@@ -40,7 +40,7 @@ test('small samples do not display a fabricated normality p-value and use IQR sc
 
 test('Grubbs mode flags no more than one candidate in a single run', () => {
   const jStat = { chisquare: { cdf: () => 0 }, studentt: { inv: () => 2.5 } };
-  const html = runOutlierCalculator([0, 1, 2, 3, 4, 5, 6, 30], jStat);
+  const html = runOutlierCalculator([0, 1, 2, 3, 4, 5, 6, 30], jStat, 'grubbs');
   assert.match(html, /Method: Grubb's Test/);
   assert.match(html, /Outlier: 30/);
   assert.doesNotMatch(html, /Outlier: 0, 30|Outlier: 30, 0/);
@@ -102,5 +102,5 @@ test('manual Grubbs selection is available when small-sample normality is not as
 test('large-sample Grubbs fallback uses a conservative critical value without jStat', () => {
   const values = Array.from({ length: 200 }, (_, i) => i + 1);
   const html = runOutlierCalculator(values, undefined, 'grubbs');
-  assert.match(html, /Critical G: 3\.61/);
+  assert.match(html, /Critical G: 3\.606/);
 });
