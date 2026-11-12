@@ -46,6 +46,36 @@ test('Grubbs mode flags no more than one candidate in a single run', () => {
   assert.doesNotMatch(html, /Outlier: 0, 30|Outlier: 30, 0/);
 });
 
+
+test('D’Agostino-Pearson matches SciPy 1.17 reference for symmetric N=8 data', () => {
+  const html = runOutlierCalculator([1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.match(html, /Normality P-value: <strong>0\.427<\/strong>/);
+  assert.match(html, /Method: IQR \(1\.5×\)/);
+});
+
+test('D’Agostino-Pearson matches SciPy 1.17 reference near alpha=0.05', () => {
+  const html = runOutlierCalculator(Array.from({ length: 30 }, (_, i) => i + 1));
+  assert.match(html, /Normality P-value: <strong>0\.039<\/strong>/);
+  // A normality diagnostic must not automatically select Grubbs.
+  assert.match(html, /Method: IQR \(1\.5×\)/);
+  assert.doesNotMatch(html, /Method: Grubb's Test/);
+});
+
+test('D’Agostino-Pearson matches SciPy 1.17 reference for skewed observations', () => {
+  const values = [1,1,1,1,2,2,2,3,3,3,4,4,5,5,6,7,8,9,10,12,14,16,18,21,25,30,36,43,51,60];
+  const html = runOutlierCalculator(values);
+  assert.match(html, /Normality P-value: <strong>0\.001<\/strong>/);
+  assert.match(html, /Method: IQR \(1\.5×\)/);
+});
+
+test('Grubbs fallback does not claim a negative result beyond its validated table', () => {
+  const values = Array.from({ length: 1001 }, (_, i) => i + 1);
+  const html = runOutlierCalculator(values, undefined, 'grubbs');
+  assert.match(html, /Critical value unavailable for this sample size/);
+  assert.match(html, /Test not evaluated/);
+  assert.doesNotMatch(html, /No Outliers Detected/);
+});
+
 test('invalid entries are rejected rather than silently ignored', () => {
   const html = runOutlierCalculator([1, 2, NaN]);
   assert.match(html, /Use only valid numbers/);
