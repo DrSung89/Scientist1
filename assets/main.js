@@ -244,6 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${tipText}
                     </div>`;
                 }
+            } else if (methodUsed.includes("not evaluated")) {
+                html += `<div style="background:#fff7ed; padding:10px; border-radius:4px; color:#9a3412; text-align:center; font-weight:bold;">⚠️ Test not evaluated. The critical value is unavailable for this sample size when the statistics library is unavailable.</div>`;
             } else {
                 html += `<div style="background:#ecfdf5; padding:10px; border-radius:4px; color:#065f46; text-align:center; font-weight:bold;">✅ No Outliers Detected</div>`;
             }
