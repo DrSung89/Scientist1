@@ -65,61 +65,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function testNormalityDP(data) {
         const n = data.length;
-        // Do not fabricate a normality-test p-value for small samples.
         if (n < 8) return { p: null, reason: 'small-sample' };
 
         const mean = stat.mean(data);
-        const sd = stat.sd(data, mean);
-        if (sd === 0) return { p: 1 }; 
-        
-        // Z1 (왜도 변환)
-        const g1 = stat.skewness(data, mean, sd);
-        const y_skew = g1 * Math.sqrt(((n + 1) * (n + 3)) / (6 * (n - 2)));
-        const beta2_skew = (3 * (n*n + 27*n - 70) * (n+1) * (n+3)) / ((n-2) * (n+5) * (n+7) * (n+9));
-        const w2_skew = -1 + Math.sqrt(2 * (beta2_skew - 1));
-        const delta_skew = 1 / Math.sqrt(0.5 * Math.log(w2_skew));
-        const alpha_skew = Math.sqrt(2 / (w2_skew - 1));
-        const z1 = delta_skew * Math.log(y_skew / alpha_skew + Math.sqrt(Math.pow(y_skew / alpha_skew, 2) + 1));
-
-        // Z2 (첨도 변환)
-        const g2 = stat.kurtosis(data, mean, sd);
-        const mean_g2 = (-6 * (n - 1)) / ((n + 1) * (n + 3));
-        const var_g2 = (24 * n * (n - 2) * (n - 3)) / (Math.pow(n + 1, 2) * (n + 3) * (n + 5));
-        const x_kurt = (g2 - mean_g2) / Math.sqrt(var_g2);
-        const root_beta1_kurt = (6 * (n*n - 5*n + 2)) / ((n + 7) * (n + 9)) * Math.sqrt((6 * (n + 3) * (n + 5)) / (n * (n - 2) * (n - 3)));
-        const a_kurt = 6 + (8 / root_beta1_kurt) * (2 / root_beta1_kurt + Math.sqrt(1 + 4 / Math.pow(root_beta1_kurt, 2)));
-        
-        const W = 1 + x_kurt * Math.sqrt(2 / (a_kurt - 4));
-        let z2 = 0;
-        
-        if (W > 0) {
-            const term1 = 1 - 2 / (9 * a_kurt);
-            const term2 = Math.cbrt((1 - 2 / a_kurt) / W); 
-            z2 = Math.sqrt(9 * a_kurt / 2) * (term1 - term2);
-        } else {
-            z2 = 10; 
+        let m2 = 0, m3 = 0, m4 = 0;
+        for (const value of data) {
+            const deviation = value - mean;
+            const square = deviation * deviation;
+            m2 += square;
+            m3 += square * deviation;
+            m4 += square * square;
         }
+        m2 /= n; m3 /= n; m4 /= n;
+        if (m2 === 0) return { p: 1, statistic: 0 };
 
-        // K-squared 통계량 및 P-value
-        const k2 = Math.pow(z1, 2) + Math.pow(z2, 2);
-        let p = 1 - chiSquareCDF(k2, 2);
-        
-        if (!isFinite(p) || p < 0) p = 0;
-        if (p > 1) p = 1;
+        // Match the biased central-moment definitions used by SciPy's
+        // skewtest/kurtosistest and the D'Agostino-Pearson omnibus test.
+        const biasedSkew = m3 / Math.pow(m2, 1.5);
+        let y = biasedSkew * Math.sqrt(((n + 1) * (n + 3)) / (6 * (n - 2)));
+        const beta2Skew = (3 * (n*n + 27*n - 70) * (n+1) * (n+3)) /
+            ((n-2) * (n+5) * (n+7) * (n+9));
+        const w2Skew = -1 + Math.sqrt(2 * (beta2Skew - 1));
+        const deltaSkew = 1 / Math.sqrt(0.5 * Math.log(w2Skew));
+        const alphaSkew = Math.sqrt(2 / (w2Skew - 1));
+        // SciPy's skewtest convention when sample skewness is exactly zero.
+        if (y === 0) y = 1;
+        const z1 = deltaSkew * Math.log(y / alphaSkew + Math.sqrt((y / alphaSkew) ** 2 + 1));
 
-        return { p: p };
+        // Anscombe-Glynn transform uses biased Pearson kurtosis, not
+        // unbiased Fisher excess kurtosis.
+        const pearsonKurtosis = m4 / (m2 * m2);
+        const meanKurtosis = (3 * (n - 1)) / (n + 1);
+        const varianceKurtosis = (24 * n * (n - 2) * (n - 3)) /
+            ((n + 1) * (n + 1) * (n + 3) * (n + 5));
+        const xKurtosis = (pearsonKurtosis - meanKurtosis) / Math.sqrt(varianceKurtosis);
+        const rootBeta1 = (6 * (n*n - 5*n + 2) / ((n + 7) * (n + 9))) *
+            Math.sqrt((6 * (n + 3) * (n + 5)) / (n * (n - 2) * (n - 3)));
+        const aKurtosis = 6 + (8 / rootBeta1) *
+            (2 / rootBeta1 + Math.sqrt(1 + 4 / (rootBeta1 * rootBeta1)));
+        const denominator = 1 + xKurtosis * Math.sqrt(2 / (aKurtosis - 4));
+        if (denominator === 0) return { p: null, reason: 'numerical-boundary' };
+        const term1 = 1 - 2 / (9 * aKurtosis);
+        const term2 = Math.sign(denominator) *
+            Math.pow((1 - 2 / aKurtosis) / Math.abs(denominator), 1 / 3);
+        const z2 = (term1 - term2) / Math.sqrt(2 / (9 * aKurtosis));
+
+        const k2 = z1 * z1 + z2 * z2;
+        // Chi-square survival function for df=2 is exactly exp(-K2/2).
+        const p = Math.exp(-k2 / 2);
+        return { p: Number.isFinite(p) ? Math.min(1, Math.max(0, p)) : null, statistic: k2 };
     }
-
     // ====================================================
     // 2. Outlier Checker 
     // ====================================================
     const outlierButton = document.getElementById('check-outliers');
     if (outlierButton) {
         // Two-sided Grubbs critical value at alpha = 0.05.
-        // Use the exact t-quantile formula when jStat is available; otherwise use conservative tabulated values.
+        // Use exact t quantiles when jStat is available; otherwise use upward-rounded fallback values.
         const grubbsTable = {
-            3: 1.1547, 4: 1.481, 5: 1.715, 6: 1.887, 7: 2.020, 8: 2.127, 9: 2.215, 10: 2.290,
-            12: 2.412, 15: 2.549, 20: 2.708, 30: 2.908, 50: 3.128, 100: 3.384, 150: 3.518, 200: 3.606, 500: 3.864, 1000: 4.041
+            3: 1.157, 4: 1.484, 5: 1.718, 6: 1.890, 7: 2.023, 8: 2.130, 9: 2.218, 10: 2.293,
+            12: 2.415, 15: 2.552, 20: 2.711, 30: 2.912, 50: 3.132, 100: 3.388, 150: 3.522, 200: 3.610, 500: 3.867, 1000: 4.044
         };
         const getGCrit = (n) => {
             if (typeof jStat !== 'undefined' && jStat.studentt && typeof jStat.studentt.inv === 'function') {
@@ -128,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const keys = Object.keys(grubbsTable).map(Number).sort((a,b)=>a-b);
             for (let k of keys) { if (n <= k) return grubbsTable[k]; }
-            return 4.5;
+            return null;
         };
 
         outlierButton.addEventListener('click', () => {
@@ -176,18 +181,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let methodUsed, outliers = [], thresholdInfo;
-            if (requestedMethod === 'grubbs' || (requestedMethod === 'auto' && isNormal)) {
+            if (requestedMethod === 'grubbs') {
                 methodUsed = "Grubb's Test";
                 const g_crit = getGCrit(n);
-                const g_max = (data[n-1] - mean) / sd;
-                const g_min = (mean - data[0]) / sd;
-                // Standard Grubbs' test evaluates one most-extreme observation per test.
-                if (Math.max(g_max, g_min) > g_crit) {
-                    outliers.push(g_max >= g_min ? data[n-1] : data[0]);
+                if (g_crit === null || !Number.isFinite(g_crit)) {
+                    thresholdInfo = 'Critical value unavailable for this sample size';
+                    methodUsed = "Grubbs' Test (not evaluated)";
+                } else {
+                    const g_max = (data[n-1] - mean) / sd;
+                    const g_min = (mean - data[0]) / sd;
+                    // Standard Grubbs' test evaluates one most-extreme observation per test.
+                    if (Math.max(g_max, g_min) > g_crit) {
+                        outliers.push(g_max >= g_min ? data[n-1] : data[0]);
+                    }
+                    thresholdInfo = `Critical G: ${g_crit.toFixed(3)}`;
                 }
-                thresholdInfo = `Critical G: ${g_crit.toFixed(2)}`;
             } else {
-                methodUsed = "IQR (1.5×)";
+                methodUsed = "IQR (1.5×) — exploratory default";
                 const q1 = stat.percentile(data, 0.25);
                 const q3 = stat.percentile(data, 0.75);
                 const iqr = q3 - q1;
