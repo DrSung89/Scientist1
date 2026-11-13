@@ -120,6 +120,15 @@ const pairedSandbox = {
 };
 vm.runInNewContext(extractFunction('calculatePairedTTest') + '\nglobalThis.calculatePairedTTest = calculatePairedTTest;', pairedSandbox);
 
+const oneSampleSandbox = {
+  Math,
+  getMean: (values) => values.reduce((sum, value) => sum + value, 0) / values.length,
+  getVariance: (values, mean) => values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (values.length - 1),
+  twoSidedStudentTPValue: sandbox.twoSidedStudentTPValue,
+  jStat: { studentt: { inv: (p, df) => (p === 0.025 && df === 4 ? -2.7764451051977987 : NaN) } }
+};
+vm.runInNewContext(extractFunction('calculateOneSampleTTest') + '\nglobalThis.calculateOneSampleTTest = calculateOneSampleTTest;', oneSampleSandbox);
+
 test('Student t two-sided p-values retain small-tail precision', () => {
   const actual = sandbox.twoSidedStudentTPValue(10, 10);
   const expected = regularizedBeta(10 / 110, 5, 0.5);
@@ -149,7 +158,7 @@ test('very small p-values display as a threshold, not 0.0000', () => {
 test('signed Cohen d preserves Group A minus Group B direction', () => {
   assert.equal(sandbox.calculateCohensD(4, 4), 2);
   assert.equal(sandbox.calculateCohensD(-4, 4), -2);
-  assert.match(html, /Welch's test remains the recommended default/);
+  assert.match(html, /Prefer Welch's test as the default/);
   assert.match(html, /choosing Student's or Welch's test based on a preliminary variance test can distort the overall error rate/);
 });
 
@@ -171,6 +180,63 @@ test('paired t-test rejects unequal pair counts and zero-variance differences', 
   assert.equal(pairedSandbox.calculatePairedTTest([1, 2, 3], [1, 2]), null);
   assert.equal(pairedSandbox.calculatePairedTTest([1, 2, 3], [0, 1, 2]), null);
   assert.equal(pairedSandbox.calculatePairedTTest([1], [0]), null);
+});
+
+test('one-sample t-test matches reference statistic, p-value, mean CI, and signed d', () => {
+  const result = oneSampleSandbox.calculateOneSampleTTest([2, 3, 4, 5, 6], 2);
+  const expectedT = 2 / Math.sqrt(0.5);
+  const expectedP = regularizedBeta(4 / (4 + expectedT ** 2), 2, 0.5);
+  assert.equal(result.n, 5);
+  assert.equal(result.df, 4);
+  assert.equal(result.mean, 4);
+  assert.ok(Math.abs(result.t - expectedT) < 1e-12);
+  assert.ok(Math.abs(result.pValue - expectedP) < 1e-12);
+  assert.ok(Math.abs(result.ciLow - 2.036756838522439) < 1e-12);
+  assert.ok(Math.abs(result.ciHigh - 5.9632431614775605) < 1e-12);
+  assert.ok(Math.abs(result.cohensD - (2 / Math.sqrt(2.5))) < 1e-12);
+});
+
+test('one-sample t-test rejects inadequate or zero-variance samples and invalid reference means', () => {
+  assert.equal(oneSampleSandbox.calculateOneSampleTTest([2], 0), null);
+  assert.equal(oneSampleSandbox.calculateOneSampleTTest([2, 2, 2], 0), null);
+  assert.equal(oneSampleSandbox.calculateOneSampleTTest([1, NaN, 3], 0), null);
+  assert.equal(oneSampleSandbox.calculateOneSampleTTest([1, 2, 3], Infinity), null);
+});
+
+test('one-sample analysis renders only its result and ignores the unused Group B field', () => {
+  const elements = new Map();
+  const getElementById = (id) => {
+    if (!elements.has(id)) elements.set(id, { value: '', innerText: '', innerHTML: '', style: { display: '' } });
+    return elements.get(id);
+  };
+  getElementById('group-a').value = '2, 3, 4, 5, 6';
+  getElementById('group-b').value = 'not used';
+  getElementById('reference-mean').value = '2';
+  getElementById('analysis-type').value = 'one-sample';
+  const alerts = [];
+  const context = {
+    Math, document: { getElementById }, alert: (message) => alerts.push(message),
+    jStat: { studentt: { cdf: (value, df) => referenceStudentTCdf(value, df), inv: () => -2.7764451051977987 } }
+  };
+  const declarations = [
+    'const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;',
+    'const getVariance = (arr, mean) => arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);',
+    extractFunction('twoSidedStudentTPValue'), extractFunction('formatPValue'),
+    extractFunction('formatSignificantPValue'), extractFunction('calculateOneSampleTTest'),
+    extractFunction('clearTTestResults'), extractFunction('runAnalysis')
+  ].join('\n');
+  vm.runInNewContext(declarations + '\nrunAnalysis();', context);
+  assert.equal(alerts.length, 0);
+  assert.equal(getElementById('summary-label-a').innerText, 'Sample');
+  assert.equal(getElementById('row-one-sample').style.display, 'table-row');
+  assert.equal(getElementById('row-paired').style.display, 'none');
+  assert.equal(getElementById('row-welch').style.display, 'none');
+  assert.equal(getElementById('f-test-box').style.display, 'none');
+  assert.equal(getElementById('t-one-sample').innerText, '2.828');
+  assert.equal(getElementById('df-one-sample').innerText, '4.0');
+  assert.equal(getElementById('mean-diff').innerText, '2.000');
+  assert.equal(getElementById('effect-size').innerText, '1.265');
+  assert.equal(getElementById('result-area').style.display, 'block');
 });
 
 test('paired mode UI explains matching order and distinguishes Cohen dz', () => {
