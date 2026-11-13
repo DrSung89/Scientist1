@@ -147,3 +147,35 @@ test('ANOVA page documents assumptions, exposes method selection, and provides d
   assert.match(html, /MAX_GROUPS = 8/);
   assert.match(html, /aria-live="polite"/);
 });
+
+test('adding a group preserves values already entered in existing groups', () => {
+  class Element {
+    constructor(tagName) { this.tagName = tagName; this.children = []; this.dataset = {}; this.value = ''; }
+    append(...children) { this.children.push(...children); }
+    setAttribute() {}
+    set innerHTML(value) { if (value === '') this.children = []; }
+    querySelectorAll(selector) {
+      if (selector !== 'textarea') return [];
+      return this.children.flatMap((child) => child.children.filter((node) => node.tagName === 'textarea'));
+    }
+  }
+  const container = new Element('div');
+  const addButton = { disabled: false };
+  const context = {
+    String,
+    document: {
+      getElementById: (id) => id === 'groups' ? container : addButton,
+      createElement: (tagName) => new Element(tagName)
+    },
+    groupCount: 3,
+    MAX_GROUPS: 8
+  };
+  vm.runInNewContext(`${extractFunction('renderGroupInputs')}\nglobalThis.renderGroupInputs = renderGroupInputs;`, context);
+  context.renderGroupInputs();
+  container.children[0].children[1].value = '1, 2, 3';
+  context.groupCount = 4;
+  context.renderGroupInputs();
+  assert.equal(container.children.length, 4);
+  assert.equal(container.children[0].children[1].value, '1, 2, 3');
+  assert.equal(addButton.disabled, false);
+});
