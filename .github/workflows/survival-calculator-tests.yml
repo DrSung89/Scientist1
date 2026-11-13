@@ -12,6 +12,8 @@ on:
       - "tests/chi-square-calculator.test.js"
       - "t-test-calculator/index.html"
       - "tests/t-test-calculator.test.js"
+      - "articles/brain-spinal-interface-nature/index.html"
+      - "tests/article-t-test-guidance.test.js"
       - "one-way-anova-calculator/index.html"
       - "tests/one-way-anova-calculator.test.js"
       - "molarity-calculator/index.html"
@@ -35,6 +37,8 @@ on:
       - "tests/chi-square-calculator.test.js"
       - "t-test-calculator/index.html"
       - "tests/t-test-calculator.test.js"
+      - "articles/brain-spinal-interface-nature/index.html"
+      - "tests/article-t-test-guidance.test.js"
       - "one-way-anova-calculator/index.html"
       - "tests/one-way-anova-calculator.test.js"
       - "molarity-calculator/index.html"
@@ -57,4 +61,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/homepage-directory.test.js tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/one-way-anova-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
+      - run: node --test tests/homepage-directory.test.js tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/article-t-test-guidance.test.js tests/one-way-anova-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
