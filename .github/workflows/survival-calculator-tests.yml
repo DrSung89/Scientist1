@@ -12,6 +12,8 @@ on:
       - "tests/chi-square-calculator.test.js"
       - "t-test-calculator/index.html"
       - "tests/t-test-calculator.test.js"
+      - "one-way-anova-calculator/index.html"
+      - "tests/one-way-anova-calculator.test.js"
       - "molarity-calculator/index.html"
       - "dilution-calculator/index.html"
       - "tests/molarity-dilution.test.js"
@@ -33,6 +35,8 @@ on:
       - "tests/chi-square-calculator.test.js"
       - "t-test-calculator/index.html"
       - "tests/t-test-calculator.test.js"
+      - "one-way-anova-calculator/index.html"
+      - "tests/one-way-anova-calculator.test.js"
       - "molarity-calculator/index.html"
       - "dilution-calculator/index.html"
       - "tests/molarity-dilution.test.js"
@@ -53,4 +57,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/homepage-directory.test.js tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
+      - run: node --test tests/homepage-directory.test.js tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/one-way-anova-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
