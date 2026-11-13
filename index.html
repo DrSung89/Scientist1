@@ -392,7 +392,8 @@
                     searchTerms: card.dataset.searchTerms,
                     category: card.dataset.category
                 }, query, category);
-                card.hidden = !visible;
+                card.style.display = visible ? '' : 'none';
+                card.setAttribute('aria-hidden', String(!visible));
                 if (visible) visibleCount++;
             });
             document.getElementById('calculator-results-count').innerText = `Showing ${visibleCount} of ${cards.length} calculators`;
