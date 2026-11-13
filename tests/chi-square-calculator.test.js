@@ -8,14 +8,32 @@ const start = html.indexOf('function chiSquarePValue(x, df) {');
 const end = html.indexOf('\n        function calcChi()', start);
 const formatStart = html.indexOf('function formatChiSquarePValue(p) {');
 const formatEnd = html.indexOf('\n        function calcChi()', formatStart);
+const fisherStart = html.indexOf('function logFactorial(n) {');
+const fisherEnd = html.indexOf('\n        function formatChiSquarePValue', fisherStart);
 assert.ok(start >= 0 && end > start, 'chi-square p-value function should exist in the calculator page');
 assert.ok(formatStart >= 0 && formatEnd > formatStart, 'chi-square p-value formatter should exist in the calculator page');
+assert.ok(fisherStart >= 0 && fisherEnd > fisherStart, 'Fisher exact function should exist in the calculator page');
 
 const source = html.slice(start, formatStart) + html.slice(formatStart, formatEnd);
 const sandbox = {};
 vm.runInNewContext(`${source}\nglobalThis.chiSquarePValue = chiSquarePValue;\nglobalThis.formatChiSquarePValue = formatChiSquarePValue;`, sandbox);
 const chiSquarePValue = sandbox.chiSquarePValue;
 const formatChiSquarePValue = sandbox.formatChiSquarePValue;
+const fisherSandbox = {};
+vm.runInNewContext(`${html.slice(fisherStart, fisherEnd)}\nglobalThis.fisherExactTwoSided = fisherExactTwoSided;`, fisherSandbox);
+const fisherExactTwoSided = fisherSandbox.fisherExactTwoSided;
+
+test('Fisher two-sided exact test matches probability-ordering reference tables', () => {
+  assert.ok(Math.abs(fisherExactTwoSided(1, 9, 11, 3) - 0.0027594561852200836) < 1e-12);
+  assert.ok(Math.abs(fisherExactTwoSided(10, 10, 10, 10) - 1) < 1e-12);
+  assert.ok(Math.abs(fisherExactTwoSided(0, 5, 5, 0) - 0.007936507936507936) < 1e-12);
+});
+
+test('Fisher exact test rejects unsafe counts and overly large tables', () => {
+  assert.ok(Number.isNaN(fisherExactTwoSided(-1, 2, 3, 4)));
+  assert.ok(Number.isNaN(fisherExactTwoSided(Number.MAX_SAFE_INTEGER + 1, 2, 3, 4)));
+  assert.ok(Number.isNaN(fisherExactTwoSided(25001, 25000, 25000, 25000)));
+});
 
 test('df=1 chi-square survival function matches reference values', () => {
   const cases = [
@@ -61,7 +79,7 @@ test('clearChiSquareResults clears stale results before a new calculation', () =
   assert.ok(start >= 0 && end > start, 'result-reset helper should exist before calcChi');
 
   const elements = {};
-  const ids = ['result-area', 'warning-msg', 'exp-a', 'exp-b', 'exp-c', 'exp-d', 'p-val', 'sig-msg', 'chi-stat', 'cramers-v'];
+  const ids = ['result-area', 'warning-msg', 'exp-a', 'exp-b', 'exp-c', 'exp-d', 'p-val', 'sig-msg', 'chi-stat', 'cramers-v', 'fisher-p'];
   for (const id of ids) {
     elements[id] = { innerText: 'stale result', style: { display: 'block' } };
   }
@@ -74,7 +92,7 @@ test('clearChiSquareResults clears stale results before a new calculation', () =
   for (const id of ['exp-a', 'exp-b', 'exp-c', 'exp-d']) {
     assert.equal(elements[id].innerText, 'Exp: -');
   }
-  for (const id of ['p-val', 'sig-msg', 'chi-stat', 'cramers-v']) {
+  for (const id of ['p-val', 'sig-msg', 'chi-stat', 'cramers-v', 'fisher-p']) {
     assert.equal(elements[id].innerText, '');
   }
 });
