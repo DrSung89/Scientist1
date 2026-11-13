@@ -112,6 +112,14 @@ for (const name of [
   sandbox[name] = sandbox.__helper;
 }
 
+const pairedSandbox = {
+  getMean: (values) => values.reduce((sum, value) => sum + value, 0) / values.length,
+  getVariance: (values, mean) => values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (values.length - 1),
+  twoSidedStudentTPValue: sandbox.twoSidedStudentTPValue,
+  jStat: { studentt: { inv: (p, df) => (p === 0.025 && df === 4 ? -2.7764451051977987 : NaN) } }
+};
+vm.runInNewContext(extractFunction('calculatePairedTTest') + '\nglobalThis.calculatePairedTTest = calculatePairedTTest;', pairedSandbox);
+
 test('Student t two-sided p-values retain small-tail precision', () => {
   const actual = sandbox.twoSidedStudentTPValue(10, 10);
   const expected = regularizedBeta(10 / 110, 5, 0.5);
@@ -141,8 +149,89 @@ test('very small p-values display as a threshold, not 0.0000', () => {
 test('signed Cohen d preserves Group A minus Group B direction', () => {
   assert.equal(sandbox.calculateCohensD(4, 4), 2);
   assert.equal(sandbox.calculateCohensD(-4, 4), -2);
-  assert.match(html, /Welch's test is the recommended default/);
+  assert.match(html, /Welch's test remains the recommended default/);
   assert.match(html, /choosing Student's or Welch's test based on a preliminary variance test can distort the overall error rate/);
+});
+
+test('paired t-test matches reference statistics and confidence interval', () => {
+  const result = pairedSandbox.calculatePairedTTest([1, 2, 3, 4, 5], [0, 1, 1, 2, 2]);
+  const expectedT = 1.8 / Math.sqrt(0.7 / 5);
+  const expectedP = regularizedBeta(4 / (4 + expectedT ** 2), 2, 0.5);
+  assert.equal(result.n, 5);
+  assert.equal(result.df, 4);
+  assert.ok(Math.abs(result.meanDifference - 1.8) < 1e-12);
+  assert.ok(Math.abs(result.t - expectedT) < 1e-12);
+  assert.ok(Math.abs(result.pValue - expectedP) < 1e-12);
+  assert.ok(Math.abs(result.ciLow - 0.7611493663164304) < 1e-12);
+  assert.ok(Math.abs(result.ciHigh - 2.8388506336835695) < 1e-12);
+  assert.ok(Math.abs(result.cohensDz - 2.1514114968019085) < 1e-12);
+});
+
+test('paired t-test rejects unequal pair counts and zero-variance differences', () => {
+  assert.equal(pairedSandbox.calculatePairedTTest([1, 2, 3], [1, 2]), null);
+  assert.equal(pairedSandbox.calculatePairedTTest([1, 2, 3], [0, 1, 2]), null);
+  assert.equal(pairedSandbox.calculatePairedTTest([1], [0]), null);
+});
+
+test('paired mode UI explains matching order and distinguishes Cohen dz', () => {
+  assert.match(html, /Paired \/ repeated measurements/);
+  assert.match(html, /same position in both lists/);
+  assert.match(html, /signed Cohen's dz/);
+  assert.match(html, /Pairing must come from the study design/);
+});
+
+test('paired analysis displays only its result and skips the independent-samples F-test', () => {
+  const elements = new Map();
+  const getElementById = (id) => {
+    if (!elements.has(id)) elements.set(id, { value: '', innerText: '', innerHTML: '', style: { display: '' } });
+    return elements.get(id);
+  };
+  getElementById('group-a').value = '1, 2, 3, 4, 5';
+  getElementById('group-b').value = '0, 1, 1, 2, 2';
+  getElementById('analysis-type').value = 'paired';
+  const alerts = [];
+  const context = {
+    Math,
+    document: { getElementById },
+    alert: (message) => alerts.push(message),
+    jStat: { studentt: { cdf: (value, df) => referenceStudentTCdf(value, df), inv: () => -2.7764451051977987 } }
+  };
+  const functions = [
+    'getMean', 'getVariance', 'twoSidedStudentTPValue', 'formatPValue', 'formatSignificantPValue',
+    'calculatePairedTTest', 'clearTTestResults', 'runAnalysis'
+  ];
+  const declarations = functions.map((name) => name === 'getMean'
+    ? 'const getMean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;'
+    : name === 'getVariance'
+      ? 'const getVariance = (arr, mean) => arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);'
+      : extractFunction(name)).join('\n');
+  vm.runInNewContext(declarations + '\nrunAnalysis();', context);
+  assert.equal(alerts.length, 0);
+  assert.equal(getElementById('row-paired').style.display, 'table-row');
+  assert.equal(getElementById('row-student').style.display, 'none');
+  assert.equal(getElementById('row-welch').style.display, 'none');
+  assert.equal(getElementById('f-test-box').style.display, 'none');
+  assert.equal(getElementById('t-paired').innerText, '4.811');
+  assert.equal(getElementById('df-paired').innerText, '4.0');
+  assert.equal(getElementById('mean-diff').innerText, '1.800');
+  assert.equal(getElementById('effect-size').innerText, '2.151');
+  assert.equal(getElementById('result-area').style.display, 'block');
+});
+
+test('paired analysis rejects a mismatched number of observations', () => {
+  const elements = new Map();
+  const getElementById = (id) => {
+    if (!elements.has(id)) elements.set(id, { value: '', innerText: '', innerHTML: '', style: { display: '' } });
+    return elements.get(id);
+  };
+  getElementById('group-a').value = '1, 2, 3';
+  getElementById('group-b').value = '1, 2';
+  getElementById('analysis-type').value = 'paired';
+  const alerts = [];
+  const context = { Math, document: { getElementById }, alert: (message) => alerts.push(message), jStat: {} };
+  vm.runInNewContext(`${extractFunction('clearTTestResults')}\n${extractFunction('runAnalysis')}\nrunAnalysis();`, context);
+  assert.match(alerts[0], /same number of observations/);
+  assert.equal(getElementById('result-area').style.display, 'none');
 });
 
 
