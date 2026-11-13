@@ -20,6 +20,21 @@ assert.ok(end > start, 'calculator directory matching helper should be complete'
 const sandbox = {};
 vm.runInNewContext(`${html.slice(start, end)}\nglobalThis.calculatorCardMatches = calculatorCardMatches;`, sandbox);
 
+function extractFunction(name) {
+  const functionStart = html.indexOf(`function ${name}(`);
+  assert.ok(functionStart >= 0, `${name} should exist`);
+  const functionBrace = html.indexOf('{', functionStart);
+  let functionDepth = 0;
+  for (let i = functionBrace; i < html.length; i++) {
+    if (html[i] === '{') functionDepth++;
+    if (html[i] === '}') {
+      functionDepth--;
+      if (functionDepth === 0) return html.slice(functionStart, i + 1);
+    }
+  }
+  assert.fail(`${name} should have a closing brace`);
+}
+
 test('calculator directory search ignores case and surrounding whitespace', () => {
   const card = { title: 'T-Test', searchTerms: 'paired repeated measurements', category: 'statistics' };
   assert.equal(sandbox.calculatorCardMatches(card, '  PAIRED  ', 'all'), true);
@@ -49,4 +64,37 @@ test('homepage directory includes all eight calculators, accessible filters, and
   assert.match(html, /calculator-no-results/);
   assert.match(html, /Browse Calculators/);
   assert.match(html, /calculator-directory/);
+});
+
+test('directory filtering hides non-matching cards and exposes the no-results state', () => {
+  const cards = [
+    { innerText: 'T-Test', dataset: { searchTerms: 'paired repeated', category: 'statistics' }, style: {}, attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } },
+    { innerText: 'Molarity', dataset: { searchTerms: 'concentration solution', category: 'lab' }, style: {}, attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } }
+  ];
+  const search = { value: 'paired' };
+  const category = { value: 'all' };
+  const count = { innerText: '' };
+  const emptyState = { classList: { hidden: true, toggle(name, force) { this.hidden = force; } } };
+  const elements = { 'calculator-search': search, 'calculator-category': category, 'calculator-results-count': count, 'calculator-no-results': emptyState };
+  const context = {
+    document: {
+      getElementById: (id) => elements[id],
+      querySelectorAll: () => cards
+    }
+  };
+  vm.runInNewContext(`${extractFunction('calculatorCardMatches')}\n${extractFunction('filterCalculatorDirectory')}\nfilterCalculatorDirectory();`, context);
+
+  assert.equal(cards[0].style.display, '');
+  assert.equal(cards[0].attributes['aria-hidden'], 'false');
+  assert.equal(cards[1].style.display, 'none');
+  assert.equal(cards[1].attributes['aria-hidden'], 'true');
+  assert.equal(count.innerText, 'Showing 1 of 2 calculators');
+  assert.equal(emptyState.classList.hidden, true);
+
+  search.value = 'no matching tool';
+  vm.runInNewContext('filterCalculatorDirectory();', context);
+  assert.equal(cards[0].style.display, 'none');
+  assert.equal(cards[1].style.display, 'none');
+  assert.equal(count.innerText, 'Showing 0 of 2 calculators');
+  assert.equal(emptyState.classList.hidden, false);
 });
