@@ -47,16 +47,17 @@ test('calculator category filters preserve each tool in its intended group', () 
     { title: 'Molarity', searchTerms: 'concentration', category: 'lab' },
     { title: 'Dilution', searchTerms: 'stock solution', category: 'lab' },
     { title: 'T-Test', searchTerms: 'paired', category: 'statistics' },
+    { title: 'One-Way ANOVA', searchTerms: 'anova multiple groups', category: 'statistics' },
     { title: 'Chi-Square', searchTerms: 'fisher', category: 'statistics' },
     { title: 'Human Equivalent Dose', searchTerms: 'animal dose', category: 'dosing' }
   ];
   assert.equal(cards.filter(card => sandbox.calculatorCardMatches(card, '', 'lab')).length, 3);
-  assert.equal(cards.filter(card => sandbox.calculatorCardMatches(card, '', 'statistics')).length, 2);
+  assert.equal(cards.filter(card => sandbox.calculatorCardMatches(card, '', 'statistics')).length, 3);
   assert.equal(cards.filter(card => sandbox.calculatorCardMatches(card, 'animal', 'dosing')).length, 1);
 });
 
-test('homepage directory includes all eight calculators, accessible filters, and empty-state feedback', () => {
-  assert.equal((html.match(/\sdata-calculator-card\sdata-category=/g) || []).length, 8);
+test('homepage directory includes all nine calculators, accessible filters, and empty-state feedback', () => {
+  assert.equal((html.match(/\sdata-calculator-card\sdata-category=/g) || []).length, 9);
   for (const category of ['all', 'lab', 'statistics', 'dosing']) {
     assert.match(html, new RegExp(`<option value="${category}"`));
   }
@@ -64,6 +65,8 @@ test('homepage directory includes all eight calculators, accessible filters, and
   assert.match(html, /calculator-no-results/);
   assert.match(html, /Browse Calculators/);
   assert.match(html, /calculator-directory/);
+  assert.match(html, /one-way-anova-calculator\\//);
+  assert.equal(sandbox.calculatorCardMatches({ title: 'One-Way ANOVA', searchTerms: 'standard welch bonferroni multiple groups', category: 'statistics' }, 'bonferroni', 'statistics'), true);
 });
 
 test('directory filtering hides non-matching cards and exposes the no-results state', () => {
