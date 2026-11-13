@@ -4,6 +4,8 @@ on:
   push:
     branches: [main, survival-calculator-validation]
     paths:
+      - "index.html"
+      - "tests/homepage-directory.test.js"
       - "survival-calculator/main.js"
       - "tests/survival-calculator.test.js"
       - "chi-square-calculator/index.html"
@@ -23,6 +25,8 @@ on:
       - ".github/workflows/survival-calculator-tests.yml"
   pull_request:
     paths:
+      - "index.html"
+      - "tests/homepage-directory.test.js"
       - "survival-calculator/main.js"
       - "tests/survival-calculator.test.js"
       - "chi-square-calculator/index.html"
@@ -49,4 +53,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
+      - run: node --test tests/homepage-directory.test.js tests/survival-calculator.test.js tests/chi-square-calculator.test.js tests/outlier-detector.test.js tests/t-test-calculator.test.js tests/molarity-dilution.test.js tests/hed-calculator.test.js tests/protein-calculator.test.js
