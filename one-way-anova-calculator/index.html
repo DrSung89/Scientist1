@@ -90,6 +90,7 @@
 
     function renderGroupInputs() {
       const container = document.getElementById('groups');
+      const previousValues = Array.from(container.querySelectorAll('textarea'), (field) => field.value);
       container.innerHTML = '';
       for (let i = 0; i < groupCount; i++) {
         const card = document.createElement('div');
@@ -101,6 +102,7 @@
         textarea.id = `group-${i + 1}`;
         textarea.dataset.groupIndex = String(i);
         textarea.placeholder = 'e.g. 12.1, 13.4, 11.8';
+        textarea.value = previousValues[i] || '';
         textarea.setAttribute('aria-label', `${label.textContent} observations`);
         card.append(label, textarea);
         container.append(card);
