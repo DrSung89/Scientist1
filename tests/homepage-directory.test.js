@@ -65,7 +65,7 @@ test('homepage directory includes all nine calculators, accessible filters, and 
   assert.match(html, /calculator-no-results/);
   assert.match(html, /Browse Calculators/);
   assert.match(html, /calculator-directory/);
-  assert.match(html, /one-way-anova-calculator\\//);
+  assert.ok(html.includes('one-way-anova-calculator/'));
   assert.equal(sandbox.calculatorCardMatches({ title: 'One-Way ANOVA', searchTerms: 'standard welch bonferroni multiple groups', category: 'statistics' }, 'bonferroni', 'statistics'), true);
 });
 
