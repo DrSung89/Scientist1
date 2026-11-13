@@ -153,11 +153,11 @@
                 <div class="mb-6">
                     <label for="analysis-type" class="block font-headline text-sm font-bold text-on-surface mb-2">Study design</label>
                     <select id="analysis-type" onchange="updateAnalysisMode()" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-on-surface">
-                        <option value="one-sample">One sample vs. reference mean</option>
                         <option value="independent">Independent samples (Welch default)</option>
+                        <option value="one-sample">One sample vs. reference mean</option>
                         <option value="paired">Paired / repeated measurements</option>
                     </select>
-                    <p id="analysis-hint" class="text-xs text-on-surface-variant mt-2">Test whether a sample mean differs from a specified reference mean.</p>
+                    <p id="analysis-hint" class="text-xs text-on-surface-variant mt-2">Use for two unrelated groups. Values do not need to be entered in matched order.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div id="sample-field-a">
