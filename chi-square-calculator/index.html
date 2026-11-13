@@ -187,7 +187,7 @@
                     
                     <div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/20 mb-6">
                         <div class="text-on-surface font-headline text-lg mb-2">
-                            P-value = <strong id="p-val" class="text-3xl tracking-tight text-primary ml-2"></strong>
+                            Pearson χ² P-value = <strong id="p-val" class="text-3xl tracking-tight text-primary ml-2"></strong>
                         </div>
                         <div id="sig-msg" class="font-bold text-sm tracking-wide uppercase mt-4 mb-2"></div>
                         
@@ -203,12 +203,18 @@
                             <div class="sm:col-span-2 bg-primary-fixed/30 p-3 rounded border border-primary-fixed flex justify-between">
                                 <span>Cramér's V (Effect Size):</span> <strong id="cramers-v" class="text-primary text-base"></strong>
                             </div>
+                            <div class="sm:col-span-2 bg-surface p-3 rounded border border-outline-variant/20 flex justify-between gap-4">
+                                <span>Fisher's Exact Test (two-sided):</span> <strong id="fisher-p" class="text-primary"></strong>
+                            </div>
+                            <p class="sm:col-span-2 text-xs text-outline leading-relaxed">Fisher's test conditions on the observed row and column totals. Its two-sided p-value sums fixed-margin tables no more probable than the observed table. Total count is limited to 100,000 for responsive exact calculation.</p>
+                            
+                            </div>
                         </div>
                     </div>
 
                     <div id="warning-msg" style="display:none;" class="bg-error-container text-on-error-container p-4 rounded border-l-4 border-error text-sm font-light leading-relaxed">
                         <strong class="font-bold flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-[18px]">warning</span> Statistical Warning:</strong> 
-                        One or more of your calculated "Expected Counts" is less than 5. The Chi-square approximation may be inaccurate. It is highly recommended to use <strong>Fisher's Exact Test</strong> for this dataset instead.
+                        One or more expected counts is less than 5. The Pearson Chi-square approximation may be inaccurate; review the Fisher exact result below and consider the study design when choosing a test.
                     </div>
                 </div>
 
@@ -263,7 +269,7 @@
                         <div class="space-y-6">
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Why did I get a warning about "Expected counts < 5"?</h4>
-                                <p class="text-on-surface-variant font-light leading-relaxed">Small expected counts can make the usual asymptotic Pearson Chi-Square P-value unreliable, but an expected count below 5 is a warning threshold—not an automatic rule that makes the test invalid in every setting. Review the full expected-count pattern and study design. For a 2×2 table with sparse data, <strong>Fisher's Exact Test</strong> is a commonly used alternative; depending on the design, an exact or Monte Carlo method may also be appropriate. This calculator reports the Pearson Chi-Square result and does not calculate Fisher's Exact Test, so use a suitable exact-test tool or statistical software when needed.</p>
+                                <p class="text-on-surface-variant font-light leading-relaxed">Small expected counts can make the usual asymptotic Pearson Chi-Square P-value unreliable, but an expected count below 5 is a warning threshold, not an automatic invalidity rule. For a 2×2 table, this calculator also reports Fisher's two-sided exact P-value, which conditions on the observed row and column totals. Choose the test based on the study design and analysis plan.</p>
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use percentages instead of raw counts?</h4>
@@ -365,6 +371,32 @@
             );
             return Math.max(0, Math.min(1, erfc));
         }
+        function logFactorial(n) {
+            // Lanczos approximation to log(n!), avoiding factorial overflow.
+            const coefficients = [676.5203681218851, -1259.1392167224028, 771.3234287776531, -176.6150291621406, 12.507343278686905, -0.13857109526572012, 9.984369578019572e-6, 1.5056327351493116e-7];
+            if (n < 2) return 0;
+            let x = 0.9999999999998099;
+            for (let i = 0; i < coefficients.length; i++) x += coefficients[i] / (n + i + 1);
+            const t = n + coefficients.length - 0.5;
+            return 0.9189385332046727 + (n + 0.5) * Math.log(t) - t + Math.log(x);
+        }
+        function fisherExactTwoSided(a, b, c, d) {
+            if (![a, b, c, d].every(Number.isSafeInteger) || [a, b, c, d].some(value => value < 0)) return NaN;
+            const row1 = a + b, col1 = a + c, total = a + b + c + d;
+            if (total > 100000) return NaN;
+            const min = Math.max(0, row1 + col1 - total);
+            const max = Math.min(row1, col1);
+            const logChoose = (n, k) => logFactorial(n) - logFactorial(k) - logFactorial(n - k);
+            const logDenominator = logChoose(total, row1);
+            const logProbability = x => logChoose(col1, x) + logChoose(total - col1, row1 - x) - logDenominator;
+            const observedLogProbability = logProbability(a);
+            let probabilitySum = 0;
+            for (let x = min; x <= max; x++) {
+                const candidateLogProbability = logProbability(x);
+                if (candidateLogProbability <= observedLogProbability + 1e-12) probabilitySum += Math.exp(candidateLogProbability);
+            }
+            return Math.min(1, probabilitySum);
+        }
         function formatChiSquarePValue(p) {
             if (!Number.isFinite(p) || p < 0 || p > 1) return 'Not available';
             return p < 0.00001 ? '<0.00001' : p.toFixed(5);
@@ -377,7 +409,7 @@
             ['exp-a', 'exp-b', 'exp-c', 'exp-d'].forEach(id => {
                 document.getElementById(id).innerText = 'Exp: -';
             });
-            ['p-val', 'sig-msg', 'chi-stat', 'cramers-v'].forEach(id => {
+            ['p-val', 'sig-msg', 'chi-stat', 'cramers-v', 'fisher-p'].forEach(id => {
                 document.getElementById(id).innerText = '';
             });
         }
@@ -391,7 +423,7 @@
                 alert("Fill all four cells with valid numbers.");
                 return;
             }
-            if ([a,b,c,d].some(v => v < 0 || !Number.isInteger(v))) {
+            if ([a,b,c,d].some(v => v < 0 || !Number.isSafeInteger(v))) {
                 alert("Observed counts must be non-negative whole numbers.");
                 return;
             }
@@ -400,6 +432,10 @@
             const row1 = a + b, row2 = c + d;
             const col1 = a + c, col2 = b + d;
             const total = a + b + c + d;
+            if (!Number.isSafeInteger(total) || total > 100000) {
+                alert("The total count must not exceed 100,000 for accurate, responsive calculations.");
+                return;
+            }
             if (total === 0 || row1 === 0 || row2 === 0 || col1 === 0 || col2 === 0) {
                 alert("Each row and column must have a non-zero total.");
                 return;
@@ -430,9 +466,11 @@
 
             // P-value (df=1 for 2x2 table): calculate the upper tail directly.
             const pVal = chiSquarePValue(chiSq, 1);
+            const fisherP = fisherExactTwoSided(a, b, c, d);
 
             // Output Formatting
             document.getElementById('p-val').innerText = formatChiSquarePValue(pVal);
+            document.getElementById('fisher-p').innerText = formatChiSquarePValue(fisherP);
             
             const sigMsg = document.getElementById('sig-msg');
             if (pVal < 0.05) {
