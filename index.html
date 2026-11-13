@@ -5,11 +5,11 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
     <title>Scientific Calculators for Lab &amp; Statistics | Scientist's Toolkit</title>
-    <meta name="description" content="Free scientific calculators for laboratory and research workflows: molarity, dilution, protein quantification, HED, outliers, independent and paired t-tests, Fisher exact, and survival analysis.">
+    <meta name="description" content="Free scientific calculators for lab and research workflows: molarity, dilution, protein quantification, one-sample and paired t-tests, ANOVA, Fisher exact, and survival analysis.">
     <link rel="canonical" href="https://scientisttoolkit.xyz/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Scientific Calculators for Lab &amp; Statistics | Scientist's Toolkit">
-    <meta property="og:description" content="Find free lab and statistical calculators for molarity, dilution, protein quantification, paired and independent t-tests, Fisher exact tests, and survival analysis.">
+    <meta property="og:description" content="Find lab and statistical calculators for molarity, dilution, protein quantification, t-tests, one-way ANOVA, Fisher exact tests, and survival analysis.">
     <meta property="og:url" content="https://scientisttoolkit.xyz/">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -197,7 +197,7 @@
                     </select>
                 </div>
             </div>
-            <p id="calculator-results-count" class="text-xs text-outline mb-4" aria-live="polite">Showing 8 calculators</p>
+            <p id="calculator-results-count" class="text-xs text-outline mb-4" aria-live="polite">Showing 9 calculators</p>
             <p id="calculator-no-results" class="hidden text-sm text-on-surface-variant bg-surface-container-low p-5 rounded-lg mb-4">No calculators match these filters. Try another search term or category.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 
@@ -234,10 +234,15 @@
                     <h4 class="font-headline font-bold text-lg">Dilution</h4>
                     <p class="text-xs text-on-surface-variant mt-2">Plan stock-to-working-solution dilutions.</p>
                 </a>
-                <a href="t-test-calculator/" data-calculator-card data-category="statistics" data-search-terms="t-test student welch paired repeated independent samples comparison mean p-value" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                <a href="t-test-calculator/" data-calculator-card data-category="statistics" data-search-terms="t-test one sample student welch paired repeated independent samples comparison mean p-value reference mean" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="stacked_line_chart">stacked_line_chart</span>
                     <h4 class="font-headline font-bold text-lg">T-Test</h4>
-                    <p class="text-xs text-on-surface-variant mt-2">Compare independent or paired measurements.</p>
+                    <p class="text-xs text-on-surface-variant mt-2">Compare one sample, independent groups, or paired measurements.</p>
+                </a>
+                <a href="one-way-anova-calculator/" data-calculator-card data-category="statistics" data-search-terms="anova one-way f-test three or more groups mean comparison standard welch bonferroni pairwise" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
+                    <span class="material-symbols-outlined text-primary mb-4" data-icon="bar_chart">bar_chart</span>
+                    <h4 class="font-headline font-bold text-lg">One-Way ANOVA</h4>
+                    <p class="text-xs text-on-surface-variant mt-2">Compare independent group means with adjusted pairwise results.</p>
                 </a>
                 <a href="survival-calculator/" data-calculator-card data-category="statistics" data-search-terms="survival kaplan meier log-rank cox hazard ratio time event" class="bg-surface-container p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors cursor-pointer border-b-2 border-transparent hover:border-primary rounded-lg">
                     <span class="material-symbols-outlined text-primary mb-4" data-icon="timeline">timeline</span>
@@ -338,7 +343,7 @@
                     </article>
                     <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
                         <h3 class="font-headline font-bold text-lg mb-2">Comparing experimental groups</h3>
-                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">The <a class="text-primary underline" href="t-test-calculator/">t-test calculator</a> supports independent and paired comparisons, while the <a class="text-primary underline" href="chi-square-calculator/">chi-square calculator</a> analyzes 2×2 categorical counts with Pearson and Fisher results. Choose the test based on the outcome and study design, not only on which result is significant.</p>
+                        <p class="font-body text-sm leading-6 text-on-surface-variant mb-3">The <a class="text-primary underline" href="t-test-calculator/">t-test calculator</a> supports one-sample, independent, and paired comparisons; the <a class="text-primary underline" href="one-way-anova-calculator/">one-way ANOVA calculator</a> compares multiple independent means; and the <a class="text-primary underline" href="chi-square-calculator/">chi-square calculator</a> analyzes 2×2 categorical counts with Pearson and Fisher results. Choose the test based on the outcome and study design, not only on which result is significant.</p>
                         <p class="font-body text-xs leading-5 text-outline">Check independence, sample size, distributional assumptions, expected cell counts, and report effect sizes or confidence intervals where appropriate.</p>
                     </article>
                     <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-5">
