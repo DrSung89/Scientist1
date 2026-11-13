@@ -4,13 +4,13 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     
-    <title>T-Test Calculator (Student's & Welch's) | Scientist's Toolkit</title>
-    <meta name="description" content="Calculate Student's and Welch's independent-samples t-tests with p-values, 95% confidence intervals, and signed Cohen's d. Includes an F-test as a variance diagnostic; Welch's test is the recommended default.">
+    <title>T-Test Calculator: Independent & Paired | Scientist's Toolkit</title>
+    <meta name="description" content="Run independent Student's or Welch's t-tests, or a paired t-test with 95% confidence intervals and effect sizes. Enter two numeric samples and inspect the calculations.">
     <link rel="canonical" href="https://scientisttoolkit.xyz/t-test-calculator/">
     
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Robust T-Test Calculator | Scientist's Toolkit">
-    <meta property="og:description" content="Calculate Student's and Welch's t-tests, p-values, 95% confidence intervals, and signed Cohen's d. Welch's test is the recommended default; the F-test is a diagnostic.">
+    <meta property="og:title" content="T-Test Calculator: Independent & Paired | Scientist's Toolkit">
+    <meta property="og:description" content="Run independent Student's or Welch's t-tests, or a paired t-test with confidence intervals and effect sizes.">
     <meta property="og:image" content="https://scientisttoolkit.xyz/og-image.png">
     <meta property="og:url" content="https://scientisttoolkit.xyz/t-test-calculator/">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -142,27 +142,37 @@
 
         <section class="relative px-6 py-10 md:py-12 max-w-screen-md mx-auto z-10 text-center">
             <span class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-[0.2em] uppercase mb-4 rounded-sm">Statistical Module</span>
-            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">Independent Samples T-Test</h1>
-            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Compare <strong>Student's</strong> and <strong>Welch's</strong> t-tests. Welch's test is the recommended default; the F-test is shown as a variance diagnostic, not as a rule for choosing the test.</p>
+            <h1 class="text-4xl md:text-5xl font-headline font-bold text-on-surface tracking-tighter leading-tight mb-4">T-Test Calculator</h1>
+            <p class="text-lg text-on-surface-variant font-light leading-relaxed mb-4">Analyze independent groups with Student's or Welch's t-test, or choose a paired t-test for matched measurements. Welch's test remains the recommended default for independent samples.</p>
             <p id="quote-display" class="text-sm font-medium text-outline italic border-l-2 border-primary/30 pl-3 max-w-fit mx-auto">Science is a journey of resilience. Keep going. 🚀</p>
         </section>
 
         <section class="px-6 pb-20 max-w-screen-md mx-auto z-10 relative">
             <div class="bg-surface-container-lowest p-6 md:p-8 rounded-xl shadow-sm border border-outline-variant/30">
                 
+                <div class="mb-6">
+                    <label for="analysis-type" class="block font-headline text-sm font-bold text-on-surface mb-2">Study design</label>
+                    <select id="analysis-type" onchange="updateAnalysisMode()" class="w-full p-3 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-on-surface">
+                        <option value="independent">Independent samples (Welch default)</option>
+                        <option value="paired">Paired / repeated measurements</option>
+                    </select>
+                    <p id="analysis-hint" class="text-xs text-on-surface-variant mt-2">Use for two unrelated groups. Values do not need to be entered in matched order.</p>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
                         <label for="group-a" class="block font-headline text-sm font-bold text-on-surface mb-2 flex justify-between">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> Group A Data</span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> <span id="label-a">Group A Data</span></span>
                         </label>
                         <textarea id="group-a" rows="4" placeholder="e.g. 10.2, 11.5, 10.8..." class="w-full p-4 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-mono text-sm text-on-surface resize-y"></textarea>
+                        <p class="text-xs text-outline mt-1">Enter numeric observations separated by commas or spaces.</p>
                     </div>
 
                     <div>
                         <label for="group-b" class="block font-headline text-sm font-bold text-on-surface mb-2 flex justify-between">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> Group B Data</span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-primary text-base">data_array</span> <span id="label-b">Group B Data</span></span>
                         </label>
                         <textarea id="group-b" rows="4" placeholder="e.g. 9.5, 9.8, 10.1..." class="w-full p-4 bg-surface border border-outline-variant/50 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-mono text-sm text-on-surface resize-y"></textarea>
+                        <p id="pair-order-hint" class="text-xs text-primary mt-1" style="display:none;">Enter each matched subject's measurements in the same position in both lists (A₁ pairs with B₁, etc.).</p>
                     </div>
                 </div>
 
@@ -244,6 +254,13 @@
                                     <td id="p-welch" class="p-4 font-bold font-mono"></td>
                                     <td id="ci-welch" class="p-4 text-on-surface-variant font-mono"></td>
                                 </tr>
+                                <tr id="row-paired" class="transition-colors" style="display:none;">
+                                    <td class="p-4"><strong class="text-on-surface block">Paired</strong><span class="text-[11px] text-on-surface-variant font-light">(Matched differences)</span></td>
+                                    <td id="t-paired" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="df-paired" class="p-4 text-on-surface-variant font-mono"></td>
+                                    <td id="p-paired" class="p-4 font-bold font-mono"></td>
+                                    <td id="ci-paired" class="p-4 text-on-surface-variant font-mono"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -254,7 +271,7 @@
                             <span id="mean-diff" class="text-primary font-bold ml-1 font-mono"></span>
                         </div>
                         <div>
-                            <span class="text-on-surface-variant font-medium">Effect Size (signed Cohen's d):</span> 
+                            <span id="effect-size-label" class="text-on-surface-variant font-medium">Effect Size (signed Cohen's d):</span> 
                             <span id="effect-size" class="text-primary font-bold ml-1 font-mono"></span>
                         </div>
                     </div>
@@ -265,10 +282,10 @@
         <section class="bg-surface-container-low px-6 py-16 border-t border-outline-variant/30 relative z-10">
             <div class="max-w-screen-md mx-auto">
                 <h2 class="text-3xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">menu_book</span> The Ultimate Guide to Independent T-Tests
+                    <span class="material-symbols-outlined text-primary">menu_book</span> Guide to Independent and Paired T-Tests
                 </h2>
                 <p class="text-on-surface-variant font-light leading-relaxed mb-8">
-                    In empirical research, whether you are analyzing molecular assays, animal models, or clinical trial data, determining if a treatment caused a real effect is critical. The <strong>Independent Samples T-Test</strong> (also known as the two-sample t-test) is the most widely used statistical method to compare the means of two distinct, unrelated groups (e.g., a vehicle control group versus a drug treatment arm) to ascertain if they are significantly different from one another.
+                    This calculator supports two different study designs. Independent-samples tests compare means from unrelated groups; the paired t-test analyzes within-pair changes when the same subjects are measured twice or observations are deliberately matched. Select the design that reflects how the data were collected.
                 </p>
 
                 <div class="space-y-12">
@@ -310,12 +327,22 @@
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-headline font-bold text-primary mb-4">3. How to Interpret Your Output Metrics</h3>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">3. Paired T-Test</h3>
+                        <p class="text-on-surface-variant font-light leading-relaxed mb-4">A paired t-test first calculates one difference per matched pair, then tests whether the mean difference is zero. Its degrees of freedom are the number of pairs minus one. Pairs must be defined by the study design, and differences from different pairs should be independent; with small samples, the distribution of differences should be reasonably compatible with the t-test model.</p>
+                        <div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-primary shadow-sm flex flex-col items-center justify-center overflow-x-auto">
+                            <p class="font-bold text-sm text-on-surface mb-2">Paired T-Statistic:</p>
+                            <div class="text-xl md:text-2xl mb-2 font-serif text-on-surface whitespace-nowrap">$$ t = \frac{\overline{D}}{s_D / \sqrt{n}} $$</div>
+                            <p class="text-sm text-on-surface-variant text-center">$D$ is the within-pair difference (A − B); $s_D$ is its sample standard deviation.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-headline font-bold text-primary mb-4">4. How to Interpret Your Output Metrics</h3>
                         <p class="text-on-surface-variant font-light leading-relaxed mb-4">Beyond the simple P-value, high-impact journals require comprehensive statistical reporting. Our tool provides these essential metrics:</p>
                         <ul class="space-y-3 text-on-surface-variant font-light list-disc pl-5">
                             <li><strong class="font-medium text-on-surface">P-value:</strong> Compare the P-value with the significance level specified in your analysis plan (often α = 0.05). If P is below α, reject the null hypothesis of equal population means under the test assumptions. Statistical significance alone does not establish biological or clinical importance.</li>
                             <li><strong class="font-medium text-on-surface">95% Confidence Interval (CI):</strong> This interval is produced by a method that, over repeated samples under its assumptions, would cover the true population mean difference in 95% of such intervals. For the corresponding two-sided test at α = 0.05, an interval that includes zero indicates that the difference is not statistically significant at that level.</li>
-                            <li><strong class="font-medium text-on-surface">Signed Cohen's d (Effect Size):</strong> The magnitude describes the standardized difference, while the sign indicates direction (Group A minus Group B). This calculator uses the pooled standard deviation; for unequal variances, interpret it as a conventional standardized effect size rather than a Welch-specific effect size. <br><span class="text-sm">(Benchmarks: 0.2 = Small effect, 0.5 = Medium effect, 0.8+ = Large and obvious effect).</span></li>
+                            <li><strong class="font-medium text-on-surface">Effect size:</strong> For independent groups, the signed Cohen's d uses the pooled standard deviation; for paired samples, the signed Cohen's dz uses the standard deviation of within-pair differences. Both signs follow A − B, and the values are not interchangeable. Context matters when interpreting standardized effects.</li>
                         </ul>
                     </div>
 
@@ -323,8 +350,8 @@
                         <h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Frequently Asked Questions (FAQ)</h3>
                         <div class="space-y-6">
                             <div class="border-b border-outline-variant/30 pb-4">
-                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">Can I use this calculator for paired data?</h4>
-                                <p class="text-on-surface-variant font-light leading-relaxed">No. This calculator is specifically for <em>independent</em> samples (e.g., comparing different mice or distinct patient cohorts). If you are measuring the exact same subjects before and after a treatment, you must use a Paired T-Test.</p>
+                                <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">When should I choose the paired design?</h4>
+                                <p class="text-on-surface-variant font-light leading-relaxed">Choose paired / repeated measurements when each value in A is meaningfully linked to the value in the same position in B, such as before-and-after measurements on the same subject or matched pairs. The test analyzes the within-pair differences; enter each pair in the same order. Use independent samples for unrelated observations. Pairing must come from the study design, not from sorting values to create matches.</p>
                             </div>
                             <div class="border-b border-outline-variant/30 pb-4">
                                 <h4 class="font-headline font-bold text-lg mb-2 text-on-surface">What should I do if my sample size is very small (N < 5)?</h4>
@@ -442,6 +469,47 @@
             return meanDifference / Math.sqrt(pooledVariance);
         }
 
+        function calculatePairedTTest(A, B) {
+            if (!Array.isArray(A) || !Array.isArray(B) || A.length < 2 || A.length !== B.length) return null;
+            const differences = A.map((value, index) => value - B[index]);
+            const meanDifference = getMean(differences);
+            const variance = getVariance(differences, meanDifference);
+            if (!Number.isFinite(variance) || variance <= 0) return null;
+            const standardError = Math.sqrt(variance / differences.length);
+            const t = meanDifference / standardError;
+            const df = differences.length - 1;
+            const pValue = twoSidedStudentTPValue(t, df);
+            const criticalValue = Math.abs(jStat.studentt.inv(0.025, df));
+            if (![meanDifference, standardError, t, pValue, criticalValue].every(Number.isFinite)) return null;
+            const margin = criticalValue * standardError;
+            return {
+                n: differences.length,
+                meanDifference,
+                sdDifference: Math.sqrt(variance),
+                standardError,
+                t,
+                df,
+                pValue,
+                ciLow: meanDifference - margin,
+                ciHigh: meanDifference + margin,
+                cohensDz: meanDifference / Math.sqrt(variance)
+            };
+        }
+
+        function updateAnalysisMode() {
+            clearTTestResults();
+            const paired = document.getElementById('analysis-type').value === 'paired';
+            document.getElementById('label-a').innerText = paired ? 'Condition A / Before' : 'Group A Data';
+            document.getElementById('label-b').innerText = paired ? 'Condition B / After' : 'Group B Data';
+            document.getElementById('analysis-hint').innerText = paired
+                ? 'Use when observations are linked in pairs, such as the same subjects measured twice.'
+                : 'Use for two unrelated groups. Values do not need to be entered in matched order.';
+            document.getElementById('pair-order-hint').style.display = paired ? 'block' : 'none';
+            document.getElementById('effect-size-label').innerText = paired
+                ? "Effect Size (signed Cohen's dz):"
+                : "Effect Size (signed Cohen's d):";
+        }
+
         function clearTTestResults() {
             const resultArea = document.getElementById('result-area');
             if (resultArea) resultArea.style.display = 'none';
@@ -472,15 +540,52 @@
             }
 
             const n1 = A.length, n2 = B.length;
+            const pairedMode = document.getElementById('analysis-type').value === 'paired';
+            if (pairedMode && n1 !== n2) {
+                alert("Paired samples must contain the same number of observations, with each pair in the same position.");
+                return;
+            }
             const m1 = getMean(A), m2 = getMean(B);
             const v1 = getVariance(A, m1), v2 = getVariance(B, m2);
-            if (v1 === 0 && v2 === 0) {
+            if (!pairedMode && v1 === 0 && v2 === 0) {
                 alert("Both groups have zero variance. The t-statistic and standardized effect size are undefined for these data.");
                 return;
             }
             const sd1 = Math.sqrt(v1), sd2 = Math.sqrt(v2);
             const se1 = sd1 / Math.sqrt(n1), se2 = sd2 / Math.sqrt(n2);
             const diff = m1 - m2;
+
+            document.getElementById('n-a').innerText = n1;
+            document.getElementById('n-b').innerText = n2;
+            document.getElementById('mean-sd-a').innerText = `${m1.toFixed(3)} ± ${sd1.toFixed(3)}`;
+            document.getElementById('mean-sd-b').innerText = `${m2.toFixed(3)} ± ${sd2.toFixed(3)}`;
+            document.getElementById('se-a').innerText = se1.toFixed(3);
+            document.getElementById('se-b').innerText = se2.toFixed(3);
+
+            if (pairedMode) {
+                const paired = calculatePairedTTest(A, B);
+                if (!paired) {
+                    alert("The paired differences have zero or non-finite variance, so the t-statistic and confidence interval cannot be estimated.");
+                    return;
+                }
+                document.getElementById('f-test-box').style.display = 'none';
+                document.getElementById('row-student').style.display = 'none';
+                document.getElementById('row-welch').style.display = 'none';
+                document.getElementById('row-paired').style.display = 'table-row';
+                document.getElementById('t-paired').innerText = paired.t.toFixed(3);
+                document.getElementById('df-paired').innerText = paired.df.toFixed(1);
+                document.getElementById('p-paired').innerHTML = formatSignificantPValue(paired.pValue);
+                document.getElementById('ci-paired').innerText = `[${paired.ciLow.toFixed(3)} , ${paired.ciHigh.toFixed(3)}]`;
+                document.getElementById('mean-diff').innerText = diff.toFixed(3);
+                document.getElementById('effect-size').innerText = paired.cohensDz.toFixed(3);
+                document.getElementById('result-area').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('f-test-box').style.display = 'block';
+            document.getElementById('row-student').style.display = 'table-row';
+            document.getElementById('row-welch').style.display = 'table-row';
+            document.getElementById('row-paired').style.display = 'none';
 
             // 1. F-Test variance diagnostic
             const fDiagnostic = calculateFTestDiagnostic(v1, v2, n1, n2);
@@ -528,14 +633,6 @@
 
             // 4. Cohen's d
             const cohens_d = calculateCohensD(diff, v_pooled);
-
-            // HTML에 값 채우기 (Descriptive)
-            document.getElementById('n-a').innerText = n1;
-            document.getElementById('n-b').innerText = n2;
-            document.getElementById('mean-sd-a').innerText = `${m1.toFixed(3)} ± ${sd1.toFixed(3)}`;
-            document.getElementById('mean-sd-b').innerText = `${m2.toFixed(3)} ± ${sd2.toFixed(3)}`;
-            document.getElementById('se-a').innerText = se1.toFixed(3);
-            document.getElementById('se-b').innerText = se2.toFixed(3);
 
             // Output Formatting
             // Tailwind's text-error (#ba1a1a) for significance highlight
